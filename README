@@ -1,6 +1,6 @@
-========
-Licenser
-========
+=======
+egg2rpm
+=======
 
 TODO: Description
 
@@ -8,7 +8,7 @@ TODO: Description
 Prerequisites
 =============
 
-This scripts needs the 'argpars' Python module installed. It is also part of
+This scripts needs the 'argparse' Python module installed. It is also part of
 the Python-2.7 Standard Library.
 
 
@@ -16,9 +16,3 @@ Usage
 =====
 
 TODO
-
-
-License
-=======
-
-
