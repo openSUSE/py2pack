@@ -64,9 +64,6 @@ def gen_spec(args):
     with open(args.name + '.spec', 'w') as outfile:                 # write result to spec file
         outfile.write(result)
 
-def gen_changes(args):
-    pass
-
 def gen_dsc(args):
     pass
 
