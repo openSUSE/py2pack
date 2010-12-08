@@ -43,8 +43,9 @@ def gen_rpm_spec(args):
     if not args.version:                                            # take first version found
         args.version = pypi.search({'name': args.name})[0]['version']
     print('generating spec file for {0}...'.format(args.name))
-    #from pprint import pprint
-    #pprint(pypi.release_data(args.name, args.version))
+    data = pypi.release_data(args.name, args.version)               # fetch all meta data
+    from pprint import pprint
+    pprint data
 
 
 if __name__ == '__main__':
@@ -59,7 +60,7 @@ if __name__ == '__main__':
     parser_search.add_argument('name', help='package name')
     parser_search.set_defaults(func=search)
 
-    parser_fetch = subparsers.add_parser('fetch', help='download package from PyPI')
+    parser_fetch = subparsers.add_parser('fetch', help='download package source tarball from PyPI')
     parser_fetch.add_argument('name', help='package name')
     parser_fetch.add_argument('version', nargs='?', help='package version (optional)')
     parser_fetch.set_defaults(func=fetch)
