@@ -18,7 +18,7 @@
 
 import argparse, os, urllib, xmlrpclib
 
-pypi = xmlrpclib.ServerProxy('http://python.org/pypi')
+pypi = xmlrpclib.ServerProxy('http://python.org/pypi')              # XML RPC connection to PyPI
 
 def list(args):
     print('listing all PyPI packages...')
@@ -26,21 +26,25 @@ def list(args):
         print(package)
 
 def search(args):
-    print('searching for {0}...'.format(args.name))
+    print('searching for package {0}...'.format(args.name))
     for hit in pypi.search({'name': args.name}):
         print('found {0}-{1}'.format(hit['name'], hit['version']))
 
 def fetch(args):
-    if not args.version:
+    if not args.version:                                            # take first version found
         args.version = pypi.search({'name': args.name})[0]['version']
-    print('downloading {0}-{1}...'.format(args.name, args.version))
+    print('downloading package {0}-{1}...'.format(args.name, args.version))
     for url in pypi.package_urls(args.name, args.version):          # fetch all download URLs
         if url['packagetype'] == 'sdist':                           # found the source URL we care for
             print('from {0}'.format(url['url']))
             urllib.urlretrieve(url['url'], url['filename'])         # download the object behind the URL
 
-def build(args):
-    print('build {0}'.format(args.url))
+def gen_rpm_spec(args):
+    if not args.version:                                            # take first version found
+        args.version = pypi.search({'name': args.name})[0]['version']
+    print('generating spec file for {0}...'.format(args.name))
+    #from pprint import pprint
+    #pprint(pypi.release_data(args.name, args.version))
 
 
 if __name__ == '__main__':
@@ -52,13 +56,19 @@ if __name__ == '__main__':
     parser_list.set_defaults(func=list)
 
     parser_search = subparsers.add_parser('search', help='search for packages on PyPI')
-    parser_search.add_argument('name', type=str, help='package name')
+    parser_search.add_argument('name', help='package name')
     parser_search.set_defaults(func=search)
 
-    parser_fetch = subparsers.add_parser('fetch', help='download a package from PyPI')
-    parser_fetch.add_argument('name', type=str, help='package name')
-    parser_fetch.add_argument('version', type=str, nargs='?', help='package version (optional)')
+    parser_fetch = subparsers.add_parser('fetch', help='download package from PyPI')
+    parser_fetch.add_argument('name', help='package name')
+    parser_fetch.add_argument('version', nargs='?', help='package version (optional)')
     parser_fetch.set_defaults(func=fetch)
+
+    parser_spec = subparsers.add_parser('genrpmspec', help='generate RPM spec file for a package')
+    parser_spec.add_argument('name', help='package name')
+    parser_spec.add_argument('version', nargs='?', help='package version (optional)')
+    parser_spec.add_argument('template', nargs='?', default='opensuse', help='spec file template')
+    parser_spec.set_defaults(func=gen_rpm_spec)
 
     args = parser.parse_args()
     args.func(args)

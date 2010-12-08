@@ -15,4 +15,12 @@ the Python-2.7 Standard Library.
 Usage
 =====
 
-TODO
+To get help about egg2rpm usage issue the following command:
+
+ $ egg2pm help
+
+
+License
+=======
+
+See the file LICENSE.

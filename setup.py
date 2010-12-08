@@ -13,5 +13,5 @@ setup(name='egg2rpm', version='0.1', license="GPLv2",
       url='http://github.com/saschpe/egg2rpm',
       packages=['egg2rpm'],
       scripts=['egg2rpm/egg2rpm.py'],
-      #install_requires=[]
+      install_requires=['argparse']
 )
