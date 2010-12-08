@@ -36,7 +36,11 @@ Requires:       {{ req }}
 %py_requires
 
 %description
-{{ description }}
+{{ summary }}
+
+Authors:
+--------
+    {{ author}} <{{ author_email }}>
 
 %prep
 %setup -n %{mod_name}-%{version}
