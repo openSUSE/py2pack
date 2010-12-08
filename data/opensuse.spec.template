@@ -1,7 +1,7 @@
 #
-# spec file for package rubygem-<%= spec.name %> (Version <%= spec.version %>)
+# spec file for package python-{name}
 #
-# Copyright (c) 2009 SUSE LINUX Products GmbH, Nuernberg, Germany.
+# Copyright (c) {year} SUSE LINUX Products GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -16,59 +16,40 @@
 #
 
 # norootforbuild
-Name:           rubygem-<%= spec.name %>
-Version:        <%= spec.version %>
+
+Name:           python-{name}
+Version:        {version}
 Release:        0
-%define mod_name <%= spec.name %>
-#
-Group:          Development/Languages/Ruby
-License:        GPLv2+ or Ruby
-#
-BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-BuildRequires:  rubygems_with_buildroot_patch
+Url:            {home_page}
+Summary:        {summary}
+License:        {license}
+Group:          Development/Languages/Python
+%define mod_name {name}
+Source:         %{{mod_name}}-%{{version}}.gem
+BuildRoot:      %{{_tmppath}}/%{{name}}-%{{version}}-build
 %rubygems_requires
-<%
-# no need to add a requires ruby >= 0 here. will be pulled in via rubygems already
-  unless spec.required_ruby_version.satisfied_by? Gem::Version.new(0)
-%>
-Requires:       ruby <%= spec.required_ruby_version.to_rpm %>
-BuildRequires:  ruby-devel <%= spec.required_ruby_version.to_rpm %>
-<% end %>
-<% for d in spec.dependencies %>
-<% if d.type != :development %>
-<% for req in d.requirement.to_rpm %>
-BuildRequires:  rubygem-<%= d.name %> <%= req %>
-Requires:       rubygem-<%= d.name %> <%= req %>
-<% end %>
-<% end %>
-<% end %>
+Requires:       
+BuildRequires:  python-devel {requirements}
+
+{dependencies}
 #
-Url:            <%= spec.homepage %>
-Source:         %{mod_name}-%{version}.gem
-#
-Summary:        <%= spec.summary.gsub(/\.$/, "") %>
+
 %description
 <%= spec.description.to_s.chomp + "\n" %>
 
 %prep
+%setup -n %{{mod_name}}-%{{version}}
+
 %build
+python setup.py build
+
 %install
-%gem_install %{S:0}
-<% unless spec.extensions.empty? %>
-%gem_cleanup
-<% end %>
+python setup.py install --prefix=%{{_prefix}} --root=$RPM_BUILD_ROOT --record-rpm=INSTALLED_FILES
 
 %clean
-%{__rm} -rf %{buildroot}
+rm -rf $RPM_BUILD_ROOT
 
-%files
+%files -f INSTALLED_FILES
 %defattr(-,root,root,-)
-<% spec.executables.each do |executable|  %>
-%{_bindir}/<%= executable %>
-<% end %>
-%{_libdir}/ruby/gems/%{rb_ver}/cache/%{mod_name}-%{version}.gem
-%{_libdir}/ruby/gems/%{rb_ver}/gems/%{mod_name}-%{version}/
-%{_libdir}/ruby/gems/%{rb_ver}/specifications/%{mod_name}-%{version}.gemspec
-%doc %{_libdir}/ruby/gems/%{rb_ver}/doc/%{mod_name}-%{version}/
 
 %changelog
