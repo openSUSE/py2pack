@@ -19,12 +19,13 @@
 
 import argparse, os, urllib, xmlrpclib
 from jinja2 import Environment, FileSystemLoader, Template
+from pprint import pprint
 
 #TODO: Move into setup.py
 TEMPLATE_DIR = 'data'
 
 pypi = xmlrpclib.ServerProxy('http://python.org/pypi')              # XML RPC connection to PyPI
-env = Environment(loader = FileSystemLoader(TEMPLATE_DIR))
+env = Environment(loader = FileSystemLoader(TEMPLATE_DIR))          # Jinja2 template environment
 
 def list(args):
     print('listing all PyPI modules...')
@@ -41,7 +42,6 @@ def show(args):
         args.version = pypi.search({'name': args.name})[0]['version']
     print('showing module {0}...'.format(args.name))
     data = pypi.release_data(args.name, args.version)               # fetch all meta data
-    from pprint import pprint
     pprint(data)
 
 def fetch(args):
@@ -59,6 +59,7 @@ def gen_spec(args):
     print('generating spec file for {0}...'.format(args.name))
     data = pypi.release_data(args.name, args.version)               # fetch all meta data
     template = env.get_template(args.template + '.spec.template')
+    #TODO: Dependencies should be read from the tarball if meta doesn't provide them
     result = template.render(data)
     with open(args.name + '.spec', 'w') as outfile:                 # write result to spec file
         outfile.write(result)
