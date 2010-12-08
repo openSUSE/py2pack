@@ -20,6 +20,7 @@ import argparse, os, urllib, xmlrpclib
 import jinja2
 
 pypi = xmlrpclib.ServerProxy('http://python.org/pypi')              # XML RPC connection to PyPI
+TEMPLATE_DIR = 'data'
 
 def list(args):
     print('listing all PyPI modules...')
@@ -48,6 +49,14 @@ def gen_rpm_spec(args):
     from pprint import pprint
     pprint(data)
 
+    content = ''
+    filename = os.path.join(TEMPLATE_DIR, args.template + '.spec.template')
+    with open(filename, 'r') as file:                               # read template file content
+        content = file.read()
+
+    template = jinja2.Template(content)
+    print template.render(name='John Doe')
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description = 'Generate packages from Python modules on PyPI')
@@ -69,7 +78,7 @@ if __name__ == '__main__':
     parser_spec = subparsers.add_parser('genrpmspec', help='generate RPM spec file for a module')
     parser_spec.add_argument('name', help='module name')
     parser_spec.add_argument('version', nargs='?', help='module version (optional)')
-    parser_spec.add_argument('template', nargs='?', default='opensuse', help='spec file template')
+    parser_spec.add_argument('template', choices=['opensuse'], help='spec file template')
     parser_spec.set_defaults(func=gen_rpm_spec)
 
     args = parser.parse_args()
