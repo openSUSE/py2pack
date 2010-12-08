@@ -60,6 +60,7 @@ def gen_spec(args):
     data = pypi.release_data(args.name, args.version)               # fetch all meta data
     template = env.get_template(args.template + '.spec.template')
     #TODO: Dependencies should be read from the tarball if meta doesn't provide them
+    #TODO: Additional files for the %files section have to be fetched from the tarball
     result = template.render(data)
     with open(args.name + '.spec', 'w') as outfile:                 # write result to spec file
         outfile.write(result)
