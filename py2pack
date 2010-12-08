@@ -98,6 +98,7 @@ if __name__ == '__main__':
     parser_spec.set_defaults(func=gen_spec)
 
     parser_help = subparsers.add_parser('help', help='show this help')
+    # TODO: allow to display module-specific help too
     parser_help.set_defaults(func=lambda args: parser.print_help())
 
     args = parser.parse_args()
