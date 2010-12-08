@@ -97,5 +97,8 @@ if __name__ == '__main__':
     parser_spec.add_argument('template', choices=['opensuse'], help='spec file template')
     parser_spec.set_defaults(func=gen_spec)
 
+    parser_help = subparsers.add_parser('help', help='show this help')
+    parser_help.set_defaults(func=lambda args: parser.print_help())
+
     args = parser.parse_args()
     args.func(args)
