@@ -3,8 +3,8 @@ py2pack
 =======
 
 This script allows to generate RPM packages from Python modules. It allows to
-list Python modules or search for them on the Python Package Index (PyPI). 
-Conveniently, it can fetch tarballs and generate spec files as well as 
+list Python modules or search for them on the Python Package Index (PyPI).
+Conveniently, it can fetch tarballs and generate spec files as well as
 changelogs making it an universal tool to package Python modules.
 
 
@@ -12,7 +12,8 @@ Prerequisites
 =============
 
 py2pack needs the 'argparse' Python module installed. It is also part of
-the Python-2.7 Standard Library.
+the Python-2.7 Standard Library. Additionally, it uses the Jinja2 templating
+engine.
 
 
 Usage

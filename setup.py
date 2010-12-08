@@ -16,5 +16,5 @@ setup(
     author_email = 'saschpe@gmx.de',
     url = 'http://github.com/saschpe/py2pack',
     scripts = ['py2pack'],
-    install_requires = ['argparse']
+    install_requires = ['argparse', 'Jinja2']
 )
