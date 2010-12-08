@@ -36,6 +36,14 @@ def search(args):
     for hit in pypi.search({'name': args.name}):
         print('found {0}-{1}'.format(hit['name'], hit['version']))
 
+def show(args):
+    if not args.version:                                            # take first version found
+        args.version = pypi.search({'name': args.name})[0]['version']
+    print('showing module {0}...'.format(args.name))
+    data = pypi.release_data(args.name, args.version)               # fetch all meta data
+    from pprint import pprint
+    pprint(data)
+
 def fetch(args):
     if not args.version:                                            # take first version found
         args.version = pypi.search({'name': args.name})[0]['version']
@@ -73,6 +81,11 @@ if __name__ == '__main__':
     parser_search = subparsers.add_parser('search', help='search for modules on PyPI')
     parser_search.add_argument('name', help='module name')
     parser_search.set_defaults(func=search)
+
+    parser_show = subparsers.add_parser('show', help='show metadata for module')
+    parser_show.add_argument('name', help='module name')
+    parser_show.add_argument('version', nargs='?', help='module version (optional)')
+    parser_show.set_defaults(func=show)
 
     parser_fetch = subparsers.add_parser('fetch', help='download module source tarball from PyPI')
     parser_fetch.add_argument('name', help='module name')
