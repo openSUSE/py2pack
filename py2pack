@@ -24,7 +24,7 @@ from jinja2 import Environment, FileSystemLoader, Template
 TEMPLATE_DIR = 'data'
 
 pypi = xmlrpclib.ServerProxy('http://python.org/pypi')              # XML RPC connection to PyPI
-env = Environment(loader = jinja2.FileSystemLoader(TEMPLATE_DIR))
+env = Environment(loader = FileSystemLoader(TEMPLATE_DIR))
 
 def list(args):
     print('listing all PyPI modules...')
@@ -51,8 +51,7 @@ def gen_spec(args):
     print('generating spec file for {0}...'.format(args.name))
     data = pypi.release_data(args.name, args.version)               # fetch all meta data
     template = env.get_template(args.template + '.spec.template')
-    #TODO: supply data to template
-    result = template.render(name='John Doe')
+    result = template.render(data)
     with open(args.name + '.spec', 'w') as outfile:                 # write result to spec file
         outfile.write(result)
 
