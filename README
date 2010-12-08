@@ -1,23 +1,26 @@
 =======
-egg2rpm
+py2pack
 =======
 
-TODO: Description
+This script allows to generate RPM packages from Python modules. It allows to
+list Python modules or search for them on the Python Package Index (PyPI). 
+Conveniently, it can fetch tarballs and generate spec files as well as 
+changelogs making it an universal tool to package Python modules.
 
 
 Prerequisites
 =============
 
-This scripts needs the 'argparse' Python module installed. It is also part of
+py2pack needs the 'argparse' Python module installed. It is also part of
 the Python-2.7 Standard Library.
 
 
 Usage
 =====
 
-To get help about egg2rpm usage issue the following command:
+To get help about py2pack usage issue the following command:
 
- $ egg2pm help
+ $ py2pack help
 
 
 License

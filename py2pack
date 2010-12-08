@@ -18,8 +18,6 @@
 
 import argparse, os, urllib, xmlrpclib
 
-description='Generate packages from Python modules on PyPI'
-version='0.1'
 
 pypi = xmlrpclib.ServerProxy('http://python.org/pypi')              # XML RPC connection to PyPI
 
@@ -52,8 +50,8 @@ def gen_rpm_spec(args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='TODO')
-    parser.add_argument('--version', action='version', version='%(prog)s TODO')
+    parser = argparse.ArgumentParser(description = 'Generate packages from Python modules on PyPI')
+    parser.add_argument('--version', action='version', version='%(prog)s 0.1')
     subparsers = parser.add_subparsers(title='commands')
 
     parser_list = subparsers.add_parser('list', help='list all modules on PyPI')

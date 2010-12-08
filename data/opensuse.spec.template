@@ -27,15 +27,14 @@ Group:          Development/Languages/Python
 %define mod_name {name}
 Source:         %{{mod_name}}-%{{version}}.gem
 BuildRoot:      %{{_tmppath}}/%{{name}}-%{{version}}-build
-%rubygems_requires
-Requires:       
-BuildRequires:  python-devel {requirements}
+BuildRequires:  python-devel {buildreq}
+
+%py_requires
 
 {dependencies}
-#
 
 %description
-<%= spec.description.to_s.chomp + "\n" %>
+{description}
 
 %prep
 %setup -n %{{mod_name}}-%{{version}}
