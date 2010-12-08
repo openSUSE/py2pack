@@ -46,16 +46,14 @@ def gen_rpm_spec(args):
         args.version = pypi.search({'name': args.name})[0]['version']
     print('generating spec file for {0}...'.format(args.name))
     data = pypi.release_data(args.name, args.version)               # fetch all meta data
-    from pprint import pprint
-    pprint(data)
-
-    content = ''
     filename = os.path.join(TEMPLATE_DIR, args.template + '.spec.template')
-    with open(filename, 'r') as file:                               # read template file content
-        content = file.read()
+    with open(filename, 'r') as infile                              # read template file content
+        template = jinja2.Template(infile.read())
+        #TODO: supply data to template
+        result = template.render(name='John Doe')
+        with open(args.name + '.spec', 'w') as outfile:
+            outfile.write(result)
 
-    template = jinja2.Template(content)
-    print template.render(name='John Doe')
 
 
 if __name__ == '__main__':
