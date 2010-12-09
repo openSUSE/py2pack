@@ -19,7 +19,20 @@ engine.
 Usage
 =====
 
-To get help about py2pack usage issue the following command:
+Suppose you want to package 'zope.interface' and you don't know how it is named
+exactly. First of all, you can search for it and download the source tarball if
+you found the correct module:
+
+ $ py2pack search zope.interface
+ searching for module zope.interface...
+ found zope.interface-3.6.1
+ $ py2pack fetch zope.interface
+ downloading package zope.interface-3.6.1...
+ from http://pypi.python.org/packages/source/z/zope.interface/zope.interface-3.6.1.tar.gz
+
+
+
+To get further help about py2pack usage issue the following command:
 
  $ py2pack help
 
