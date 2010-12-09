@@ -30,7 +30,22 @@ you found the correct module:
  downloading package zope.interface-3.6.1...
  from http://pypi.python.org/packages/source/z/zope.interface/zope.interface-3.6.1.tar.gz
 
+As a next step you may want to generate a package recipe for your distribution.
+For RPM-based distributions (let's use openSUSE as an example), you want to
+generate a spec file (named 'python-zope.interface.spec'):
 
+ $ py2pack generate zope.interface -t opensuse.spec -f python-zope.interface.spec
+
+The source tarball and the package recipe is all you need to generate the RPM
+(or DEB) file. This final step may depend on which distribution you use. Again,
+for openSUSE (and by using the openSUSE Build Service), the complete recipe is:
+
+ $ osc mkpac python-zope.interface
+ $ cd python-zope.interface
+ $ py2pack fetch zope.interface
+ $ py2pack generate zope.interface -t opensuse.spec -f python-zope.interface.spec
+ $ osc build
+ ...
 
 To get further help about py2pack usage issue the following command:
 
