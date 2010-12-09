@@ -17,20 +17,21 @@
 # Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-__doc__ = 'Generate packages from Python packages on PyPI'
+__doc__ = 'Generate distribution packages from Python packages on PyPI'
 __author__ = 'Sascha Peilicke <saschpe@gmx.de>'
 __version__ = '0.1'
+
 
 import argparse, os, urllib, xmlrpclib
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, Template
 from pprint import pprint
 
-#TODO: Move into setup.py
 TEMPLATE_DIR = 'templates'
 
 pypi = xmlrpclib.ServerProxy('http://python.org/pypi')              # XML RPC connection to PyPI
 env = Environment(loader = FileSystemLoader(TEMPLATE_DIR))          # Jinja2 template environment
+
 
 def list(args):
     print('listing all PyPI packages...')
@@ -58,21 +59,20 @@ def fetch(args):
             print('from {0}'.format(url['url']))
             urllib.urlretrieve(url['url'], url['filename'])         # download the object behind the URL
 
-def gen_spec(args):
+def generate(args):
     if not args.version:                                            # take first version found
         args.version = pypi.search({'name': args.name})[0]['version']
+    if not args.filename:
+        args.filename = args.name + args.template.rsplit('.', 1)    # take template file ending
     print('generating spec file for {0}...'.format(args.name))
     data = pypi.release_data(args.name, args.version)               # fetch all meta data
-    template = env.get_template(args.template + '.spec')
+    template = env.get_template(args.template)
     #TODO: Dependencies should be read from the tarball if meta doesn't provide them
     #TODO: Additional files for the %files section have to be fetched from the tarball
     data['year'] = datetime.now().year
     result = template.render(data)
-    with open(args.name + '.spec', 'w') as outfile:                 # write result to spec file
+    with open(args.filename, 'w') as outfile:                       # write result to spec file
         outfile.write(result)
-
-def gen_dsc(args):
-    pass
 
 
 if __name__ == '__main__':
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     parser_list.set_defaults(func=list)
 
     parser_search = subparsers.add_parser('search', help='search for packages on PyPI')
-    parser_search.add_argument('name', help='package name')
+    parser_search.add_argument('name', help='package name (with optional version)')
     parser_search.set_defaults(func=search)
 
     parser_show = subparsers.add_parser('show', help='show metadata for package')
@@ -97,14 +97,14 @@ if __name__ == '__main__':
     parser_fetch.add_argument('version', nargs='?', help='package version (optional)')
     parser_fetch.set_defaults(func=fetch)
 
-    parser_spec = subparsers.add_parser('genspec', help='generate RPM spec file for a package')
+    parser_spec = subparsers.add_parser('generate', help='generate RPM spec or DEB dsc file for a package')
     parser_spec.add_argument('name', help='package name')
     parser_spec.add_argument('version', nargs='?', help='package version (optional)')
-    parser_spec.add_argument('template', choices=os.listdir(TEMPLATE_DIR), help='spec file template')
-    parser_spec.set_defaults(func=gen_spec)
+    parser_spec.add_argument('-t', '--template', choices=os.listdir(TEMPLATE_DIR), help='spec file template')
+    parser_spec.add_argument('-f', '--filename', help='spec filename (optional)')
+    parser_spec.set_defaults(func=generate)
 
     parser_help = subparsers.add_parser('help', help='show this help')
-    # TODO: allow to display package-specific help too
     parser_help.set_defaults(func=lambda args: parser.print_help())
 
     args = parser.parse_args()
