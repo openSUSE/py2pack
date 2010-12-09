@@ -22,20 +22,20 @@ __author__ = 'Sascha Peilicke <saschpe@gmx.de>'
 __version__ = '0.1'
 
 
-import argparse, os, urllib, xmlrpclib
+import argparse, os, pwd, urllib, xmlrpclib
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, Template
 from pprint import pprint
 
 TEMPLATE_DIR = 'templates'
 
-pypi = xmlrpclib.ServerProxy('http://python.org/pypi')              # XML RPC connection to PyPI
-env = Environment(loader = FileSystemLoader(TEMPLATE_DIR))          # Jinja2 template environment
+pypi = xmlrpclib.ServerProxy('http://python.org/pypi')                      # XML RPC connection to PyPI
+env = Environment(loader = FileSystemLoader(TEMPLATE_DIR))                  # Jinja2 template environment
 
 
 def list(args):
     print('listing all PyPI packages...')
-    for package in pypi.list_packages():
+    for package in pypi.list_packages():                                    # nothing fancy
         print(package)
 
 def search(args):
@@ -44,34 +44,35 @@ def search(args):
         print('found {0}-{1}'.format(hit['name'], hit['version']))
 
 def show(args):
-    if not args.version:                                            # take first version found
+    if not args.version:                                                    # take first version found
         args.version = pypi.search({'name': args.name})[0]['version']
     print('showing package {0}...'.format(args.name))
-    data = pypi.release_data(args.name, args.version)               # fetch all meta data
+    data = pypi.release_data(args.name, args.version)                       # fetch all meta data
     pprint(data)
 
 def fetch(args):
-    if not args.version:                                            # take first version found
+    if not args.version:                                                    # take first version found
         args.version = pypi.search({'name': args.name})[0]['version']
     print('downloading package {0}-{1}...'.format(args.name, args.version))
-    for url in pypi.package_urls(args.name, args.version):          # fetch all download URLs
-        if url['packagetype'] == 'sdist':                           # found the source URL we care for
+    for url in pypi.package_urls(args.name, args.version):                  # fetch all download URLs
+        if url['packagetype'] == 'sdist':                                   # found the source URL we care for
             print('from {0}'.format(url['url']))
-            urllib.urlretrieve(url['url'], url['filename'])         # download the object behind the URL
+            urllib.urlretrieve(url['url'], url['filename'])                 # download the object behind the URL
 
 def generate(args):
-    if not args.version:                                            # take first version found
+    if not args.version:                                                    # take first version found
         args.version = pypi.search({'name': args.name})[0]['version']
     if not args.filename:
-        args.filename = args.name + args.template.rsplit('.', 1)    # take template file ending
+        args.filename = args.name + '.' + args.template.rsplit('.', 1)[1]   # take template file ending
     print('generating spec file for {0}...'.format(args.name))
-    data = pypi.release_data(args.name, args.version)               # fetch all meta data
+    data = pypi.release_data(args.name, args.version)                       # fetch all meta data
     template = env.get_template(args.template)
     #TODO: Dependencies should be read from the tarball if meta doesn't provide them
     #TODO: Additional files for the %files section have to be fetched from the tarball
     data['year'] = datetime.now().year
+    data['user_name'] = pwd.getpwuid(os.getuid())[4]
     result = template.render(data)
-    with open(args.filename, 'w') as outfile:                       # write result to spec file
+    with open(args.filename, 'w') as outfile:                               # write result to spec file
         outfile.write(result)
 
 
