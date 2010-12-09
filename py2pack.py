@@ -17,7 +17,12 @@
 # Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
+__doc__ = 'Generate packages from Python packages on PyPI'
+__author__ = 'Sascha Peilicke <saschpe@gmx.de>'
+__version__ = '0.1'
+
 import argparse, os, urllib, xmlrpclib
+from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, Template
 from pprint import pprint
 
@@ -58,9 +63,10 @@ def gen_spec(args):
         args.version = pypi.search({'name': args.name})[0]['version']
     print('generating spec file for {0}...'.format(args.name))
     data = pypi.release_data(args.name, args.version)               # fetch all meta data
-    template = env.get_template(args.template + '.spec.template')
+    template = env.get_template(args.template + '.spec')
     #TODO: Dependencies should be read from the tarball if meta doesn't provide them
     #TODO: Additional files for the %files section have to be fetched from the tarball
+    data['year'] = datetime.now().year
     result = template.render(data)
     with open(args.name + '.spec', 'w') as outfile:                 # write result to spec file
         outfile.write(result)
@@ -70,7 +76,7 @@ def gen_dsc(args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description = 'Generate packages from Python packages on PyPI')
+    parser = argparse.ArgumentParser(description = __doc__)
     parser.add_argument('--version', action='version', version='%(prog)s 0.1')
     subparsers = parser.add_subparsers(title='commands')
 
@@ -94,7 +100,7 @@ if __name__ == '__main__':
     parser_spec = subparsers.add_parser('genspec', help='generate RPM spec file for a package')
     parser_spec.add_argument('name', help='package name')
     parser_spec.add_argument('version', nargs='?', help='package version (optional)')
-    parser_spec.add_argument('template', choices=['opensuse'], help='spec file template')
+    parser_spec.add_argument('template', choices=os.listdir(TEMPLATE_DIR), help='spec file template')
     parser_spec.set_defaults(func=gen_spec)
 
     parser_help = subparsers.add_parser('help', help='show this help')

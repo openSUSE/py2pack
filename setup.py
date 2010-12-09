@@ -1,4 +1,5 @@
 from distutils.core import setup
+import py2pack
 
 f = open('README')
 try:
@@ -7,13 +8,13 @@ finally:
     f.close()
 
 setup(
-    name = 'py2pack',
-    version = '0.1',
+    name = py2pack.__name__,
+    version = py2pack.__version__,
     license = "GPLv2",
-    description = 'Generate packages from Python modules on PyPI'
+    description = py2pack.__doc__,
     long_description = README,
-    author = 'Sascha Peilicke',
-    author_email = 'saschpe@gmx.de',
+    author = py2pack.__author__.split(' ')[0],
+    author_email = py2pack.__author__.split(' ')[1],
     url = 'http://github.com/saschpe/py2pack',
     scripts = ['py2pack'],
     install_requires = ['argparse', 'Jinja2']
