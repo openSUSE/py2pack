@@ -22,7 +22,7 @@ from jinja2 import Environment, FileSystemLoader, Template
 from pprint import pprint
 
 #TODO: Move into setup.py
-TEMPLATE_DIR = 'data'
+TEMPLATE_DIR = 'templates'
 
 pypi = xmlrpclib.ServerProxy('http://python.org/pypi')              # XML RPC connection to PyPI
 env = Environment(loader = FileSystemLoader(TEMPLATE_DIR))          # Jinja2 template environment
