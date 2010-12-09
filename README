@@ -2,9 +2,9 @@
 py2pack
 =======
 
-This script allows to generate RPM packages from Python modules. It allows to
-list Python modules or search for them on the Python Package Index (PyPI).
-Conveniently, it can fetch tarballs and generate spec files as well as
+This script allows to generate RPM spec or DEB dsc files from Python modules.
+It allows to list Python modules or search for them on the Python Package Index
+(PyPI). Conveniently, it can fetch tarballs and generate spec files as well as
 changelogs making it an universal tool to package Python modules.
 
 
