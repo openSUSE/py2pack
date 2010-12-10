@@ -28,10 +28,10 @@ Group:          Development/Languages/Python
 Source:         %{mod_name}-%{version}.gem
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  python-devel
-{% for req in requirements %}
-BuildRequires:  {{ req }}
-Requires:       {{ req }}
-{% endfor %}
+{%- for req in requires %}
+BuildRequires:  python-{{ req|lower }}
+Requires:       pyhton-{{ req|lower }}
+{%- endfor %}
 
 %py_requires
 
