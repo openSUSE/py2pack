@@ -61,11 +61,9 @@ def generate(args):
         args.filename = args.name + '.' + args.template.rsplit('.', 1)[1]   # take template file ending
     print('generating spec file for {0}...'.format(args.name))
     data = pypi.release_data(args.name, args.version)                       # fetch all meta data
-    template = env.get_template(args.template)
-    #TODO: Dependencies should be read from the tarball if meta doesn't provide them
-    #TODO: Additional files for the %files section have to be fetched from the tarball
     data['year'] = datetime.now().year
     data['user_name'] = pwd.getpwuid(os.getuid())[4]
+    template = env.get_template(args.template)
     result = template.render(data)
     with open(args.filename, 'w') as outfile:                               # write result to spec file
         outfile.write(result)
