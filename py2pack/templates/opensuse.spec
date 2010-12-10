@@ -34,7 +34,7 @@ Requires:       pyhton-{{ req|lower }}
 {%- endfor %}
 %if 0%{?suse_version}
 %py_requires
-%if 0%{suse_version} > 1110}
+%if 0%{?suse_version} > 1110
 BuildArch:      noarch
 %endif
 %endif
