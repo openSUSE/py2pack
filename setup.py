@@ -19,7 +19,7 @@ setup(
     scripts = ['scripts/py2pack'],
     packages = ['py2pack'],
     package_data = {'py2pack': ['templates/*']},
-    data_files = [('doc/py2pack', ['AUTHORS', 'LICENSE', 'README'])],
+    #data_files = [('doc/py2pack', ['AUTHORS', 'LICENSE', 'README'])],
     requires = ['Jinja2'],
     classifiers = [
         'Development Status :: 4 - Beta',
