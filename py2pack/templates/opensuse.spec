@@ -1,5 +1,5 @@
 #
-# spec file for package python-{{ name }}
+# spec file for package python-{{ name|lower }}
 #
 # Copyright (c) {{ year }} SUSE LINUX Products GmbH, Nuernberg, Germany.
 #
@@ -17,8 +17,8 @@
 
 # norootforbuild
 
-Name:           python-{{ name}}
-Version:        {{ version}}
+Name:           python-{{ name|lower }}
+Version:        {{ version }}
 Release:        0
 Url:            {{ home_page }}
 Summary:        {{ summary }}
@@ -32,27 +32,30 @@ BuildRequires:  python-devel
 BuildRequires:  python-{{ req|lower }}
 Requires:       pyhton-{{ req|lower }}
 {%- endfor %}
-
 %py_requires
+%if %{?suse_version: %{suse_version} > 1110} %{!?suse_version:1}
+BuildArch:      noarch
+%endif
 
 %description
-{{ summary }}
+{{ description }}
 
 Authors:
 --------
     {{ author}} <{{ author_email }}>
 
 %prep
+export CFLAGS="%{optflags}"
 %setup -n %{mod_name}-%{version}
 
 %build
-python setup.py build
+%{__python} setup.py build
 
 %install
-python setup.py install --prefix=%{_prefix} --root=$RPM_BUILD_ROOT --record-rpm=INSTALLED_FILES
+%{__python} setup.py install --prefix=%{_prefix} --root=%{buildroot} --record-rpm=INSTALLED_FILES
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+%{__rm} -rf %{buildroot}
 
 %files -f INSTALLED_FILES
 %defattr(-,root,root,-)

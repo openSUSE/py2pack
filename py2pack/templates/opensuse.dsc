@@ -1,5 +1,5 @@
 #
-# dsc file for package python-{{ name }}
+# dsc file for package python-{{ name|lower }}
 #
 # Copyright (c) {{ year }} SUSE LINUX Products GmbH, Nuernberg, Germany.
 #
@@ -17,7 +17,7 @@
 Format: 1.0
 Source: {{ name }}-{{ version }}.tar.gz
 Version: {{ version }}
-Binary: python-{{ name }}
+Binary: python-{{ name|lower }}
 Maintainer: {{ user_name }}
 Architecture: any
 Standards-Version: 3.7.1
