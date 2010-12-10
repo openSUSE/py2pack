@@ -16,6 +16,20 @@ setup(
     author = py2pack.__author__.split(' ')[0],
     author_email = py2pack.__author__.split(' ')[1],
     url = 'http://github.com/saschpe/py2pack',
-    scripts = ['py2pack'],
-    install_requires = ['argparse', 'Jinja2']
+    scripts = ['scripts/py2pack'],
+    packages = ['py2pack'],
+    package_data = {'py2pack': ['templates/*']},
+    requires = ['argparse', 'Jinja2'],
+    classifiers = [
+        'Development Status :: 4 - Beta',
+        'Environment :: Console',
+        'Intended Audience :: End Users/Desktop',
+        'Intended Audience :: Developers',
+        'Intended Audience :: System Administrators',
+        'License :: OSI Approved :: GNU General Public License',
+        'Operating System :: MacOS :: MacOS X',
+        'Operating System :: Microsoft :: Windows',
+        'Operating System :: POSIX',
+        'Programming Language :: Python',
+    ],
 )

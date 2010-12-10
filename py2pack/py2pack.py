@@ -17,17 +17,12 @@
 # Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-__doc__ = 'Generate distribution packages from Python packages on PyPI'
-__author__ = 'Sascha Peilicke <saschpe@gmx.de>'
-__version__ = '0.1'
-
-
-import argparse, os, pwd, urllib, xmlrpclib
+import argparse, os, pwd, sys, urllib, xmlrpclib
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, Template
 from pprint import pprint
 
-TEMPLATE_DIR = 'templates'
+TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates') # absolute template path
 
 pypi = xmlrpclib.ServerProxy('http://python.org/pypi')                      # XML RPC connection to PyPI
 env = Environment(loader = FileSystemLoader(TEMPLATE_DIR))                  # Jinja2 template environment
@@ -75,8 +70,7 @@ def generate(args):
     with open(args.filename, 'w') as outfile:                               # write result to spec file
         outfile.write(result)
 
-
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description = __doc__)
     parser.add_argument('--version', action='version', version='%(prog)s 0.1')
     subparsers = parser.add_subparsers(title='commands')
@@ -110,3 +104,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     args.func(args)
+
+
+# fallback if run directly
+if __name__ == '__main__':
+    main()
