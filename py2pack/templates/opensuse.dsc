@@ -15,7 +15,7 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 
 Format: 1.0
-Source: {{ name }}
+Source: {{ name }}-{{ version }}.tar.gz
 Version: {{ version }}
 Binary: python-{{ name }}
 Maintainer: {{ user_name }}

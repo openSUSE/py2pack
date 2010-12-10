@@ -25,7 +25,7 @@ Summary:        {{ summary }}
 License:        {{ license }}
 Group:          Development/Languages/Python
 %define mod_name {{ name }}
-Source:         %{mod_name}-%{version}.gem
+Source:         %{mod_name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  python-devel
 {%- for req in requires %}
