@@ -32,9 +32,11 @@ BuildRequires:  python-devel
 BuildRequires:  python-{{ req|lower }}
 Requires:       pyhton-{{ req|lower }}
 {%- endfor %}
+%if 0%{?suse_version}
 %py_requires
-%if %{?suse_version: %{suse_version} > 1110} %{!?suse_version:1}
+%if 0%{suse_version} > 1110}
 BuildArch:      noarch
+%endif
 %endif
 
 %description
@@ -52,12 +54,23 @@ export CFLAGS="%{optflags}"
 %{__python} setup.py build
 
 %install
+%if 0%{?suse_version}
 %{__python} setup.py install --prefix=%{_prefix} --root=%{buildroot} --record-rpm=INSTALLED_FILES
+%else
+%{__python} setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%endif
 
 %clean
 %{__rm} -rf %{buildroot}
 
+%if 0%{?suse_version}
 %files -f INSTALLED_FILES
 %defattr(-,root,root,-)
+%else
+%files
+%defattr(-,root,root,-)
+# You may have to add additional files here!
+/usr/lib/python2.6/site-packages/%{mod_name}*
+%endif
 
 %changelog
