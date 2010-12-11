@@ -1,1 +1,2 @@
 include AUTHORS LICENSE
+include py2pack/templates/*
