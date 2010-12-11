@@ -61,7 +61,7 @@ export CFLAGS="%{optflags}"
 
 %files %{?suse_version: -f INSTALLED_FILES}
 %defattr(-,root,root,-)
-%if 0%{?!suse_version}
+%if 0%{!?suse_version:1}
 # You may have to add additional files here!
 %python_sitelib/%{mod_name}*
 %endif
