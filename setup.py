@@ -1,11 +1,8 @@
 from distutils.core import setup
 import py2pack
 
-f = open('README')
-try:
+with open('README') as f:
     README = f.read()
-finally:
-    f.close()
 
 setup(
     name = py2pack.__name__,
