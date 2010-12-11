@@ -39,34 +39,55 @@ def search(args):
         print('found {0}-{1}'.format(hit['name'], hit['version']))
 
 def show(args):
-    if not args.version:                                                    # take first version found
-        args.version = pypi.search({'name': args.name})[0]['version']
+    check_or_set_version(args)
     print('showing package {0}...'.format(args.name))
     data = pypi.release_data(args.name, args.version)                       # fetch all meta data
     pprint(data)
 
 def fetch(args):
-    if not args.version:                                                    # take first version found
-        args.version = pypi.search({'name': args.name})[0]['version']
+    check_or_set_version(args)
+    url = newest_download_url(args)
     print('downloading package {0}-{1}...'.format(args.name, args.version))
-    for url in pypi.package_urls(args.name, args.version):                  # fetch all download URLs
-        if url['packagetype'] == 'sdist':                                   # found the source URL we care for
-            print('from {0}'.format(url['url']))
-            urllib.urlretrieve(url['url'], url['filename'])                 # download the object behind the URL
+    print('from {0}'.format(url['url']))
+    urllib.urlretrieve(url['url'], url['filename'])                         # download the object behind the URL
 
 def generate(args):
-    if not args.version:                                                    # take first version found
-        args.version = pypi.search({'name': args.name})[0]['version']
+    check_or_set_version(args)
+    if not args.template:
+        args.template = template_list()[0]
     if not args.filename:
         args.filename = args.name + '.' + args.template.rsplit('.', 1)[1]   # take template file ending
     print('generating spec file for {0}...'.format(args.name))
     data = pypi.release_data(args.name, args.version)                       # fetch all meta data
-    data['year'] = datetime.now().year
-    data['user_name'] = pwd.getpwuid(os.getuid())[4]
+    url = newest_download_url(args)
+    data['ending'] = url['filename'].rsplit(args.name + "-" + args.version)[1] # split of name-version to get ending
+    data['year'] = datetime.now().year                                      # set current year
+    data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
     template = env.get_template(args.template)
     result = template.render(data)
     with open(args.filename, 'w') as outfile:                               # write result to spec file
         outfile.write(result)
+
+def check_or_set_version(args):
+    if not args.version:                                                    # take first version found
+        releases = pypi.package_releases(args.name)
+        if len(releases) == 0:
+            print("unable to find a suitable release for {0}!".format(args.name))
+            sys.exit(1)
+        else:
+            args.version = pypi.package_releases(args.name)[0]              # return first (current) release number
+
+def newest_download_url(args):
+    for url in pypi.package_urls(args.name, args.version):                  # fetch all download URLs
+        if url['packagetype'] == 'sdist':                                   # found the source URL we care for
+            return url
+    print("unable to find a source release for {0}!".format(args.name))
+    sys.exit(1)
+
+def template_list():
+    return os.listdir(TEMPLATE_DIR)
+
+
 
 def main():
     parser = argparse.ArgumentParser(description = __doc__)
@@ -93,7 +114,7 @@ def main():
     parser_spec = subparsers.add_parser('generate', help='generate RPM spec or DEB dsc file for a package')
     parser_spec.add_argument('name', help='package name')
     parser_spec.add_argument('version', nargs='?', help='package version (optional)')
-    parser_spec.add_argument('-t', '--template', choices=os.listdir(TEMPLATE_DIR), help='spec file template')
+    parser_spec.add_argument('-t', '--template', choices=template_list(), help='spec file template')
     parser_spec.add_argument('-f', '--filename', help='spec filename (optional)')
     parser_spec.set_defaults(func=generate)
 

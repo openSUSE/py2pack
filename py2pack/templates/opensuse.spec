@@ -11,21 +11,26 @@
 # case the license is the MIT License). An "Open Source License" is a
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
-
+#
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
 # norootforbuild
 
-Name:           python-{{ name|lower }}
+%define mod_name {{ name|lower }}
+
+Name:           python-%{mod_name}
 Version:        {{ version }}
 Release:        0
 Url:            {{ home_page }}
 Summary:        {{ summary }}
 License:        {{ license }}
 Group:          Development/Languages/Python
-%define mod_name {{ name }}
-Source:         %{mod_name}-%{version}.tar.gz
+{%- if name != name|lower %}
+Source:         {{ name }}-%{version}{{ ending }}
+{%- else %}
+Source:         %{mod_name}-%{version}{{ ending }}
+{%- endif %}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  python-devel
 {%- for req in requires %}
@@ -48,7 +53,11 @@ Authors:
 
 %prep
 export CFLAGS="%{optflags}"
+{%- if name != name|lower %}
+%setup -n {{ name }}-%{version}
+{%- else %}
 %setup -n %{mod_name}-%{version}
+{%- endif %}
 
 %build
 %{__python} setup.py build
