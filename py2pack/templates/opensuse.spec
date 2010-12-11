@@ -30,7 +30,7 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  python-devel
 {%- for req in requires %}
 BuildRequires:  python-{{ req|lower }}
-Requires:       pyhton-{{ req|lower }}
+Requires:       python-{{ req|lower }}
 {%- endfor %}
 %if 0%{?suse_version}
 %py_requires
