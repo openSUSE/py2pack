@@ -1,7 +1,7 @@
 #
 # dsc file for package python-{{ name|lower }}
 #
-# Copyright (c) {{ year }} SUSE LINUX Products GmbH, Nuernberg, Germany.
+# Copyright (c) {{ year }} {{ user_name }}.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
