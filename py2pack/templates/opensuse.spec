@@ -1,7 +1,7 @@
 #
 # spec file for package python-{{ name|lower }}
 #
-# Copyright (c) {{ year }} SUSE LINUX Products GmbH, Nuernberg, Germany.
+# Copyright (c) {{ year }} {{ user_name }}.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -34,7 +34,7 @@ Requires:       pyhton-{{ req|lower }}
 {%- endfor %}
 %if 0%{?suse_version}
 %py_requires
-%if 0%{?suse_version} > 1110
+%if %{?suse_version: %{suse_version} > 1110} %{!?suse_version:1}
 BuildArch:      noarch
 %endif
 %endif
@@ -44,7 +44,7 @@ BuildArch:      noarch
 
 Authors:
 --------
-    {{ author}} <{{ author_email }}>
+    {{ author }} <{{ author_email }}>
 
 %prep
 export CFLAGS="%{optflags}"
@@ -54,23 +54,14 @@ export CFLAGS="%{optflags}"
 %{__python} setup.py build
 
 %install
-%if 0%{?suse_version}
-%{__python} setup.py install --prefix=%{_prefix} --root=%{buildroot} --record-rpm=INSTALLED_FILES
-%else
-%{__python} setup.py install --prefix=%{_prefix} --root=%{buildroot}
-%endif
+%{__python} setup.py install --prefix=%{_prefix} --root=%{buildroot} %{?suse_version: --record-rpm=INSTALLED_FILES}
 
 %clean
 %{__rm} -rf %{buildroot}
 
-%if 0%{?suse_version}
-%files -f INSTALLED_FILES
-%defattr(-,root,root,-)
-%else
-%files
+%files %{?suse_version: -f INSTALLED_FILES}
 %defattr(-,root,root,-)
 # You may have to add additional files here!
-/usr/lib/python2.6/site-packages/%{mod_name}*
-%endif
+%python_sitelib/%{mod_name}*
 
 %changelog
