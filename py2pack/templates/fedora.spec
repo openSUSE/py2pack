@@ -32,18 +32,18 @@ export CFLAGS="%{optflags}"
 %setup -n %{mod_name}-%{version}
 
 %build
-python setup.py build
+%{__python} setup.py build
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%{__python} setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %clean
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
 
-%files -f INSTALLED_FILES
+%files
 %defattr(-,root,root,-)
 # You may have to add additional files here!
-/usr/lib/python2.6/site-packages/%{mod_name}*
+%python_sitelib/%{mod_name}*
 
 %changelog
 
