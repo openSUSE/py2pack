@@ -20,7 +20,7 @@ setup(
     packages = ['py2pack'],
     package_data = {'py2pack': ['templates/*']},
     #data_files = [('doc/py2pack', ['AUTHORS', 'LICENSE', 'README'])],
-    requires = ['Jinja2'],
+    requires = ['argparse', 'Jinja2'],
     classifiers = [
         'Development Status :: 4 - Beta',
         'Environment :: Console',
