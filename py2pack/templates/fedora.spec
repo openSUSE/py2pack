@@ -1,6 +1,8 @@
 #
 # spec file for package python-{{ name|lower }}
 #
+# Copyright (c) {{ year }} {{ user_name }}.
+#
 
 Name:           python-{{ name|lower }}
 Version:        {{ version }}
@@ -17,14 +19,13 @@ BuildRequires:  python-devel
 BuildRequires:  python-{{ req|lower }}
 Requires:       pyhton-{{ req|lower }}
 {%- endfor %}
-%py_requires
 
 %description
 {{ summary }}
 
 Authors:
 --------
-    {{ author}} <{{ author_email }}>
+    {{ author }} <{{ author_email }}>
 
 %prep
 export CFLAGS="%{optflags}"
@@ -34,13 +35,15 @@ export CFLAGS="%{optflags}"
 python setup.py build
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot} --record-rpm=INSTALLED_FILES
+python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %clean
 rm -rf %{buildroot}
 
 %files -f INSTALLED_FILES
 %defattr(-,root,root,-)
+# You may have to add additional files here!
+/usr/lib/python2.6/site-packages/%{mod_name}*
 
 %changelog
 
