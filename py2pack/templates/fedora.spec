@@ -41,13 +41,13 @@ export CFLAGS="%{optflags}"
 {%- endif %}
 
 %build
-%{__python} setup.py build
+python setup.py build
 
 %install
-%{__python} setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %clean
-%{__rm} -rf %{buildroot}
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)

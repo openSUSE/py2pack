@@ -62,13 +62,13 @@ export CFLAGS="%{optflags}"
 {%- endif %}
 
 %build
-%{__python} setup.py build
+python setup.py build
 
 %install
-%{__python} setup.py install --prefix=%{_prefix} --root=%{buildroot} %{?suse_version: --record-rpm=INSTALLED_FILES}
+python setup.py install --prefix=%{_prefix} --root=%{buildroot} %{?suse_version: --record-rpm=INSTALLED_FILES}
 
 %clean
-%{__rm} -rf %{buildroot}
+rm -rf %{buildroot}
 
 %files %{?suse_version: -f INSTALLED_FILES}
 %defattr(-,root,root,-)
