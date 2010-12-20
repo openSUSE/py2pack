@@ -54,7 +54,6 @@ Authors:
     {{ author }} <{{ author_email }}>
 
 %prep
-export CFLAGS="%{optflags}"
 {%- if name != name|lower %}
 %setup -n {{ name }}-%{version}
 {%- else %}
@@ -62,6 +61,7 @@ export CFLAGS="%{optflags}"
 {%- endif %}
 
 %build
+export CFLAGS="%{optflags}"
 python setup.py build
 
 %install
