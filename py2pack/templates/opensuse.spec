@@ -55,9 +55,9 @@ Authors:
 
 %prep
 {%- if name != name|lower %}
-%setup -n {{ name }}-%{version}
+%setup -q -n {{ name }}-%{version}
 {%- else %}
-%setup -n %{mod_name}-%{version}
+%setup -q -n %{mod_name}-%{version}
 {%- endif %}
 
 %build
