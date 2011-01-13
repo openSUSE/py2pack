@@ -47,6 +47,9 @@ def show(args):
 def fetch(args):
     check_or_set_version(args)
     url = newest_download_url(args)
+    if not url:
+      print("unable to find a source release for {0}!".format(args.name))
+      sys.exit(1)
     print('downloading package {0}-{1}...'.format(args.name, args.version))
     print('from {0}'.format(url['url']))
     urllib.urlretrieve(url['url'], url['filename'])                         # download the object behind the URL
@@ -60,7 +63,10 @@ def generate(args):
     print('generating spec file for {0}...'.format(args.name))
     data = pypi.release_data(args.name, args.version)                       # fetch all meta data
     url = newest_download_url(args)
-    data['ending'] = url['filename'].rsplit(args.name + "-" + args.version)[1] # split of name-version to get ending
+    if url:
+      data['ending'] = url['filename'].rsplit(args.name + "-" + args.version)[1] # split of name-version to get ending
+    else:
+      data['ending'] = '.zip'                                               # set sane default if no download available
     data['year'] = datetime.now().year                                      # set current year
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
     template = env.get_template(args.template)
@@ -81,12 +87,10 @@ def newest_download_url(args):
     for url in pypi.package_urls(args.name, args.version):                  # fetch all download URLs
         if url['packagetype'] == 'sdist':                                   # found the source URL we care for
             return url
-    print("unable to find a source release for {0}!".format(args.name))
-    sys.exit(1)
+    return []
 
 def template_list():
     return os.listdir(TEMPLATE_DIR)
-
 
 
 def main():
