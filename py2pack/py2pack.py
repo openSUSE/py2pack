@@ -48,7 +48,7 @@ def fetch(args):
     check_or_set_version(args)
     url = newest_download_url(args)
     if not url:
-      print("unable to find a source release for {0}!".format(args.name))
+      print("unable to find a source release for {0}!".format(args.name))   # pass out if nothing is found
       sys.exit(1)
     print('downloading package {0}-{1}...'.format(args.name, args.version))
     print('from {0}'.format(url['url']))
