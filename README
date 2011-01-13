@@ -43,7 +43,7 @@ for openSUSE_ (and by using the `openSUSE Build Service`_), the complete recipe 
  $ osc mkpac python-zope.interface
  $ cd python-zope.interface
  $ py2pack fetch zope.interface
- $ py2pack generate zope.interface -t opensuse.spec -f python-zope.interface.spec
+ $ py2pack generate zope.interface -f python-zope.interface.spec
  $ osc build
  ...
 
