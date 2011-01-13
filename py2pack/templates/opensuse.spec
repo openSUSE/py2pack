@@ -36,8 +36,8 @@ Source:         %{mod_name}-%{version}{{ ending }}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  python-devel
 {%- for req in requires %}
-BuildRequires:  python-{{ req|lower }}
-Requires:       python-{{ req|lower }}
+BuildRequires:  python-{{ req|lower|replace('(','')|replace(')','') }}
+Requires:       python-{{ req|lower|replace('(','')|replace(')','') }}
 {%- endfor %}
 %if 0%{?suse_version}
 %py_requires
