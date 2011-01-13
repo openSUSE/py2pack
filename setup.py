@@ -1,15 +1,12 @@
 from distutils.core import setup
 import py2pack
 
-with open('README') as f:
-    README = f.read()
-
 setup(
     name = py2pack.__name__,
     version = py2pack.__version__,
     license = "GPLv2",
     description = py2pack.__doc__,
-    long_description = README,
+    long_description = open('README').read(),
     author = py2pack.__author__.rsplit(' ', 1)[0],
     author_email = py2pack.__author__.rsplit(' ', 1)[1][1:-1],
     url = 'http://github.com/saschpe/py2pack',
