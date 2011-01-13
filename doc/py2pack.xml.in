@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE refentry PUBLIC 
+   "-//OASIS//DTD DocBook XML V4.5//EN"
+   "http://www.docbook.org/xml/4.5/docbookx.dtd"
+[
+  <!ENTITY product "py2pack">
+]>
+
+
+
+<refentry lang="en" id="py2pack">
+  <refentryinfo>
+    <productname>&product;</productname>
+    <authorgroup>
+      <author>
+        <contrib>Developer</contrib>
+        <firstname>Sascha</firstname>
+        <surname>Peilicke</surname>
+        <email>saschpe@gmx.de</email>
+      </author>
+      <othercredit>
+        <contrib>Manpage author</contrib>
+        <firstname>Thomas</firstname>
+        <surname>Schraitle</surname>
+      </othercredit>
+    </authorgroup>
+    <abstract>
+      <!-- Taken from the RPM description, but modified slightly -->
+      &product; allows to generate RPM spec or DEB dsc files from 
+      Python modules, to list Python modules or search for them on 
+      the Python Package Index (PyPI). Conveniently, it can fetch 
+      tarballs and changelogs making it an universal tool to 
+      package Python modules.
+    </abstract>
+  </refentryinfo>
+  <refmeta>
+    <refentrytitle>&product;</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class="version">@VERSION@</refmiscinfo>
+    <refmiscinfo class="source"
+      >http://github.com/saschpe/py2pack</refmiscinfo>
+    <!--<refmiscinfo class="manual"></refmiscinfo>-->
+  </refmeta>
+
+  <refnamediv>
+    <refname>&product;</refname>
+    <refpurpose>
+      Generate Distribution Packages from Python Packages on PyPI
+    </refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv id="py2pack.synopsis">
+    <title>Synopsis</title>
+    <cmdsynopsis>
+      <command>py2pack</command>
+      <arg choice="opt">-h</arg>
+      <arg choice="opt">--version</arg>
+      <group choice="req">
+        <arg choice="plain">search</arg>
+        <arg choice="plain">help</arg>
+        <arg choice="plain">show</arg>
+        <arg choice="plain">list</arg>
+        <arg choice="plain">fetch</arg>
+        <arg choice="plain">generate</arg>
+      </group>
+      <arg rep="repeat" choice="plain"/>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1 id="py2pack.options">
+    <title>Commands</title>
+    <para>The following commands are available:</para>
+  
+    <!-- Commands sorted alphabetically: -->
+    <refsect2 id="py2pack.cmd.fetch">
+      <title>The fetch Command</title>
+      <cmdsynopsis><command>py2pack</command><!--
+         --> fetch <!--
+          --><arg choice="plain">name</arg> <!--
+          --><arg choice="opt">version</arg>
+      </cmdsynopsis>
+      <para>Downloads a package from PyPI and stores it in the current directory. Optionally you
+        can specify a version number.</para>
+    </refsect2>
+    
+    <refsect2 id="py2pack.cmd.generate">
+      <title>The generate Command</title>
+      <cmdsynopsis><command>py2pack</command>
+          <command> generate</command> 
+          <arg choice="opt">-h</arg>
+          <arg choice="opt">
+            <arg choice="plain">-t</arg>
+            <group choice="req">
+              <arg choice="plain">fedora.spec</arg>
+              <arg choice="plain">opensuse.dsc</arg>
+              <arg choice="plain">opensuse.spec</arg>
+            </group>
+          </arg>
+          <arg choice="opt">-f <replaceable>FILENAME</replaceable></arg>
+          <arg choice="plain">name</arg>
+          <arg choice="opt">version</arg>
+      </cmdsynopsis>
+      <para>Creates a SPEC or DSC file for a specific distribution.</para>
+    </refsect2>
+    
+    <refsect2 id="py2pack.cmd.list">
+      <title>The list Command</title>
+      <cmdsynopsis><command>py2pack</command>
+          <command> list</command> 
+        <arg choice="opt">-h</arg>
+      </cmdsynopsis>
+      <para>Gives a list of all Python modules available on PyPI.</para>
+    </refsect2>
+    
+    <refsect2 id="py2pack.cmd.search">
+      <title>The search Command</title>
+      <cmdsynopsis><command>py2pack</command>
+          <command> search</command> 
+        <arg choice="opt">-h</arg>
+        <arg choice="req">name</arg>
+      </cmdsynopsis>
+      <para>Gives a list of all Python modules found in
+        <replaceable>name</replaceable>.</para>
+    </refsect2>
+    
+    <refsect2 id="py2pack.cmd.show">
+      <title>The show Command</title>
+      <cmdsynopsis><command>py2pack</command>
+          <command> show</command> 
+        <arg choice="opt">-h</arg>
+        <arg choice="req">name</arg>
+        <arg choice="opt">version</arg>
+      </cmdsynopsis>
+      <para>Shows the <ulink
+        url="http://usefulinc.com/doap">DOAP</ulink> record for the
+        given name and version (optionally). The output is a Python
+        dictionary.</para>
+    </refsect2>
+    
+  </refsect1>
+
+  <refsect1 id="py2pack.examples">
+    <title>Examples</title>
+    <para>Creating a package from a Python module involves the following
+    steps:</para>
+    <procedure>
+      <step>
+        <para>Search for your favorite Python module, for example,
+          <package></package>:</para>
+        <screen><prompt>$ </prompt><command>py2pack</command> search pylint
+searching for package pylint...
+found logilab.pylintinstaller-0.15.2
+found plpylint-0.1.2
+found pylint-0.22.0</screen>
+      </step>
+      <step>
+        <para>Download</para>
+        <screen><prompt>$ </prompt><command>py2pack</command> fetch
+downloading package pylint-0.22.0...
+from http://pypi.python.org/packages/source/p/pylint/pylint-0.22.0.tar.gz</screen>
+      </step>
+      <step>
+        <para>Create a SPEC file, for example, for openSUSE:</para>
+        <screen><prompt>$ </prompt><command>py2pack</command> generate -t opensuse.spec<!--
+        --> -f python-pylint.spec pylint</screen>
+      </step>
+      <step>
+        <para>Check the SPEC file
+          <filename>python-pylint.spec</filename> and adapt it to your
+          needs.</para>
+      </step>
+    </procedure>
+    
+  </refsect1>
+  
+</refentry>
