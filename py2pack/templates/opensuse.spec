@@ -41,7 +41,7 @@ Requires:       python-{{ req|lower|replace('(','')|replace(')','') }}
 {%- endfor %}
 %if 0%{?suse_version}
 %py_requires
-%if %{?suse_version: %{suse_version} > 1110} %{!?suse_version:1}
+%if %{?suse_version: %{suse_version} > 1110}
 BuildArch:      noarch
 %endif
 %endif
@@ -72,8 +72,9 @@ rm -rf %{buildroot}
 
 %files %{?suse_version: -f INSTALLED_FILES}
 %defattr(-,root,root,-)
+# Please add documentation files here
 %if 0%{!?suse_version:1}
-# You may have to add additional files here!
+# You may have to add additional files here (binaries, egg-info)
 %python_sitelib/%{mod_name}*
 %endif
 
