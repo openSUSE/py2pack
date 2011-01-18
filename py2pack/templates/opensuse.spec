@@ -49,10 +49,6 @@ BuildArch:      noarch
 %description
 {{ description }}
 
-Authors:
---------
-    {{ author }} <{{ author_email }}>
-
 %prep
 {%- if name != name|lower %}
 %setup -q -n {{ name }}-%{version}
