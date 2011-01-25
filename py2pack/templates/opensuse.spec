@@ -70,8 +70,9 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 # Please add documentation files here
 %if 0%{!?suse_version:1}
-# You may have to add additional files here (binaries, egg-info)
+# You may have to add additional files here (binaries mostly)
 %python_sitelib/%{mod_name}*
+%python_sitelib/*.egg-info
 %endif
 
 %changelog
