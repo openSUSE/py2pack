@@ -1,2 +1,2 @@
-include AUTHORS LICENSE
+include AUTHORS LICENSE README.rst
 include py2pack/templates/*
