@@ -6,7 +6,7 @@ setup(
     version = py2pack.__version__,
     license = "GPLv2",
     description = py2pack.__doc__,
-    long_description = open('README').read(),
+    long_description = open('README.rst').read(),
     author = py2pack.__author__.rsplit(' ', 1)[0],
     author_email = py2pack.__author__.rsplit(' ', 1)[1][1:-1],
     url = 'http://github.com/saschpe/py2pack',
