@@ -61,18 +61,15 @@ export CFLAGS="%{optflags}"
 python setup.py build
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot} %{?suse_version: --record-rpm=INSTALLED_FILES}
+python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %clean
 rm -rf %{buildroot}
 
-%files %{?suse_version: -f INSTALLED_FILES}
+%files
 %defattr(-,root,root,-)
-# Please add documentation files here
-%if 0%{!?suse_version:1}
-# You may have to add additional files here (binaries mostly)
+# You may have to add additional files here (documentation and binaries mostly)
 %python_sitelib/%{mod_name}*
 %python_sitelib/*.egg-info
-%endif
 
 %changelog
