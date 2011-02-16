@@ -71,8 +71,11 @@ def generate(args):
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
     template = env.get_template(args.template)
     result = template.render(data)
-    with open(args.filename, 'w') as outfile:                               # write result to spec file
+    outfile = open(args.filename, 'w')                                      # write result to spec file
+    try:
         outfile.write(result)
+    finally:
+        outfile.close()
 
 def check_or_set_version(args):
     if not args.version:                                                    # take first version found
