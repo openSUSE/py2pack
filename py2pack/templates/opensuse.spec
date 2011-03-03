@@ -41,7 +41,7 @@ Requires:       python-{{ req|lower|replace('(','')|replace(')','') }}
 {%- endfor %}
 %if 0%{?suse_version}
 %py_requires
-%if %{?suse_version: %{suse_version} > 1110}
+%if 0%{?suse_version} > 1110
 BuildArch:      noarch
 %endif
 %endif
