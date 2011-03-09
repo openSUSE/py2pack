@@ -1,5 +1,29 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from distutils.core import setup
+import os,subprocess, sys
 import py2pack
+
+
+if sys.argv[-1] == "doc":
+    """Generate manpage, HTML and PDF documentation.
+    """
+    try:
+        subprocess.call(["xsltproc", "--output", "doc/py2pack.html", "/usr/share/xml/docbook/stylesheet/nwalsh/current/html/docbook.xsl", "doc/py2pack.xml.in"])
+        subprocess.call(["xsltproc", "--output", "doc/py2pack.1", "/usr/share/xml/docbook/stylesheet/nwalsh/current/manpages/docbook.xsl", "doc/py2pack.xml.in"])
+        #subprocess.call(["xsltproc", "--output", "doc/py2pack.fo",
+        #                 "--stringparam", "paper.type", "A4",
+        #                 "--stringparam", "body.start.indent", "0pt",
+        #                 "--stringparam", "title.margin.left", "0pt",
+        #                 "--stringparam", "variablelist.as.blocks", "1",
+        #                 "/usr/share/xml/docbook/stylesheet/nwalsh/current/fo/docbook.xsl", "doc/py2pack.xml.in"])
+        #subprocess.call(["fop", "doc/py2pack.fo", "doc/py2pack.pdf"])
+    except:
+        pass
+    #if os.path.exists("doc/py2pack.fo"):
+    #    os.remove("doc/py2pack.fo")
+    sys.exit()
 
 setup(
     name = py2pack.__name__,
@@ -13,7 +37,10 @@ setup(
     scripts = ['scripts/py2pack'],
     packages = ['py2pack'],
     package_data = {'py2pack': ['templates/*']},
-    #data_files = [('doc/py2pack', ['AUTHORS', 'LICENSE', 'README'])],
+    data_files = [('share/doc/py2pack', ['AUTHORS', 'LICENSE', 'README.rst']),
+                  ('share/doc/py2pack/html', ['doc/py2pack.html']),
+                  #('share/doc/py2pack/pdf', ['doc/py2pack.pdf']),
+                  ('man/man1', ['doc/py2pack.1'])],
     requires = ['argparse', 'Jinja2'],
     classifiers = [
         'Development Status :: 4 - Beta',

@@ -1,0 +1,20 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>py2pack</title><meta name="generator" content="DocBook XSL Stylesheets V1.75.2"><meta name="description" content=""></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en" class="refentry" title="py2pack"><a name="py2pack"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>py2pack &#8212; 
+      Generate Distribution Packages from Python Packages on PyPI
+    </p></div><div class="refsynopsisdiv" title="Synopsis"><a name="py2pack.synopsis"></a><h2>Synopsis</h2><div class="cmdsynopsis"><p><code class="command">py2pack</code>  [-h] [--version] { search  |   help  |   show  |   list  |   fetch  |   generate }  ... </p></div></div><div class="refsect1" title="Commands"><a name="py2pack.options"></a><h2>Commands</h2><p>The following commands are available:</p><div class="refsect2" title="The fetch Command"><a name="py2pack.cmd.fetch"></a><h3>The fetch Command</h3><div class="cmdsynopsis"><p><code class="command">py2pack</code>  fetch   name  [version]</p></div><p>Downloads a package from PyPI and stores it in the current directory. Optionally you
+        can specify a version number.</p></div><div class="refsect2" title="The generate Command"><a name="py2pack.cmd.generate"></a><h3>The generate Command</h3><div class="cmdsynopsis"><p><code class="command">py2pack</code> <br><code class="command"> generate</code>  [-h] [
+             -t 
+             { fedora.spec  |   opensuse.dsc  |   opensuse.spec }
+          ] [-f <em class="replaceable"><code>FILENAME</code></em>]  name  [version]</p></div><p>Creates a SPEC or DSC file for a specific distribution.</p></div><div class="refsect2" title="The list Command"><a name="py2pack.cmd.list"></a><h3>The list Command</h3><div class="cmdsynopsis"><p><code class="command">py2pack</code> <br><code class="command"> list</code>  [-h]</p></div><p>Gives a list of all Python modules available on PyPI.</p></div><div class="refsect2" title="The search Command"><a name="py2pack.cmd.search"></a><h3>The search Command</h3><div class="cmdsynopsis"><p><code class="command">py2pack</code> <br><code class="command"> search</code>  [-h] {name}</p></div><p>Gives a list of all Python modules found in
+        <em class="replaceable"><code>name</code></em>.</p></div><div class="refsect2" title="The show Command"><a name="py2pack.cmd.show"></a><h3>The show Command</h3><div class="cmdsynopsis"><p><code class="command">py2pack</code> <br><code class="command"> show</code>  [-h] {name} [version]</p></div><p>Shows the <a class="ulink" href="http://usefulinc.com/doap" target="_top">DOAP</a> record for the
+        given name and version (optionally). The output is a Python
+        dictionary.</p></div></div><div class="refsect1" title="Examples"><a name="py2pack.examples"></a><h2>Examples</h2><p>Creating a package from a Python module involves the following
+    steps:</p><div class="procedure"><ol class="procedure" type="1"><li class="step" title="Step 1"><p>Search for your favorite Python module, for example,
+          <span class="package"></span>:</p><pre class="screen"><code class="prompt">$ </code><span class="command"><strong>py2pack</strong></span> search pylint
+searching for package pylint...
+found logilab.pylintinstaller-0.15.2
+found plpylint-0.1.2
+found pylint-0.22.0</pre></li><li class="step" title="Step 2"><p>Download</p><pre class="screen"><code class="prompt">$ </code><span class="command"><strong>py2pack</strong></span> fetch
+downloading package pylint-0.22.0...
+from http://pypi.python.org/packages/source/p/pylint/pylint-0.22.0.tar.gz</pre></li><li class="step" title="Step 3"><p>Create a SPEC file, for example, for openSUSE:</p><pre class="screen"><code class="prompt">$ </code><span class="command"><strong>py2pack</strong></span> generate -t opensuse.spec -f python-pylint.spec pylint</pre></li><li class="step" title="Step 4"><p>Check the SPEC file
+          <code class="filename">python-pylint.spec</code> and adapt it to your
+          needs.</p></li></ol></div></div></div></body></html>
