@@ -1,5 +1,5 @@
 #
-# spec file for package python-{{ name|lower }}
+# spec file for package python-{{ name }}
 #
 # Copyright (c) {{ year }} SUSE LINUX Products GmbH, Nuernberg, Germany.
 #
@@ -15,10 +15,8 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
-%{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
 
-%define mod_name {{ name|lower }}
+%define mod_name {{ name }}
 
 Name:           python-%{mod_name}
 Version:        {{ version }}
@@ -27,16 +25,12 @@ Url:            {{ home_page }}
 Summary:        {{ summary }}
 License:        {{ license }}
 Group:          Development/Languages/Python
-{%- if name != name|lower %}
-Source:         {{ name }}-%{version}{{ ending }}
-{%- else %}
 Source:         %{mod_name}-%{version}{{ ending }}
-{%- endif %}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  python-devel
 {%- for req in requires %}
-BuildRequires:  python-{{ req|lower|replace('(','')|replace(')','') }}
-Requires:       python-{{ req|lower|replace('(','')|replace(')','') }}
+BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
+Requires:       python-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
 %if 0%{?suse_version}
 %py_requires
@@ -44,16 +38,14 @@ Requires:       python-{{ req|lower|replace('(','')|replace(')','') }}
 BuildArch:      noarch
 %endif
 %endif
+%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
+%{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
 
 %description
 {{ description }}
 
 %prep
-{%- if name != name|lower %}
-%setup -q -n {{ name }}-%{version}
-{%- else %}
 %setup -q -n %{mod_name}-%{version}
-{%- endif %}
 
 %build
 export CFLAGS="%{optflags}"
@@ -66,8 +58,8 @@ python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 rm -rf %{buildroot}
 
 %files
-%defattr(-,root,root,-)
+%defattr(-,root,root)
 # You may have to add additional files here (documentation and binaries mostly)
-%python_sitelib/%{mod_name}*
+%{python_sitelib}/*
 
 %changelog
