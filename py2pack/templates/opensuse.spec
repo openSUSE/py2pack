@@ -25,7 +25,7 @@ Url:            {{ home_page }}
 Summary:        {{ summary }}
 License:        {{ license }}
 Group:          Development/Languages/Python
-Source:         %{mod_name}-%{version}{{ ending }}
+Source:         {{ file_name }}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  python-devel
 {%- for req in requires %}
@@ -58,7 +58,7 @@ python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 rm -rf %{buildroot}
 
 %files
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 # You may have to add additional files here (documentation and binaries mostly)
 %{python_sitelib}/*
 

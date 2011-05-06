@@ -64,9 +64,9 @@ def generate(args):
     data = pypi.release_data(args.name, args.version)                       # fetch all meta data
     url = newest_download_url(args)
     if url:
-      data['ending'] = url['filename'].rsplit(args.name + "-" + args.version)[1] # split of name-version to get ending
+        data['file_name'] = url['filename']
     else:
-      data['ending'] = '.zip'                                               # set sane default if no download available
+        data['file_name'] = args.name + '-' + args.version + '.zip'
     data['year'] = datetime.now().year                                      # set current year
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
     template = env.get_template(args.template)

@@ -1,10 +1,10 @@
 #
-# spec file for package python-{{ name|lower }}
+# spec file for package python-{{ name }}
 #
 # Copyright (c) {{ year }} {{ user_name }}.
 #
 
-%define mod_name {{ name|lower }}
+%define mod_name {{ name }}
 
 Name:           python-%{mod_name}
 Version:        {{ version }}
@@ -13,37 +13,25 @@ Url:            {{ home_page }}
 Summary:        {{ summary }}
 License:        {{ license }}
 Group:          Development/Languages/Python
-{%- if name != name|lower %}
-Source:         {{ name }}-%{version}{{ ending }}
-{%- else %}
-Source:         %{mod_name}-%{version}{{ ending }}
-{%- endif %}
+Source:         {{ file_name }}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  python-devel
 {%- for req in requires %}
-BuildRequires:  python-{{ req|lower }}
-Requires:       pyhton-{{ req|lower }}
+BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
+Requires:       python-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
 
 %description
-{{ summary }}
-
-Authors:
---------
-    {{ author }} <{{ author_email }}>
+{{ description }}
 
 %prep
-{%- if name != name|lower %}
-%setup -n {{ name }}-%{version}
-{%- else %}
-%setup -n %{mod_name}-%{version}
-{%- endif %}
+%setup -q -n %{mod_name}-%{version}
 
 %build
-export CFLAGS="%{optflags}"
 python setup.py build
 
 %install
+export CFLAGS="%{optflags}"
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %clean
@@ -51,8 +39,8 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-# You may have to add additional files here!
-%python_sitelib/%{mod_name}*
+# You may have to add additional files here (documentation and binaries mostly)
+%python_sitelib/1
 
 %changelog
 
