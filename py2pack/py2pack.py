@@ -70,7 +70,7 @@ def generate(args):
     data['year'] = datetime.now().year                                      # set current year
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
     template = env.get_template(args.template)
-    result = template.render(data)
+    result = template.render(data).encode('utf-8')                          # render template and encode properly
     outfile = open(args.filename, 'w')                                      # write result to spec file
     try:
         outfile.write(result)
