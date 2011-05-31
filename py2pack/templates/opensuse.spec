@@ -15,20 +15,21 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-
-%define mod_name {{ name }}
-
-Name:           python-%{mod_name}
+Name:           python-{{ name }}
 Version:        {{ version }}
 Release:        0
 Url:            {{ home_page }}
 Summary:        {{ summary }}
 License:        {{ license }}
 Group:          Development/Languages/Python
-Source:         {{ file_name }}
+Source:         {{ file_name|replace(version, '%{version}') }}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-BuildRequires:  python-devel
+BuildRequires:  python-devel {%- if requires_python %} = {{ requires_python }} {% endif %}
 {%- for req in requires %}
+BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
+Requires:       python-{{ req|replace('(','')|replace(')','') }}
+{%- endfor %}
+{%- for req in install_requires %}
 BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
 Requires:       python-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
@@ -45,7 +46,7 @@ BuildArch:      noarch
 {{ description }}
 
 %prep
-%setup -q -n %{mod_name}-%{version}
+%setup -q -n {{ name }}-%{version}
 
 %build
 export CFLAGS="%{optflags}"
