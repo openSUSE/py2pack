@@ -53,7 +53,7 @@ export CFLAGS="%{optflags}"
 python setup.py build
 
 %install
-python setup.py install -O1 --skip-build --prefix=%{_prefix} --root=%{buildroot}
+python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %clean
 rm -rf %{buildroot}

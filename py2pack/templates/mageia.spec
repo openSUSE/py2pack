@@ -34,7 +34,7 @@ Requires:       pyhton-{{ req|lower }}
 %{__python} setup.py build
 
 %install
-%{__python} setup.py install -O1 --skip-build  --prefix=%{_prefix} --root=%{buildroot}
+%{__python} setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %clean
 rm -rf %{buildroot}
