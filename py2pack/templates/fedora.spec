@@ -4,19 +4,21 @@
 # Copyright (c) {{ year }} {{ user_name }}.
 #
 
-%define mod_name {{ name }}
-
-Name:           python-%{mod_name}
+Name:           python-{{ name }}
 Version:        {{ version }}
 Release:        0
 Url:            {{ home_page }}
 Summary:        {{ summary }}
 License:        {{ license }}
 Group:          Development/Languages/Python
-Source:         {{ file_name }}
+Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-BuildRequires:  python-devel
+BuildRequires:  python-devel {%- if requires_python %} = {{ requires_python }} {% endif %}
 {%- for req in requires %}
+BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
+Requires:       python-{{ req|replace('(','')|replace(')','') }}
+{%- endfor %}
+{%- for req in install_requires %}
 BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
 Requires:       python-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
@@ -25,14 +27,14 @@ Requires:       python-{{ req|replace('(','')|replace(')','') }}
 {{ description }}
 
 %prep
-%setup -q -n %{mod_name}-%{version}
+%setup -q -n {{ name }}-%{version}
 
 %build
+export CFLAGS="%{optflags}"
 python setup.py build
 
 %install
-export CFLAGS="%{optflags}"
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python setup.py install -O1 --skip-build --prefix=%{_prefix} --root=%{buildroot}
 
 %clean
 rm -rf %{buildroot}
@@ -40,7 +42,7 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 # You may have to add additional files here (documentation and binaries mostly)
-%python_sitelib/1
+%{python_sitelib}/*
 
 %changelog
 

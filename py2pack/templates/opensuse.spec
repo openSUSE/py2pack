@@ -22,7 +22,7 @@ Url:            {{ home_page }}
 Summary:        {{ summary }}
 License:        {{ license }}
 Group:          Development/Languages/Python
-Source:         {{ file_name|replace(version, '%{version}') }}
+Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  python-devel {%- if requires_python %} = {{ requires_python }} {% endif %}
 {%- for req in requires %}
@@ -53,7 +53,7 @@ export CFLAGS="%{optflags}"
 python setup.py build
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python setup.py install -O1 --skip-build --prefix=%{_prefix} --root=%{buildroot}
 
 %clean
 rm -rf %{buildroot}

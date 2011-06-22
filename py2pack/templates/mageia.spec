@@ -7,14 +7,14 @@ Url:            {{ home_page }}
 Summary:        {{ summary }}
 License:        {{ license }}
 Group:          Development/Python
-{%- if name != name|lower %}
-Source:         {{ name }}-%{version}{{ ending }}
-{%- else %}
-Source:         %{mod_name}-%{version}{{ ending }}
-{%- endif %}
+Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-buildroot
 BuildRequires:  python-devel
 {%- for req in requires %}
+BuildRequires:  python-{{ req|lower }}
+Requires:       pyhton-{{ req|lower }}
+{%- endfor %}
+{%- for req in install_requires %}
 BuildRequires:  python-{{ req|lower }}
 Requires:       pyhton-{{ req|lower }}
 {%- endfor %}

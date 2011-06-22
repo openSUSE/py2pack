@@ -64,9 +64,9 @@ def generate(args):
     data = pypi.release_data(args.name, args.version)                       # fetch all meta data
     url = newest_download_url(args)
     if url:
-        data['file_name'] = url['filename']
+        data['source_url'] = url['url']
     else:
-        data['file_name'] = args.name + '-' + args.version + '.zip'
+        data['source_url'] = args.name + '-' + args.version + '.zip'
     data['year'] = datetime.now().year                                      # set current year
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
     template = env.get_template(args.template)
@@ -93,7 +93,7 @@ def newest_download_url(args):
     return []
 
 def template_list():
-    return os.listdir(TEMPLATE_DIR)
+    return filter(lambda filename: not filename.startswith('.'), os.listdir(TEMPLATE_DIR))
 
 
 def main():
