@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
+import subprocess
+import sys
+
 from distutils.core import setup
-import os,subprocess, sys
+
 import py2pack
 
 
