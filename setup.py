@@ -33,8 +33,8 @@ if sys.argv[-1] == "doc":
     """Generate manpage, HTML and PDF documentation.
     """
     try:
-        subprocess.call(["xsltproc", "--output", "doc/py2pack.html", "/usr/share/xml/docbook/stylesheet/nwalsh/current/html/docbook.xsl", "doc/py2pack.xml.in"])
-        subprocess.call(["xsltproc", "--output", "doc/py2pack.1", "/usr/share/xml/docbook/stylesheet/nwalsh/current/manpages/docbook.xsl", "doc/py2pack.xml.in"])
+        subprocess.call(["xsltproc", "--output", "doc/py2pack.html", "/usr/share/xml/docbook/stylesheet/nwalsh/current/html/docbook.xsl", "doc/src/py2pack.xml.in"])
+        subprocess.call(["xsltproc", "--output", "doc/py2pack.1", "/usr/share/xml/docbook/stylesheet/nwalsh/current/manpages/docbook.xsl", "doc/src/py2pack.xml.in"])
         #subprocess.call(["xsltproc", "--output", "doc/py2pack.fo",
         #                 "--stringparam", "paper.type", "A4",
         #                 "--stringparam", "body.start.indent", "0pt",
