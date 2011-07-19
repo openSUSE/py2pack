@@ -1,4 +1,3 @@
-=======
 py2pack
 =======
 
@@ -11,8 +10,8 @@ universal tool to package Python modules.
 Prerequisites
 =============
 
-py2pack needs the argparse_ Python module installed. It is also part of
-the Python-2.7 Standard Library. Additionally, it uses the Jinja2_ templating
+py2pack needs the argparse_ Python module installed. It is also part of the 
+Python-2.7 Standard Library. Additionally, it uses the Jinja2_ templating
 engine.
 
 
@@ -53,10 +52,9 @@ To get further help about py2pack usage, issue the following command::
  $ py2pack help
 
 
-License
-=======
+ :copyright: (c) 2011 Sascha Peilicke.
+ :license: GPLv2, see LICENSE for more details.
 
-See the file LICENSE.
 
 .. _argparse: http://pypi.python.org/pypi/argparse
 .. _Jinja2: http://pypi.python.org/pypi/Jinja2 
