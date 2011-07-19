@@ -18,6 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 __doc__ = 'Generate distribution packages from Python packages on PyPI'
+__docformat__ = 'restructuredtext en'
 __author__ = 'Sascha Peilicke <saschpe@gmx.de>'
 __version__ = '0.3.19'
 
