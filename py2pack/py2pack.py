@@ -22,15 +22,18 @@ import os
 import pwd
 import sys
 import urllib
+import warnings
 import xmlrpclib
 
 from datetime import datetime
-from jinja2 import Environment, FileSystemLoader, Template
 from pprint import pprint
+
+warnings.filterwarnings('ignore', 'Module argparse was already imported')   # Filter a UserWarning from Jinja2
+import jinja2
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')  # absolute template path
 pypi = xmlrpclib.ServerProxy('http://python.org/pypi')                      # XML RPC connection to PyPI
-env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))                    # Jinja2 template environment
+env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))      # Jinja2 template environment
 
 
 def list(args):
