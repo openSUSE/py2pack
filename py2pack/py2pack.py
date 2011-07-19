@@ -17,15 +17,20 @@
 # Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-import argparse, os, pwd, sys, urllib, xmlrpclib
+import argparse
+import os
+import pwd
+import sys
+import urllib
+import xmlrpclib
+
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, Template
 from pprint import pprint
 
-TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates') # absolute template path
-
+TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')  # absolute template path
 pypi = xmlrpclib.ServerProxy('http://python.org/pypi')                      # XML RPC connection to PyPI
-env = Environment(loader = FileSystemLoader(TEMPLATE_DIR))                  # Jinja2 template environment
+env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))                    # Jinja2 template environment
 
 
 def list(args):
@@ -33,10 +38,12 @@ def list(args):
     for package in pypi.list_packages():                                    # nothing fancy
         print(package)
 
+
 def search(args):
     print('searching for package {0}...'.format(args.name))
     for hit in pypi.search({'name': args.name}):
         print('found {0}-{1}'.format(hit['name'], hit['version']))
+
 
 def show(args):
     check_or_set_version(args)
@@ -44,15 +51,17 @@ def show(args):
     data = pypi.release_data(args.name, args.version)                       # fetch all meta data
     pprint(data)
 
+
 def fetch(args):
     check_or_set_version(args)
     url = newest_download_url(args)
     if not url:
-      print("unable to find a source release for {0}!".format(args.name))   # pass out if nothing is found
-      sys.exit(1)
+        print("unable to find a source release for {0}!".format(args.name))  # pass out if nothing is found
+        sys.exit(1)
     print('downloading package {0}-{1}...'.format(args.name, args.version))
     print('from {0}'.format(url['url']))
     urllib.urlretrieve(url['url'], url['filename'])                         # download the object behind the URL
+
 
 def generate(args):
     check_or_set_version(args)
@@ -77,6 +86,7 @@ def generate(args):
     finally:
         outfile.close()
 
+
 def check_or_set_version(args):
     if not args.version:                                                    # take first version found
         releases = pypi.package_releases(args.name)
@@ -86,18 +96,20 @@ def check_or_set_version(args):
         else:
             args.version = pypi.package_releases(args.name)[0]              # return first (current) release number
 
+
 def newest_download_url(args):
     for url in pypi.package_urls(args.name, args.version):                  # fetch all download URLs
         if url['packagetype'] == 'sdist':                                   # found the source URL we care for
             return url
     return []
 
+
 def template_list():
     return filter(lambda filename: not filename.startswith('.'), os.listdir(TEMPLATE_DIR))
 
 
 def main():
-    parser = argparse.ArgumentParser(description = __doc__)
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--version', action='version', version='%(prog)s 0.1')
     subparsers = parser.add_subparsers(title='commands')
 

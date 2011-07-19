@@ -22,6 +22,7 @@ import doctest
 
 import py2pack
 
+
 class Test(unittest.TestCase):
     """Unit tests for py2pack."""
 
