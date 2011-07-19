@@ -31,6 +31,8 @@ from pprint import pprint
 warnings.filterwarnings('ignore', 'Module argparse was already imported')   # Filter a UserWarning from Jinja2
 import jinja2
 
+from __init__ import __version__                                            # Import module version
+
 TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')  # absolute template path
 pypi = xmlrpclib.ServerProxy('http://python.org/pypi')                      # XML RPC connection to PyPI
 env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))      # Jinja2 template environment
@@ -113,7 +115,7 @@ def template_list():
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--version', action='version', version='%(prog)s 0.1')
+    parser.add_argument('--version', action='version', version='%(prog)s {0}'.format(__version__))
     subparsers = parser.add_subparsers(title='commands')
 
     parser_list = subparsers.add_parser('list', help='list all packages on PyPI')
