@@ -49,8 +49,7 @@ BuildArch:      noarch
 %setup -q -n {{ name }}-%{version}
 
 %build
-export CFLAGS="%{optflags}"
-python setup.py build
+CFLAGS="%{optflags}" python setup.py build
 
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
