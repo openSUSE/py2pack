@@ -38,7 +38,7 @@ pypi = xmlrpclib.ServerProxy('http://python.org/pypi')                      # XM
 env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))      # Jinja2 template environment
 
 
-def list_all(args):
+def list(args):
     print('listing all PyPI packages...')
     for package in pypi.list_packages():                                    # nothing fancy
         print(package)
@@ -119,7 +119,7 @@ def main():
     subparsers = parser.add_subparsers(title='commands')
 
     parser_list = subparsers.add_parser('list', help='list all packages on PyPI')
-    parser_list.set_defaults(func=list_all)
+    parser_list.set_defaults(func=list)
 
     parser_search = subparsers.add_parser('search', help='search for packages on PyPI')
     parser_search.add_argument('name', help='package name (with optional version)')
