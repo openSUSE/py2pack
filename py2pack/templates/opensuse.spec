@@ -54,9 +54,6 @@ CFLAGS="%{optflags}" python setup.py build
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
-%clean
-rm -rf %{buildroot}
-
 %files
 %defattr(-,root,root,-)
 # You may have to add additional files here (documentation and binaries mostly)
