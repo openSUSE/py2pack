@@ -31,7 +31,7 @@ from pprint import pprint
 warnings.filterwarnings('ignore', 'Module argparse was already imported')   # Filter a UserWarning from Jinja2
 import jinja2
 
-from __init__ import __version__                                            # Import module version
+__version__ = '0.3.21'
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')  # absolute template path
 pypi = xmlrpclib.ServerProxy('http://python.org/pypi')                      # XML RPC connection to PyPI
