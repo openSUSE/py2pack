@@ -22,4 +22,4 @@ __docformat__ = 'restructuredtext en'
 __author__ = 'Sascha Peilicke <saschpe@gmx.de>'
 __version__ = '0.3.21'
 
-from py2pack import list, search, fetch, generate, main
+from py2pack import list_all, search, fetch, generate, main
