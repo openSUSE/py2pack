@@ -18,9 +18,9 @@
 Name:           python-{{ name }}
 Version:        {{ version }}
 Release:        0
-Url:            {{ home_page }}
-Summary:        {{ summary }}
 License:        {{ license }}
+Summary:        {{ summary }}
+Url:            {{ home_page }}
 Group:          Development/Languages/Python
 Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -39,8 +39,8 @@ Requires:       python-{{ req|replace('(','')|replace(')','') }}
 BuildArch:      noarch
 %endif
 %endif
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
-%{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
+%{!?python_sitelib: %global python_sitelib %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
+%{!?python_sitearch: %global python_sitearch %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
 
 %description
 {{ description }}
