@@ -18,6 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 import argparse
+import httplib
 import os
 import pwd
 import sys
@@ -31,7 +32,22 @@ from pprint import pprint
 warnings.filterwarnings('ignore', 'Module argparse was already imported')   # Filter a UserWarning from Jinja2
 import jinja2
 
-__version__ = '0.3.21'
+__version__ = '0.3.22'
+
+
+class ProxiedTransport(xmlrpclib.Transport):
+    def set_proxy(self, proxy):
+        self.proxy = proxy
+    def make_connection(self, host):
+        self.realhost = host
+        h = httplib.HTTP(self.proxy)
+        return h
+    def send_request(self, connection, handler, request_body):
+        connection.putrequest('POST', 'http://{0}{1}'.format(self.realhost, handler))
+    def send_host(self, connection, host):
+        connection.putheader('Host', self.realhost)
+
+
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')  # absolute template path
 pypi = xmlrpclib.ServerProxy('http://python.org/pypi')                      # XML RPC connection to PyPI
@@ -116,6 +132,7 @@ def template_list():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--version', action='version', version='%(prog)s {0}'.format(__version__))
+    parser.add_argument('--proxy', help='HTTP proxy to use')
     subparsers = parser.add_subparsers(title='commands')
 
     parser_list = subparsers.add_parser('list', help='list all packages on PyPI')
@@ -146,6 +163,18 @@ def main():
     parser_help.set_defaults(func=lambda args: parser.print_help())
 
     args = parser.parse_args()
+
+    # set HTTP proxy if one is provided
+    if args.proxy:
+        try:
+            urllib.urlopen(args.proxy)
+        except IOError:
+            print('the proxy \'{0}\' is not responding'.format(args.proxy))
+            sys.exit(1)
+        p = ProxiedTransport()
+        p.set_proxy(args.proxy)
+        pypi._ServerProxy__transport = p # Evil, but should do the trick
+
     args.func(args)
 
 
