@@ -125,14 +125,20 @@ def check_or_set_version(args):
 
 
 def newest_download_url(args):
-    for url in pypi.package_urls(args.name, args.version):                  # fetch all download URLs
-        if url['packagetype'] == 'sdist':                                   # found the source URL we care for
+    for url in pypi.package_urls(args.name, args.version):                  # Fetch all download URLs
+        if url['packagetype'] == 'sdist':                                   # Found the source URL we care for
             return url
-    return []
+    # No PyPI tarball release, let's see if an upstream download URL is provided:
+    data = pypi.release_data(args.name, args.version)                       # Fetch all meta data
+    if 'download_url' in data:
+        filename = os.path.basename(data['download_url'])
+        return {'url': data['download_url'], 'filename': filename}
+    return {}                                                               # We're all out of bubblegum
 
 
 def file_template_list():
     return filter(lambda filename: not filename.startswith('.'), os.listdir(TEMPLATE_DIR))
+
 
 def package_template_list():
     pass
