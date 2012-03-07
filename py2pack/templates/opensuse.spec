@@ -19,7 +19,7 @@ Name:           python-{{ name }}
 Version:        {{ version }}
 Release:        0
 License:        {{ license }}
-Summary:        {{ summary }}
+Summary:        {{ summary_no_ending_dot|default(summary, true) }}
 Url:            {{ home_page }}
 Group:          Development/Languages/Python
 Source:         {{ source_url|replace(version, '%{version}') }}
@@ -33,14 +33,12 @@ Requires:       python-{{ req|replace('(','')|replace(')','') }}
 BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
 Requires:       python-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
-%if 0%{?suse_version}
-%py_requires
-%if 0%{?suse_version} > 1110
-BuildArch:      noarch
-%endif
-%endif
+%if 0%{?suse_version} && 0%{?suse_version} <= 1110
 %{!?python_sitelib: %global python_sitelib %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 %{!?python_sitearch: %global python_sitearch %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
+%else
+BuildArch:      noarch
+%endif
 
 %description
 {{ description }}
@@ -56,7 +54,6 @@ python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %files
 %defattr(-,root,root,-)
-# You may have to add additional files here (documentation and binaries mostly)
 %{python_sitelib}/*
 
 %changelog

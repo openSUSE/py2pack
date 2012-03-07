@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2010, Sascha Peilicke <saschpe@gmx.de>
+# Copyright (c) 2011 Sascha Peilicke <saschpe@gmx.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
@@ -21,6 +21,7 @@ import argparse
 import httplib
 import os
 import pwd
+import re
 import sys
 import urllib
 import warnings
@@ -32,7 +33,7 @@ from pprint import pprint
 warnings.filterwarnings('ignore', 'Module argparse was already imported')   # Filter a UserWarning from Jinja2
 import jinja2
 
-__version__ = '0.3.22'
+__version__ = '0.4'
 
 
 class ProxiedTransport(xmlrpclib.Transport):
@@ -87,7 +88,7 @@ def fetch(args):
 def generate(args):
     check_or_set_version(args)
     if not args.template:
-        args.template = template_list()[0]
+        args.template = file_template_list()[0]
     if not args.filename:
         args.filename = args.name + '.' + args.template.rsplit('.', 1)[1]   # take template file ending
     print('generating spec file for {0}...'.format(args.name))
@@ -99,6 +100,7 @@ def generate(args):
         data['source_url'] = args.name + '-' + args.version + '.zip'
     data['year'] = datetime.now().year                                      # set current year
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
+    data['summary_no_ending_dot'] = re.sub('(.*)\.', '\g<1>', data['summary'])
     template = env.get_template(args.template)
     result = template.render(data).encode('utf-8')                          # render template and encode properly
     outfile = open(args.filename, 'w')                                      # write result to spec file
@@ -106,6 +108,10 @@ def generate(args):
         outfile.write(result)
     finally:
         outfile.close()
+
+
+def create(args):
+    pass
 
 
 def check_or_set_version(args):
@@ -125,8 +131,11 @@ def newest_download_url(args):
     return []
 
 
-def template_list():
+def file_template_list():
     return filter(lambda filename: not filename.startswith('.'), os.listdir(TEMPLATE_DIR))
+
+def package_template_list():
+    pass
 
 
 def main():
@@ -152,12 +161,18 @@ def main():
     parser_fetch.add_argument('version', nargs='?', help='package version (optional)')
     parser_fetch.set_defaults(func=fetch)
 
-    parser_spec = subparsers.add_parser('generate', help='generate RPM spec or DEB dsc file for a package')
-    parser_spec.add_argument('name', help='package name')
-    parser_spec.add_argument('version', nargs='?', help='package version (optional)')
-    parser_spec.add_argument('-t', '--template', choices=template_list(), help='spec file template')
-    parser_spec.add_argument('-f', '--filename', help='spec filename (optional)')
-    parser_spec.set_defaults(func=generate)
+    parser_generate = subparsers.add_parser('generate', help='generate RPM spec or DEB dsc file for a package')
+    parser_generate.add_argument('name', help='package name')
+    parser_generate.add_argument('version', nargs='?', help='package version (optional)')
+    parser_generate.add_argument('-t', '--template', choices=file_template_list(), help='file template')
+    parser_generate.add_argument('-f', '--filename', help='spec filename (optional)')
+    parser_generate.set_defaults(func=generate)
+
+    parser_do = subparsers.add_parser('create', help='generate complete package')
+    parser_do.add_argument('name', help='package name')
+    parser_do.add_argument('version', nargs='?', help='package version (optional)')
+    parser_do.add_argument('-t', '--template', choices=package_template_list(), help='package template')
+    parser_do.set_defaults(func=create)
 
     parser_help = subparsers.add_parser('help', help='show this help')
     parser_help.set_defaults(func=lambda args: parser.print_help())
