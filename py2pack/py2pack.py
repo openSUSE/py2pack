@@ -111,7 +111,7 @@ def generate(args):
 
 
 def create(args):
-    pass
+    print('create package {0}...'.format(args.name))
 
 
 def check_or_set_version(args):
@@ -141,7 +141,7 @@ def file_template_list():
 
 
 def package_template_list():
-    pass
+    return ['obs']
 
 
 def main():
@@ -170,14 +170,14 @@ def main():
     parser_generate = subparsers.add_parser('generate', help='generate RPM spec or DEB dsc file for a package')
     parser_generate.add_argument('name', help='package name')
     parser_generate.add_argument('version', nargs='?', help='package version (optional)')
-    parser_generate.add_argument('-t', '--template', choices=file_template_list(), help='file template')
+    parser_generate.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec', help='file template')
     parser_generate.add_argument('-f', '--filename', help='spec filename (optional)')
     parser_generate.set_defaults(func=generate)
 
     parser_do = subparsers.add_parser('create', help='generate complete package')
     parser_do.add_argument('name', help='package name')
     parser_do.add_argument('version', nargs='?', help='package version (optional)')
-    parser_do.add_argument('-t', '--template', choices=package_template_list(), help='package template')
+    parser_do.add_argument('-t', '--template', choices=package_template_list(), default='obs', help='package template')
     parser_do.set_defaults(func=create)
 
     parser_help = subparsers.add_parser('help', help='show this help')
