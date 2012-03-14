@@ -33,6 +33,9 @@ Requires:       python-{{ req|replace('(','')|replace(')','') }}
 BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
 Requires:       python-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
+{%- if source_url.endswith('.zip') %}
+BuildRequires:  unzip
+{%- endif %}
 %if 0%{?suse_version} && 0%{?suse_version} <= 1110
 %{!?python_sitelib: %global python_sitelib %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 %{!?python_sitearch: %global python_sitearch %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
