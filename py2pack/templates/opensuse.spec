@@ -11,9 +11,9 @@
 # case the license is the MIT License). An "Open Source License" is a
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
-#
+
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
-#
+
 
 Name:           python-{{ name }}
 Version:        {{ version }}
@@ -23,7 +23,6 @@ Summary:        {{ summary_no_ending_dot|default(summary, true) }}
 Url:            {{ home_page }}
 Group:          Development/Languages/Python
 Source:         {{ source_url|replace(version, '%{version}') }}
-BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  python-devel {%- if requires_python %} = {{ requires_python }} {% endif %}
 {%- for req in requires %}
 BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
@@ -36,6 +35,7 @@ Requires:       python-{{ req|replace('(','')|replace(')','') }}
 {%- if source_url.endswith('.zip') %}
 BuildRequires:  unzip
 {%- endif %}
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 %if 0%{?suse_version} && 0%{?suse_version} <= 1110
 %{!?python_sitelib: %global python_sitelib %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 %{!?python_sitearch: %global python_sitearch %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
