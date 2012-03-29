@@ -33,7 +33,7 @@ from pprint import pprint
 warnings.filterwarnings('ignore', 'Module argparse was already imported')   # Filter a UserWarning from Jinja2
 import jinja2
 
-__version__ = '0.4'
+__version__ = '0.4.1'
 
 
 class ProxiedTransport(xmlrpclib.Transport):
