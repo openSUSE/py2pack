@@ -63,7 +63,7 @@ setup(
     data_files=[('share/doc/py2pack', ['AUTHORS', 'LICENSE', 'README.rst']),
                 ('share/doc/py2pack/html', ['docs/py2pack.html']),
                #('share/doc/py2pack/pdf', ['docs/py2pack.pdf']),
-                ('man/man1', ['doc/py2pack.1'])],
+                ('man/man1', ['docs/py2pack.1'])],
     requires=['argparse', 'Jinja2'],
     classifiers=[
         'Development Status :: 4 - Beta',
