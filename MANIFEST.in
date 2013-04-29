@@ -1,3 +1,4 @@
 include AUTHORS LICENSE README.rst
 include docs/*
+include py2pack/suse_spdx_license_map.p
 include py2pack/templates/*
