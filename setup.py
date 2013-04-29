@@ -59,7 +59,7 @@ setup(
     url='http://github.com/saschpe/py2pack',
     scripts=['scripts/py2pack'],
     packages=['py2pack'],
-    package_data={'py2pack': ['templates/*']},
+    package_data={'py2pack': ['templates/*', 'suse_spdx_license_map.p']},
     data_files=[('share/doc/py2pack', ['AUTHORS', 'LICENSE', 'README.rst']),
                 ('share/doc/py2pack/html', ['docs/py2pack.html']),
                #('share/doc/py2pack/pdf', ['docs/py2pack.pdf']),
