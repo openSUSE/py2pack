@@ -21,6 +21,7 @@ import argparse
 import glob
 import httplib
 import os
+import pickle
 import pwd
 import re
 import sys
@@ -55,6 +56,9 @@ class ProxiedTransport(xmlrpclib.Transport):
 TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')  # absolute template path
 pypi = xmlrpclib.ServerProxy('http://python.org/pypi')                      # XML RPC connection to PyPI
 env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))      # Jinja2 template environment
+
+SPDX_LICENSES_FILE = 'py2pack/suse_spdx_license_map.p'
+SDPX_LICENSES = pickle.load(open(SPDX_LICENSES_FILE, 'rb'))
 
 
 def list(args):
@@ -138,6 +142,10 @@ def generate(args):
     tarball_file = glob.glob("{0}-{1}*".format(args.name, args.version))    # we have a local tarball, try to 
     if tarball_file:                                                        # get some more info from that
         _augment_data_from_tarball(args, tarball_file[0], data)
+
+
+    if data['license'] in SDPX_LICENSES:                                    # if we have a mapping, transform 
+        data['license'] = SDPX_LICENSES[data['license']]                    # license into SPDX style
 
     template = env.get_template(args.template)
     result = template.render(data).encode('utf-8')                          # render template and encode properly
