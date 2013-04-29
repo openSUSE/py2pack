@@ -61,7 +61,7 @@ python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %files
 %defattr(-,root,root,-)
 {%- if doc_files %}
-%doc {{ doc_files }}
+%doc {{ doc_files|join(" ") }}
 {%- endif %}
 %{python_sitelib}/*
 

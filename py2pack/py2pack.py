@@ -52,7 +52,6 @@ class ProxiedTransport(xmlrpclib.Transport):
         connection.putheader('Host', self.realhost)
 
 
-
 TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')  # absolute template path
 pypi = xmlrpclib.ServerProxy('http://python.org/pypi')                      # XML RPC connection to PyPI
 env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))      # Jinja2 template environment
@@ -90,17 +89,33 @@ def fetch(args):
 
 def _augment_data_from_tarball(args, filename, data):
     setup_filename = "{0}-{1}/setup.py".format(args.name, args.version)
+    docs_re = re.compile("{0}-{1}\/(AUTHOR|CHANGES|COPYING|LICENSE|NEWS|README(?:\.\w+)?)".format(args.name, args.version), re.IGNORECASE)
+
     if tarfile.is_tarfile(filename):
         with tarfile.open(filename) as f:
             for line in f.extractfile(setup_filename):
                 if "ext_modules" in line:                                   # tarball contains C/C++ extension
                     data["is_extension"] = True
+            for name in f.getnames():
+                match = re.match(docs_re, name)
+                if match:
+                    print "DOC", match.groups()
+                    if not "doc_files" in data:
+                        data["doc_files"] = []
+                    data["doc_files"].append(match.group(1))
     elif zipfile.is_zipfile(filename):
         with zipfile.ZipFile(filename) as f:
             with f.open(setup_filename) as s:
                 for line in s:
                     if "ext_modules" in line:                               # tarball contains C/C++ extension
                         data["is_extension"] = True
+            for name in f.namelist():
+                match = re.match(docs_re, name)
+                if match:
+                    print "DOC", match.groups()
+                    if not "doc_files" in data:
+                        data["doc_files"] = []
+                    data["doc_files"].append(match.group(1))
 
 
 def generate(args):

@@ -41,5 +41,8 @@ rm -rf %{buildroot}
 
 %files -f
 %defattr(-,root,root)
+{%- if doc_files %}
+%doc {{ doc_files|join(" ") }}
+{%- endif %}
 %{python_sitelib}/*
 

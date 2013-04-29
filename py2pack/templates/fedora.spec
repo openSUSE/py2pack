@@ -43,7 +43,9 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-# You may have to add additional files here (documentation and binaries mostly)
+{%- if doc_files %}
+%doc {{ doc_files|join(" ") }}
+{%- endif %}
 %{python_sitelib}/*
 
 %changelog
