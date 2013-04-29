@@ -18,14 +18,17 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 import argparse
+import glob
 import httplib
 import os
 import pwd
 import re
 import sys
+import tarfile
 import urllib
 import warnings
 import xmlrpclib
+import zipfile
 
 from datetime import datetime
 from pprint import pprint
@@ -85,6 +88,21 @@ def fetch(args):
     urllib.urlretrieve(url['url'], url['filename'])                         # download the object behind the URL
 
 
+def _augment_data_from_tarball(args, filename, data):
+    setup_filename = "{0}-{1}/setup.py".format(args.name, args.version)
+    if tarfile.is_tarfile(filename):
+        with tarfile.open(filename) as f:
+            for line in f.extractfile(setup_filename):
+                if "ext_modules" in line:                                   # tarball contains C/C++ extension
+                    data["is_extension"] = True
+    elif zipfile.is_zipfile(filename):
+        with zipfile.ZipFile(filename) as f:
+            with f.open(setup_filename) as s:
+                for line in s:
+                    if "ext_modules" in line:                               # tarball contains C/C++ extension
+                        data["is_extension"] = True
+
+
 def generate(args):
     check_or_set_version(args)
     if not args.template:
@@ -101,6 +119,11 @@ def generate(args):
     data['year'] = datetime.now().year                                      # set current year
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
     data['summary_no_ending_dot'] = re.sub('(.*)\.', '\g<1>', data['summary'])
+
+    tarball_file = glob.glob("{0}-{1}*".format(args.name, args.version))    # we have a local tarball, try to 
+    if tarball_file:                                                        # get some more info from that
+        _augment_data_from_tarball(args, tarball_file[0], data)
+
     template = env.get_template(args.template)
     result = template.render(data).encode('utf-8')                          # render template and encode properly
     outfile = open(args.filename, 'w')                                      # write result to spec file

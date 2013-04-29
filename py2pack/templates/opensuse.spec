@@ -37,8 +37,11 @@ BuildRequires:  unzip
 {%- endif %}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 %if 0%{?suse_version} && 0%{?suse_version} <= 1110
-%{!?python_sitelib: %global python_sitelib %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
+{%- if is_extension %}
 %{!?python_sitearch: %global python_sitearch %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
+{%- else %}
+%{!?python_sitelib: %global python_sitelib %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
+{%- endif %}
 %else
 BuildArch:      noarch
 %endif
@@ -50,13 +53,16 @@ BuildArch:      noarch
 %setup -q -n {{ name }}-%{version}
 
 %build
-CFLAGS="%{optflags}" python setup.py build
+{% if is_extension %}CFLAGS="%{optflags}" {% endif %}python setup.py build
 
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %files
 %defattr(-,root,root,-)
+{%- if doc_files %}
+%doc {{ doc_files }}
+{%- endif %}
 %{python_sitelib}/*
 
 %changelog

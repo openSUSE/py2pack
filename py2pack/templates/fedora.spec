@@ -30,7 +30,9 @@ Requires:       python-{{ req|replace('(','')|replace(')','') }}
 %setup -q -n {{ name }}-%{version}
 
 %build
+{%- if is_extension %}
 export CFLAGS="%{optflags}"
+{%- endif %}
 python setup.py build
 
 %install
