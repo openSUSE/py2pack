@@ -57,7 +57,7 @@ TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templat
 pypi = xmlrpclib.ServerProxy('http://python.org/pypi')                      # XML RPC connection to PyPI
 env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))      # Jinja2 template environment
 
-SPDX_LICENSES_FILE = 'py2pack/suse_spdx_license_map.p'
+SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'suse_spdx_license_map.p')  # absolute template path
 SDPX_LICENSES = pickle.load(open(SPDX_LICENSES_FILE, 'rb'))
 
 
@@ -103,7 +103,6 @@ def _augment_data_from_tarball(args, filename, data):
             for name in f.getnames():
                 match = re.match(docs_re, name)
                 if match:
-                    print "DOC", match.groups()
                     if not "doc_files" in data:
                         data["doc_files"] = []
                     data["doc_files"].append(match.group(1))
@@ -116,7 +115,6 @@ def _augment_data_from_tarball(args, filename, data):
             for name in f.namelist():
                 match = re.match(docs_re, name)
                 if match:
-                    print "DOC", match.groups()
                     if not "doc_files" in data:
                         data["doc_files"] = []
                     data["doc_files"].append(match.group(1))
