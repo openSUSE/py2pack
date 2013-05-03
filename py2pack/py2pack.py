@@ -93,31 +93,28 @@ def fetch(args):
 
 def _augment_data_from_tarball(args, filename, data):
     setup_filename = "{0}-{1}/setup.py".format(args.name, args.version)
-    docs_re = re.compile("{0}-{1}\/(AUTHOR|CHANGES|COPYING|LICENSE|NEWS|README(?:\.\w+)?)".format(args.name, args.version), re.IGNORECASE)
+    docs_re = re.compile("{0}-{1}\/((?:AUTHOR|ChangeLog|CHANGES|COPYING|LICENSE|NEWS|README).*)".format(args.name, args.version), re.IGNORECASE)
 
     if tarfile.is_tarfile(filename):
         with tarfile.open(filename) as f:
+            names = f.getnames()
             for line in f.extractfile(setup_filename):
                 if "ext_modules" in line:                                   # tarball contains C/C++ extension
                     data["is_extension"] = True
-            for name in f.getnames():
-                match = re.match(docs_re, name)
-                if match:
-                    if not "doc_files" in data:
-                        data["doc_files"] = []
-                    data["doc_files"].append(match.group(1))
     elif zipfile.is_zipfile(filename):
         with zipfile.ZipFile(filename) as f:
+            names = f.namelist()
             with f.open(setup_filename) as s:
                 for line in s:
                     if "ext_modules" in line:                               # tarball contains C/C++ extension
                         data["is_extension"] = True
-            for name in f.namelist():
-                match = re.match(docs_re, name)
-                if match:
-                    if not "doc_files" in data:
-                        data["doc_files"] = []
-                    data["doc_files"].append(match.group(1))
+
+    for name in names:
+        match = re.match(docs_re, name)
+        if match:
+            if not "doc_files" in data:
+                data["doc_files"] = []
+            data["doc_files"].append(match.group(1))
 
 
 def generate(args):
