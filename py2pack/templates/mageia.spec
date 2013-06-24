@@ -44,5 +44,8 @@ rm -rf %{buildroot}
 {%- if doc_files %}
 %doc {{ doc_files|join(" ") }}
 {%- endif %}
+{%- for script in scripts %}
+%{_bindir}/{{ script }}
+{%- endfor %}
 %{python_sitelib}/*
 

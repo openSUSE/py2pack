@@ -91,6 +91,16 @@ def fetch(args):
     urllib.urlretrieve(url['url'], url['filename'])                         # download the object behind the URL
 
 
+def _parse_setup_py(file, data):
+    contents = file.read()
+    mo = re.search("ext_modules", contents)
+    if mo:
+        data["is_extension"] = True
+    mo = re.search("scripts\s*=\s*(\[.*\]),", contents, flags=re.MULTILINE)
+    if mo:
+        data["scripts"] = eval(mo.group(1))
+
+
 def _augment_data_from_tarball(args, filename, data):
     setup_filename = "{0}-{1}/setup.py".format(args.name, args.version)
     docs_re = re.compile("{0}-{1}\/((?:AUTHOR|ChangeLog|CHANGES|COPYING|LICENSE|NEWS|README).*)".format(args.name, args.version), re.IGNORECASE)
@@ -98,16 +108,12 @@ def _augment_data_from_tarball(args, filename, data):
     if tarfile.is_tarfile(filename):
         with tarfile.open(filename) as f:
             names = f.getnames()
-            for line in f.extractfile(setup_filename):
-                if "ext_modules" in line:                                   # tarball contains C/C++ extension
-                    data["is_extension"] = True
+            _parse_setup_py(f.extractfile(setup_filename), data)
     elif zipfile.is_zipfile(filename):
         with zipfile.ZipFile(filename) as f:
             names = f.namelist()
             with f.open(setup_filename) as s:
-                for line in s:
-                    if "ext_modules" in line:                               # tarball contains C/C++ extension
-                        data["is_extension"] = True
+                _parse_setup_py(s, data)
 
     for name in names:
         match = re.match(docs_re, name)
