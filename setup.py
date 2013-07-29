@@ -27,26 +27,12 @@ except ImportError:
     from distutils.core import setup
 
 import py2pack
+import py2pack.setup
 
 
-if sys.argv[-1] == "doc":
-    """Generate manpage, HTML and PDF documentation.
-    """
-    try:
-        subprocess.call(["xsltproc", "--output", "docs/py2pack.html", "/usr/share/xml/docbook/stylesheet/nwalsh/current/html/docbook.xsl", "docs/src/py2pack.xml.in"])
-        subprocess.call(["xsltproc", "--output", "docs/py2pack.1", "/usr/share/xml/docbook/stylesheet/nwalsh/current/manpages/docbook.xsl", "docs/src/py2pack.xml.in"])
-        #subprocess.call(["xsltproc", "--output", "doc/py2pack.fo",
-        #                 "--stringparam", "paper.type", "A4",
-        #                 "--stringparam", "body.start.indent", "0pt",
-        #                 "--stringparam", "title.margin.left", "0pt",
-        #                 "--stringparam", "variablelist.as.blocks", "1",
-        #                 "/usr/share/xml/docbook/stylesheet/nwalsh/current/fo/docbook.xsl", "docs/py2pack.xml.in"])
-        #subprocess.call(["fop", "docs/py2pack.fo", "docs/py2pack.pdf"])
-    except:
-        pass
-    #if os.path.exists("docs/py2pack.fo"):
-    #    os.remove("docs/py2pack.fo")
-    sys.exit()
+install_requires = py2pack.setup.parse_requirements("requirements.txt")
+tests_requires = py2pack.setup.parse_requirements("test-requirements.txt")
+
 
 setup(
     name=py2pack.__name__,
@@ -64,7 +50,10 @@ setup(
                 ('share/doc/py2pack/html', ['docs/py2pack.html']),
                #('share/doc/py2pack/pdf', ['docs/py2pack.pdf']),
                 ('man/man1', ['docs/py2pack.1'])],
-    requires=['argparse', 'Jinja2'],
+    install_requires=install_requires,
+    cmdclass=py2pack.setup.get_cmdclass(),
+    tests_require=tests_requires,
+    test_suite="nose.collector",
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
@@ -72,11 +61,9 @@ setup(
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
         'License :: OSI Approved :: GNU General Public License (GPL)',
-        'Operating System :: MacOS :: MacOS X',
-        'Operating System :: Microsoft :: Windows',
         'Operating System :: POSIX',
-        'Operating System :: OS Independent',
         'Programming Language :: Python',
+        "Programming Language :: Python :: 2.7",
         'Topic :: Software Development :: Code Generators',
         'Topic :: Software Development :: Pre-processors',
     ],
