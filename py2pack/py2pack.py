@@ -93,12 +93,15 @@ def fetch(args):
 
 def _parse_setup_py(file, data):
     contents = file.read()
-    mo = re.search("ext_modules", contents)
-    if mo:
+    match = re.search("ext_matchdules", contents)
+    if match:
         data["is_extension"] = True
-    mo = re.search("scripts\s*=\s*(\[.*\]),", contents, flags=re.MULTILINE)
-    if mo:
-        data["scripts"] = eval(mo.group(1))
+    match = re.search("scripts\s*=\s*(\[.*\]),", contents, flags=re.MULTILINE)
+    if match:
+        data["scripts"] = eval(match.group(1))
+    match = re.search("test_suite\s*=\s*(.*)", contents)
+    if match:
+        data["test_suite"] = eval(match.group(1))
 
 
 def _augment_data_from_tarball(args, filename, data):
@@ -121,6 +124,8 @@ def _augment_data_from_tarball(args, filename, data):
             if not "doc_files" in data:
                 data["doc_files"] = []
             data["doc_files"].append(match.group(1))
+        if "test" in name.lower():                                          # Very broad check for testsuites
+            data["testsuite"] = True
 
 
 def generate(args):
