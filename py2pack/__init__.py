@@ -184,7 +184,7 @@ def newest_download_url(args):
 
 
 def file_template_list():
-    return filter(lambda filename: not filename.startswith('.'), os.listdir(TEMPLATE_DIR))
+    return [filename for filename in os.listdir(TEMPLATE_DIR) if not filename.startswith('.')]
 
 
 def package_template_list():
