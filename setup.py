@@ -33,13 +33,16 @@ import py2pack.setup
 install_requires = py2pack.setup.parse_requirements("requirements.txt")
 tests_requires = py2pack.setup.parse_requirements("test-requirements.txt")
 
+with open("README.rst", "r") as f:
+    long_description = f.read()
+
 
 setup(
     name=py2pack.__name__,
     version=py2pack.__version__,
     license="GPLv2",
     description=py2pack.__doc__,
-    long_description=open('README.rst').read(),
+    long_description=long_description,
     author=py2pack.__author__.rsplit(' ', 1)[0],
     author_email=py2pack.__author__.rsplit(' ', 1)[1][1:-1],
     url='http://github.com/saschpe/py2pack',
