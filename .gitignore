@@ -1,7 +1,9 @@
 .*.swp
 MANIFEST
 build
+coverage
 dist
+nosetests.xml
 *.pyc
 *.egg-info
 .venv*
