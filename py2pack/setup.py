@@ -32,7 +32,7 @@ class PEP257Command(Command):
         pass
 
     def run(self):
-        subprocess.call("find py2pack -type f -name \"*.py\" | xargs pep257", shell=True)
+        subprocess.call("find py2pack test -type f -name \"*.py\" | xargs pep257", shell=True)
 
 
 class CleanupCommand(Command):
