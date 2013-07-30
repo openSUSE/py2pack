@@ -21,23 +21,6 @@ import sys
 from distutils.core import Command
 
 
-class PEP8Command(Command):
-    description = "Run pep8 with custom options"
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        subprocess.call(["pep8", "--repeat", "--show-source",
-                        "--ignore=E501",
-                        "--exclude=.coverage/.venv,.tox,build,dist,doc,*egg*",
-                        "rapport", "test"])
-
-
 class PEP257Command(Command):
     description = "Run pep257 with custom options"
     user_options = []
@@ -49,7 +32,7 @@ class PEP257Command(Command):
         pass
 
     def run(self):
-        subprocess.call("find rapport -type f -name \"*.py\" | xargs pep257", shell=True)
+        subprocess.call("find py2pack -type f -name \"*.py\" | xargs pep257", shell=True)
 
 
 class CleanupCommand(Command):
@@ -84,27 +67,26 @@ class DocCommand(Command):
 
     def run(self):
         try:
-            subprocess.call(["xsltproc", "--output", "docs/py2pack.html", "/usr/share/xml/docbook/stylesheet/nwalsh/current/html/docbook.xsl", "docs/src/py2pack.xml.in"])
-            subprocess.call(["xsltproc", "--output", "docs/py2pack.1", "/usr/share/xml/docbook/stylesheet/nwalsh/current/manpages/docbook.xsl", "docs/src/py2pack.xml.in"])
+            subprocess.call(["xsltproc", "--output", "doc/py2pack.html", "/usr/share/xml/docbook/stylesheet/nwalsh/current/html/docbook.xsl", "doc/src/py2pack.xml.in"])
+            subprocess.call(["xsltproc", "--output", "doc/py2pack.1", "/usr/share/xml/docbook/stylesheet/nwalsh/current/manpages/docbook.xsl", "doc/src/py2pack.xml.in"])
             #subprocess.call(["xsltproc", "--output", "doc/py2pack.fo",
             #                 "--stringparam", "paper.type", "A4",
             #                 "--stringparam", "body.start.indent", "0pt",
             #                 "--stringparam", "title.margin.left", "0pt",
             #                 "--stringparam", "variablelist.as.blocks", "1",
-            #                 "/usr/share/xml/docbook/stylesheet/nwalsh/current/fo/docbook.xsl", "docs/py2pack.xml.in"])
-            #subprocess.call(["fop", "docs/py2pack.fo", "docs/py2pack.pdf"])
+            #                 "/usr/share/xml/docbook/stylesheet/nwalsh/current/fo/docbook.xsl", "doc/py2pack.xml.in"])
+            #subprocess.call(["fop", "doc/py2pack.fo", "doc/py2pack.pdf"])
         except:
             pass
-        #if os.path.exists("docs/py2pack.fo"):
-        #    os.remove("docs/py2pack.fo")
+        #if os.path.exists("doc/py2pack.fo"):
+        #    os.remove("doc/py2pack.fo")
 
 
 def get_cmdclass():
     """Dictionary of all distutils commands defined in this module.
     """
     return {"cleanup": CleanupCommand,
-            "pep257": PEP257Command,
-            "pep8": PEP8Command}
+            "pep257": PEP257Command}
 
 
 def parse_requirements(requirements_file='requirements.txt'):
