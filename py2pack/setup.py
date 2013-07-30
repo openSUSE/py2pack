@@ -82,11 +82,39 @@ class DocCommand(Command):
         #    os.remove("doc/py2pack.fo")
 
 
+class SPDXUpdateCommand(Command):
+    description = "Update SDPX license map"
+    user_options = []
+    LICENSE_FILE = 'py2pack/suse_spdx_license_map.p'
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        # Not part of any requirements, could happen through setup(setup_requires=...)
+        import pickle
+        import lxml.html
+        import requests
+        response = requests.get('https://docs.google.com/spreadsheet/pub?key=0AqPp4y2wyQsbdGQ1V3pRRDg5NEpGVWpubzdRZ0tjUWc')
+        html = lxml.html.fromstring(response.text)
+        licenses = {}
+        for i, tr in enumerate(html.cssselect('table#tblMain > tr[class!="rShim"]')):
+            if i == 0:
+                continue  # Skip the first tr, only contains row descriptions
+            _, td_new, td_old = tr.getchildren()
+            licenses[td_old.text] = td_new.text
+        pickle.dump(licenses, open(SPDXUpdateCommand.LICENSE_FILE, 'wb'))
+
+
 def get_cmdclass():
     """Dictionary of all distutils commands defined in this module.
     """
     return {"cleanup": CleanupCommand,
-            "pep257": PEP257Command}
+            "pep257": PEP257Command,
+            "spdx_update": SPDXUpdateCommand}
 
 
 def parse_requirements(requirements_file='requirements.txt'):
