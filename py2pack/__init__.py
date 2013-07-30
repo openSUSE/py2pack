@@ -17,8 +17,10 @@
 # Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
+from __future__ import absolute_import
+
 __doc__ = 'Generate distribution packages from Python packages on PyPI'
 __docformat__ = 'restructuredtext en'
 __author__ = 'Sascha Peilicke <saschpe@gmx.de>'
 
-from py2pack import __version__, list, search, fetch, generate, main
+from py2pack.py2pack import __version__, list, search, fetch, generate, main

@@ -18,23 +18,28 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 import argparse
+import datetime
 import glob
-import httplib
+try:
+    import http.client as httplib
+except:
+    import httplib
 import os
 import pickle
+import pprint
 import pwd
 import re
 import sys
 import tarfile
 import urllib
-import warnings
-import xmlrpclib
+#import warnings
+try:
+    import xmlrpc.client as xmlrpclib
+except:
+    import xmlrpclib
 import zipfile
 
-from datetime import datetime
-from pprint import pprint
-
-warnings.filterwarnings('ignore', 'Module argparse was already imported')   # Filter a UserWarning from Jinja2
+#warnings.filterwarnings('ignore', 'Module argparse was already imported')   # Filter a UserWarning from Jinja2
 import jinja2
 
 __version__ = '0.4.4'
@@ -77,7 +82,7 @@ def show(args):
     check_or_set_version(args)
     print('showing package {0}...'.format(args.name))
     data = pypi.release_data(args.name, args.version)                       # fetch all meta data
-    pprint(data)
+    pprint.pprint(data)
 
 
 def fetch(args):
@@ -141,7 +146,7 @@ def generate(args):
         data['source_url'] = url['url']
     else:
         data['source_url'] = args.name + '-' + args.version + '.zip'
-    data['year'] = datetime.now().year                                      # set current year
+    data['year'] = datetime.datetime.now().year                             # set current year
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
     data['summary_no_ending_dot'] = re.sub('(.*)\.', '\g<1>', data['summary'])
 
