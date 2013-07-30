@@ -1,4 +1,4 @@
-Py2pack: Generate distribution packages from Python packages on PyPI
+Py2pack: Generate distribution packages from Python packages on PyPy
 ====================================================================
 
 .. image:: https://travis-ci.org/saschpe/py2pack.png?branch=master
@@ -90,11 +90,11 @@ To get further help about py2pack usage, issue the following command:
 Hacking and contributing
 ------------------------
 
-You can test py2pack from your git checkout by executing the py2pack.py2pack module:
+You can test py2pack from your git checkout by executing the py2pack module:
 
 .. code-block:: bash
 
-    $ python -m py2pack.py2pack
+    $ python -m py2pack
 
 Fork `the repository`_ on Github to start making your changes to the **master**
 branch (or branch off of it). Don't forget to write a test for fixed issues or
