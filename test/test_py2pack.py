@@ -1,7 +1,6 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2010, Sascha Peilicke <saschpe@gmx.de>
+# Copyright (c) 2013, Sascha Peilicke <saschpe@gmx.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
@@ -23,12 +22,27 @@ import doctest
 import py2pack
 
 
-class Test(unittest.TestCase):
-    """Unit tests for py2pack."""
+class Py2packTestCase(unittest.TestCase):
+    def setUp(self):
+        class Args:
+            name = "py2pack"
+            version = "0.4.4"
 
-    def test_doctests(self):
-        """Run py2pack doctests"""
-        doctest.testmod(py2pack)
+        self.args = Args()
 
-if __name__ == "__main__":
-    unittest.main()
+    def test_list(self):
+        py2pack.list(self.args)
+
+    def test_search(self):
+        py2pack.search(self.args)
+
+    def test_show(self):
+        py2pack.show(self.args)
+
+    def test_newest_download_url(self):
+        url = py2pack.newest_download_url(self.args)
+        self.assertIn("url", url)
+        self.assertIn("filename", url)
+        filename = "{0}-{1}.tar.gz".format(self.args.name, self.args.version)
+        self.assertEqual(url["filename"], filename)
+        self.assertEqual(url["packagetype"], "sdist")
