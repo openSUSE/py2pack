@@ -1,4 +1,4 @@
-Py2pack: Generate distribution packages from PyPy
+Py2pack: Generate distribution packages from PyPI
 =================================================
 
 .. image:: https://travis-ci.org/saschpe/py2pack.png?branch=master
