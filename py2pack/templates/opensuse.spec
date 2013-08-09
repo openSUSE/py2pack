@@ -41,9 +41,9 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 %{!?python_sitearch: %global python_sitearch %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
 {%- else %}
 %{!?python_sitelib: %global python_sitelib %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
-{%- endif %}
 %else
 BuildArch:      noarch
+{%- endif %}
 %endif
 
 %description
@@ -76,6 +76,10 @@ nosetests
 {%- for script in scripts %}
 %{_bindir}/{{ script }}
 {%- endfor %}
+{%- if is_extension %}
+%{python_sitearch}/*
+{%- else %}
 %{python_sitelib}/*
+{%- endif %}
 
 %changelog
