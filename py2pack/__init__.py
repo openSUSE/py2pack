@@ -97,6 +97,12 @@ def _parse_setup_py(file, data):
     match = re.search("test_suite\s*=\s*(.*)", contents)
     if match:
         data["test_suite"] = eval(match.group(1))
+    match = re.search("install_requires\s*=\s*(\[.*\]),", contents, flags=re.MULTILINE)
+    if match:
+        data["install_requires"] = eval(match.group(1))
+    match = re.search("extras_require\s*=\s*(\{.*\}),", contents, flags=re.MULTILINE)
+    if match:
+        data["extras_require"] = eval(match.group(1))
 
 
 def _augment_data_from_tarball(args, filename, data):

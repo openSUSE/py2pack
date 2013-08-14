@@ -35,6 +35,13 @@ Requires:       python-{{ req|replace('(','')|replace(')','') }}
 {%- if source_url.endswith('.zip') %}
 BuildRequires:  unzip
 {%- endif %}
+{%- if extras_require %}
+{%- for reqlist in extras_require.values() %}
+{%- for req in reqlist %}
+Suggests:       python-{{ req|replace('(','')|replace(')','') }}
+{%- endfor %}
+{%- endfor %}
+{%- endif %}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 %if 0%{?suse_version} && 0%{?suse_version} <= 1110
 {%- if is_extension %}
