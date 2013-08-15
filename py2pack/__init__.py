@@ -90,7 +90,7 @@ def fetch(args):
 
 def _parse_setup_py(file, data):
     contents = file.read()
-    match = re.search("ext_matchdules", contents)
+    match = re.search("ext_modules", contents)
     if match:
         data["is_extension"] = True
     match = re.search("scripts\s*=\s*(\[.*\]),", contents, flags=re.MULTILINE)
