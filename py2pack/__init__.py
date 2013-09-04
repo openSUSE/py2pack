@@ -120,6 +120,8 @@ def _augment_data_from_tarball(args, filename, data):
             names = f.namelist()
             with f.open(setup_filename) as s:
                 _parse_setup_py(s, data)
+    else:
+        return
 
     for name in names:
         match = re.match(docs_re, name)
@@ -148,7 +150,7 @@ def generate(args):
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
     data['summary_no_ending_dot'] = re.sub('(.*)\.', '\g<1>', data['summary'])
 
-    tarball_file = glob.glob("{0}-{1}*".format(args.name, args.version))    # we have a local tarball, try to
+    tarball_file = glob.glob("{0}-{1}.*".format(args.name, args.version))   # we have a local tarball, try to
     if tarball_file:                                                        # get some more info from that
         _augment_data_from_tarball(args, tarball_file[0], data)
 
