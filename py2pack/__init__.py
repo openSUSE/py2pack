@@ -89,7 +89,7 @@ def fetch(args):
 
 
 def _parse_setup_py(file, data):
-    contents = file.read()
+    contents = file.read().decode('utf-8')
     match = re.search("ext_modules", contents)
     if match:
         data["is_extension"] = True
@@ -157,7 +157,7 @@ def generate(args):
 
     template = env.get_template(args.template)
     result = template.render(data).encode('utf-8')                          # render template and encode properly
-    outfile = open(args.filename, 'w')                                      # write result to spec file
+    outfile = open(args.filename, 'wb')                                     # write result to spec file
     try:
         outfile.write(result)
     finally:
