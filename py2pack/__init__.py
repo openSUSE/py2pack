@@ -93,16 +93,16 @@ def _parse_setup_py(file, data):
     match = re.search("ext_modules", contents)
     if match:
         data["is_extension"] = True
-    match = re.search("scripts\s*=\s*(\[.*\]),", contents, flags=re.MULTILINE)
+    match = re.search("scripts\s*=\s*(\[.*?\]),", contents, flags=re.DOTALL)
     if match:
         data["scripts"] = eval(match.group(1))
     match = re.search("test_suite\s*=\s*(.*)", contents)
     if match:
         data["test_suite"] = eval(match.group(1))
-    match = re.search("install_requires\s*=\s*(\[.*\]),", contents, flags=re.MULTILINE)
+    match = re.search("install_requires\s*=\s*(\[.*?\]),", contents, flags=re.DOTALL)
     if match:
         data["install_requires"] = eval(match.group(1))
-    match = re.search("extras_require\s*=\s*(\{.*\}),", contents, flags=re.MULTILINE)
+    match = re.search("extras_require\s*=\s*(\{.*?\}),", contents, flags=re.DOTALL)
     if match:
         data["extras_require"] = eval(match.group(1))
 
