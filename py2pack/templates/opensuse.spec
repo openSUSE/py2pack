@@ -82,12 +82,24 @@ nosetests
 %doc {{ doc_files|join(" ") }}
 {%- endif %}
 {%- for script in scripts %}
-%{_bindir}/{{ script }}
+%{_bindir}/{{ script|basename }}
 {%- endfor %}
 {%- if is_extension %}
 %{python_sitearch}/*
 {%- else %}
 %{python_sitelib}/*
 {%- endif %}
+{%- for dir, files in data_files %}
+{%- set dir =
+    ('/usr/'~dir if dir[0] != '/' else dir) |
+    replace('/usr/share/doc/'~name, '%doc %{_defaultdocdir}/%{name}', 1) |
+    replace('/usr/share/man/', '%doc %{_mandir}/', 1) |
+    replace('/usr/share/', '%{_datadir}/', 1) |
+    replace('/usr/', '%{_prefix}/', 1) %}
+%dir {{ dir }}
+{%- for file in files %}
+{{ dir }}/{{file|basename }}
+{%- endfor %}
+{%- endfor %}
 
 %changelog

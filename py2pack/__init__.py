@@ -26,14 +26,17 @@ __version__ = '0.4.10'
 
 import argparse
 import datetime
+import distutils.core
 import glob
 import os
 import pickle
 import pprint
 import pwd
 import re
+import shutil
 import sys
 import tarfile
+import tempfile
 import urllib
 
 try:
@@ -52,6 +55,8 @@ pypi = xmlrpclib.ServerProxy('https://pypi.python.org/pypi')                    
 env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))      # Jinja2 template environment
 env.filters['parenthesize_version'] = \
     lambda s: re.sub('([=<>]+)(.+)', r' (\1 \2)', s)
+env.filters['basename'] = \
+    lambda s: s[s.rfind('/') + 1:]
 
 SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spdx_license_map.p')  # absolute template path
 SDPX_LICENSES = pickle.load(open(SPDX_LICENSES_FILE, 'rb'))
@@ -106,6 +111,25 @@ def _parse_setup_py(file, data):
         data["extras_require"] = eval(match.group(1))
 
 
+def _run_setup_py(tarfile, setup_filename, data):
+    oldcwd = os.getcwd()
+    tempdir = tempfile.mkdtemp()
+    setup_filename = os.path.join(tempdir, setup_filename)
+
+    tarfile.extractall(tempdir)
+    os.chdir(os.path.dirname(setup_filename))
+    sys.path.insert(0, os.path.dirname(setup_filename))
+    dist = distutils.core.run_setup(setup_filename, stop_after='config')
+    sys.path.pop(0)
+    os.chdir(oldcwd)
+    shutil.rmtree(tempdir)
+
+    if dist.scripts:
+        data["scripts"] = dist.scripts
+    if dist.data_files:
+        data["data_files"] = dist.data_files
+
+
 def _augment_data_from_tarball(args, filename, data):
     setup_filename = "{0}-{1}/setup.py".format(args.name, args.version)
     docs_re = re.compile("{0}-{1}\/((?:AUTHOR|ChangeLog|CHANGES|COPYING|LICENSE|NEWS|README).*)".format(args.name, args.version), re.IGNORECASE)
@@ -114,11 +138,15 @@ def _augment_data_from_tarball(args, filename, data):
         with tarfile.open(filename) as f:
             names = f.getnames()
             _parse_setup_py(f.extractfile(setup_filename), data)
+            if args.run:
+                _run_setup_py(f, setup_filename, data)
     elif zipfile.is_zipfile(filename):
         with zipfile.ZipFile(filename) as f:
             names = f.namelist()
             with f.open(setup_filename) as s:
                 _parse_setup_py(s, data)
+            if args.run:
+                _run_setup_py(f, setup_filename, data)
     else:
         return
 
@@ -227,6 +255,7 @@ def main():
     parser_generate.add_argument('version', nargs='?', help='package version (optional)')
     parser_generate.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec', help='file template')
     parser_generate.add_argument('-f', '--filename', help='spec filename (optional)')
+    parser_generate.add_argument('-r', '--run', action='store_true', help='run setup.py (optional, risky!)')
     parser_generate.set_defaults(func=generate)
 
     parser_help = subparsers.add_parser('help', help='show this help')
