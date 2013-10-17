@@ -33,6 +33,7 @@ import pickle
 import pprint
 import pwd
 import re
+import setuptools.sandbox
 import shutil
 import sys
 import tarfile
@@ -112,16 +113,13 @@ def _parse_setup_py(file, data):
 
 
 def _run_setup_py(tarfile, setup_filename, data):
-    oldcwd = os.getcwd()
     tempdir = tempfile.mkdtemp()
-    setup_filename = os.path.join(tempdir, setup_filename)
+    setuptools.sandbox.DirectorySandbox(tempdir).run(lambda: tarfile.extractall(tempdir))
 
-    tarfile.extractall(tempdir)
-    os.chdir(os.path.dirname(setup_filename))
-    sys.path.insert(0, os.path.dirname(setup_filename))
-    dist = distutils.core.run_setup(setup_filename, stop_after='config')
-    sys.path.pop(0)
-    os.chdir(oldcwd)
+    setup_filename = os.path.join(tempdir, setup_filename)
+    distutils.core._setup_stop_after = "config"
+    setuptools.sandbox.run_setup(setup_filename, "")
+    dist = distutils.core._setup_distribution
     shutil.rmtree(tempdir)
 
     if dist.scripts:
