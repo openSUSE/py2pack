@@ -146,16 +146,18 @@ def _augment_data_from_tarball(args, filename, data):
     if tarfile.is_tarfile(filename):
         with tarfile.open(filename) as f:
             names = f.getnames()
-            _parse_setup_py(f.extractfile(setup_filename), data)
             if args.run:
                 _run_setup_py(f, setup_filename, data)
+            else:
+                _parse_setup_py(f.extractfile(setup_filename), data)
     elif zipfile.is_zipfile(filename):
         with zipfile.ZipFile(filename) as f:
             names = f.namelist()
-            with f.open(setup_filename) as s:
-                _parse_setup_py(s, data)
             if args.run:
                 _run_setup_py(f, setup_filename, data)
+            else:
+                with f.open(setup_filename) as s:
+                    _parse_setup_py(s, data)
     else:
         return
 
