@@ -84,6 +84,9 @@ nosetests
 {%- for script in scripts %}
 %{_bindir}/{{ script|basename }}
 {%- endfor %}
+{%- for script in console_scripts %}
+%{_bindir}/{{ script }}
+{%- endfor %}
 {%- if is_extension %}
 %{python_sitearch}/*
 {%- else %}

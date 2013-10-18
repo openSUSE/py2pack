@@ -30,6 +30,7 @@ import distutils.core
 import glob
 import os
 import pickle
+import pkg_resources
 import pprint
 import pwd
 import re
@@ -98,7 +99,7 @@ def _parse_setup_py(file, data):
     match = re.search("ext_modules", contents)
     if match:
         data["is_extension"] = True
-    match = re.search("scripts\s*=\s*(\[.*?\])", contents, flags=re.DOTALL)
+    match = re.search("[(,]\s*scripts\s*=\s*(\[.*?\])", contents, flags=re.DOTALL)
     if match:
         data["scripts"] = eval(match.group(1))
     match = re.search("test_suite\s*=\s*(.*)", contents)
@@ -113,6 +114,9 @@ def _parse_setup_py(file, data):
     match = re.search("data_files\s*=\s*(\[.*?\])", contents, flags=re.DOTALL)
     if match:
         data["data_files"] = eval(match.group(1))
+    match = re.search('entry_points\s*=\s*(\{.*?\}|""".*?"""|".*?")', contents, flags=re.DOTALL)
+    if match:
+        data["entry_points"] = eval(match.group(1))
 
 
 def _run_setup_py(tarfile, setup_filename, data):
@@ -137,6 +141,8 @@ def _run_setup_py(tarfile, setup_filename, data):
         data["extras_require"] = dist.extras_require
     if dist.data_files:
         data["data_files"] = dist.data_files
+    if dist.entry_points:
+        data["entry_points"] = dist.entry_points
 
 
 def _canonicalize_setup_data(data):
@@ -160,6 +166,14 @@ def _canonicalize_setup_data(data):
         data["data_files"] = [
             (dir if (len(dir) and dir[0] == '/') else os.path.join(prefix, dir), files)
             for (dir, files) in data["data_files"]]
+
+    if "entry_points" in data:
+        # entry_points may be a string with .ini-style sections, convert to a dict:
+        if isinstance(data["entry_points"], str):
+            data["entry_points"] = pkg_resources.EntryPoint.parse_map(data["entry_points"])
+        if "console_scripts" in data["entry_points"]:
+            data["console_scripts"] = [
+                i[:i.index(" = ")] for i in data["entry_points"]["console_scripts"]]
 
 
 def _augment_data_from_tarball(args, filename, data):
