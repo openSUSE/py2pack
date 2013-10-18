@@ -139,6 +139,29 @@ def _run_setup_py(tarfile, setup_filename, data):
         data["data_files"] = dist.data_files
 
 
+def _canonicalize_setup_data(data):
+    if "install_requires" in data:
+        # install_requires may be a string, convert to list of strings:
+        if isinstance(data["install_requires"], str):
+            data["install_requires"] = data["install_requires"].splitlines()
+
+    if "extras_require" in data:
+        # extras_require value may be a string, convert to list of strings:
+        for (key, value) in data["extras_require"].items():
+            if isinstance(value, str):
+                data["extras_require"][key] = value.splitlines()
+
+    if "data_files" in data:
+        # data_files may be a sequence of files without a target directory:
+        if len(data["data_files"]) and isinstance(data["data_files"][0], str):
+            data["data_files"] = [("", data["data_files"])]
+        # directory paths may be relative to the installation prefix:
+        prefix = sys.exec_prefix if "is_extension" in data else sys.prefix
+        data["data_files"] = [
+            (dir if (len(dir) and dir[0] == '/') else os.path.join(prefix, dir), files)
+            for (dir, files) in data["data_files"]]
+
+
 def _augment_data_from_tarball(args, filename, data):
     setup_filename = "{0}-{1}/setup.py".format(args.name, args.version)
     docs_re = re.compile("{0}-{1}\/((?:AUTHOR|ChangeLog|CHANGES|COPYING|LICENSE|NEWS|README).*)".format(args.name, args.version), re.IGNORECASE)
@@ -150,6 +173,7 @@ def _augment_data_from_tarball(args, filename, data):
                 _run_setup_py(f, setup_filename, data)
             else:
                 _parse_setup_py(f.extractfile(setup_filename), data)
+            _canonicalize_setup_data(data)
     elif zipfile.is_zipfile(filename):
         with zipfile.ZipFile(filename) as f:
             names = f.namelist()
@@ -158,6 +182,7 @@ def _augment_data_from_tarball(args, filename, data):
             else:
                 with f.open(setup_filename) as s:
                     _parse_setup_py(s, data)
+            _canonicalize_setup_data(data)
     else:
         return
 

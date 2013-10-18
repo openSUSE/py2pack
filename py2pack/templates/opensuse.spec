@@ -90,8 +90,7 @@ nosetests
 %{python_sitelib}/*
 {%- endif %}
 {%- for dir, files in data_files %}
-{%- set dir =
-    ('/usr/'~dir if dir[0] != '/' else dir) |
+{%- set dir = dir |
     replace('/usr/share/doc/'~name, '%doc %{_defaultdocdir}/%{name}', 1) |
     replace('/usr/share/man/', '%doc %{_mandir}/', 1) |
     replace('/usr/share/', '%{_datadir}/', 1) |
