@@ -179,6 +179,7 @@ def _canonicalize_setup_data(data):
 def _augment_data_from_tarball(args, filename, data):
     setup_filename = "{0}-{1}/setup.py".format(args.name, args.version)
     docs_re = re.compile("{0}-{1}\/((?:AUTHOR|ChangeLog|CHANGES|COPYING|LICENSE|NEWS|README).*)".format(args.name, args.version), re.IGNORECASE)
+    shell_metachars_re = re.compile("[|&;()<>\s]")
 
     if tarfile.is_tarfile(filename):
         with tarfile.open(filename) as f:
@@ -205,7 +206,10 @@ def _augment_data_from_tarball(args, filename, data):
         if match:
             if "doc_files" not in data:
                 data["doc_files"] = []
-            data["doc_files"].append(match.group(1))
+            if re.search(shell_metachars_re, match.group(1)):               # quote filename if it contains shell metacharacters
+                data["doc_files"].append("'" + match.group(1) + "'")
+            else:
+                data["doc_files"].append(match.group(1))
         if "test" in name.lower():                                          # Very broad check for testsuites
             data["testsuite"] = True
 
