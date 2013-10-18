@@ -110,6 +110,9 @@ def _parse_setup_py(file, data):
     match = re.search("extras_require\s*=\s*(\{.*?\})", contents, flags=re.DOTALL)
     if match:
         data["extras_require"] = eval(match.group(1))
+    match = re.search("data_files\s*=\s*(\[.*?\])", contents, flags=re.DOTALL)
+    if match:
+        data["data_files"] = eval(match.group(1))
 
 
 def _run_setup_py(tarfile, setup_filename, data):
@@ -122,8 +125,16 @@ def _run_setup_py(tarfile, setup_filename, data):
     dist = distutils.core._setup_distribution
     shutil.rmtree(tempdir)
 
+    if dist.ext_modules:
+        data["is_extension"] = True
     if dist.scripts:
         data["scripts"] = dist.scripts
+    if dist.test_suite:
+        data["test_suite"] = dist.test_suite
+    if dist.install_requires:
+        data["install_requires"] = dist.install_requires
+    if dist.extras_require:
+        data["extras_require"] = dist.extras_require
     if dist.data_files:
         data["data_files"] = dist.data_files
 
