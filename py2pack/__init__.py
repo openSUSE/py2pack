@@ -51,6 +51,8 @@ import jinja2
 TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')  # absolute template path
 pypi = xmlrpclib.ServerProxy('http://python.org/pypi')                      # XML RPC connection to PyPI
 env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))      # Jinja2 template environment
+env.filters['parenthesize_version'] = \
+    lambda s: re.sub('([=<>]+)(.+)', r' (\1 \2)', s)
 
 SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'suse_spdx_license_map.p')  # absolute template path
 SDPX_LICENSES = pickle.load(open(SPDX_LICENSES_FILE, 'rb'))
@@ -87,16 +89,22 @@ def fetch(args):
 
 
 def _parse_setup_py(file, data):
-    contents = file.read()
-    match = re.search("ext_matchdules", contents)
+    contents = file.read().decode('utf-8')
+    match = re.search("ext_modules", contents)
     if match:
         data["is_extension"] = True
-    match = re.search("scripts\s*=\s*(\[.*\]),", contents, flags=re.MULTILINE)
+    match = re.search("scripts\s*=\s*(\[.*?\]),", contents, flags=re.DOTALL)
     if match:
         data["scripts"] = eval(match.group(1))
     match = re.search("test_suite\s*=\s*(.*)", contents)
     if match:
         data["test_suite"] = eval(match.group(1))
+    match = re.search("install_requires\s*=\s*(\[.*?\]),", contents, flags=re.DOTALL)
+    if match:
+        data["install_requires"] = eval(match.group(1))
+    match = re.search("extras_require\s*=\s*(\{.*?\}),", contents, flags=re.DOTALL)
+    if match:
+        data["extras_require"] = eval(match.group(1))
 
 
 def _augment_data_from_tarball(args, filename, data):
@@ -112,6 +120,8 @@ def _augment_data_from_tarball(args, filename, data):
             names = f.namelist()
             with f.open(setup_filename) as s:
                 _parse_setup_py(s, data)
+    else:
+        return
 
     for name in names:
         match = re.match(docs_re, name)
@@ -140,7 +150,7 @@ def generate(args):
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
     data['summary_no_ending_dot'] = re.sub('(.*)\.', '\g<1>', data['summary'])
 
-    tarball_file = glob.glob("{0}-{1}*".format(args.name, args.version))    # we have a local tarball, try to
+    tarball_file = glob.glob("{0}-{1}.*".format(args.name, args.version))   # we have a local tarball, try to
     if tarball_file:                                                        # get some more info from that
         _augment_data_from_tarball(args, tarball_file[0], data)
 
@@ -149,7 +159,7 @@ def generate(args):
 
     template = env.get_template(args.template)
     result = template.render(data).encode('utf-8')                          # render template and encode properly
-    outfile = open(args.filename, 'w')                                      # write result to spec file
+    outfile = open(args.filename, 'wb')                                     # write result to spec file
     try:
         outfile.write(result)
     finally:

@@ -16,8 +16,15 @@ Requires:       pyhton-{{ req|lower }}
 {%- endfor %}
 {%- for req in install_requires %}
 BuildRequires:  python-{{ req|lower }}
-Requires:       pyhton-{{ req|lower }}
+Requires:       python-{{ req|lower }}
 {%- endfor %}
+{%- if extras_require %}
+{%- for reqlist in extras_require.values() %}
+{%- for req in reqlist %}
+Suggests:       python-{{ req|lower }}
+{%- endfor %}
+{%- endfor %}
+{%- endif %}
 
 %description
 {{ summary }}

@@ -22,6 +22,13 @@ Requires:       python-{{ req|replace('(','')|replace(')','') }}
 BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
 Requires:       python-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
+{%- if extras_require %}
+{%- for reqlist in extras_require.values() %}
+{%- for req in reqlist %}
+Suggests:       python-{{ req|replace('(','')|replace(')','') }}
+{%- endfor %}
+{%- endfor %}
+{%- endif %}
 
 %description
 {{ description }}
