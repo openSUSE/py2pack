@@ -146,3 +146,9 @@ configurations (py27, py33, pep8), you can also use `tox`_:
 .. _`nose`: https://nose.readthedocs.org
 .. _`virtual environment`: http://www.virtualenv.org
 .. _`tox`: http://testrun.org/tox
+
+
+.. image:: https://d2weczhvl823v0.cloudfront.net/saschpe/py2pack/trend.png
+   :alt: Bitdeli badge
+   :target: https://bitdeli.com/free
+
