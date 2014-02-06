@@ -21,20 +21,6 @@ import sys
 from distutils.core import Command
 
 
-class PEP257Command(Command):
-    description = "Run pep257 with custom options"
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        subprocess.call("find py2pack test -type f -name \"*.py\" | xargs pep257", shell=True)
-
-
 class CleanupCommand(Command):
     patterns = [".coverage", ".tox", ".venv", "build", "dist", "*.egg", "*.egg-info"]
     description = "Clean up project directory"
@@ -113,7 +99,6 @@ def get_cmdclass():
     """Dictionary of all distutils commands defined in this module.
     """
     return {"cleanup": CleanupCommand,
-            "pep257": PEP257Command,
             "spdx_update": SPDXUpdateCommand}
 
 
