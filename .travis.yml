@@ -5,6 +5,7 @@ python:
   - 3.3
   - 3.4
 install:
+  - pip install --use-mirrors -r test-requirements.txt
   - pip install --use-mirrors coveralls
 script:
   coverage run --source=lesscpy setup.py test
