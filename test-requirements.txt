@@ -1,4 +1,4 @@
 -r requirements.txt
 coverage
+flake8
 nose
-
