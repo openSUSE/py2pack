@@ -40,8 +40,8 @@ class Py2packTestCase(unittest.TestCase):
 
     def test_newest_download_url(self):
         url = py2pack.newest_download_url(self.args)
-        self.assertIn("url", url)
-        self.assertIn("filename", url)
+        self.assertTrue("url" in url)
+        self.assertTrue("filename" in url)
         filename = "{0}-{1}.tar.gz".format(self.args.name, self.args.version)
         self.assertEqual(url["filename"], filename)
         self.assertEqual(url["packagetype"], "sdist")
