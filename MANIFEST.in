@@ -1,4 +1,6 @@
 include AUTHORS LICENSE README.rst
-include doc/*
+include requirements.txt test-requirements.txt
+include tox.ini
 include py2pack/suse_spdx_license_map.p
 include py2pack/templates/*
+recursive-include doc *.1,*.html
