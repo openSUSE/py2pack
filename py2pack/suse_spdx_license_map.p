@@ -75,531 +75,531 @@ sS'CATOSL-1.1'
 p37
 S'CATOSL-1.1'
 p38
-sS'MPLv1.1+'
+sNS'Unicode'
 p39
-S'MPL-1.1+'
+sS'MPLv1.1+'
 p40
-sS'Artistic 2.0'
+S'MPL-1.1+'
 p41
-S'Artistic-2.0'
+sS'Artistic 2.0'
 p42
-sS'ASL2'
-p43
-S'Apache-2.0'
-p44
-sS'http://pastebin.com/PkSpfTbr (part of spectcl)'
-p45
-S'SUSE-Xenonsoft-1.00'
-p46
-sS'SAX-PD'
-p47
-S'SAX-PD'
-p48
-sS'ASLv2.0+'
-p49
-S'Apache-2.0+'
-p50
-sS'Artistic-2.0'
-p51
 S'Artistic-2.0'
-p52
-sS'Apache 1.1 (Indiana University)'
-p53
-S'Apache-1.1'
-p54
-sS'Apache Software License ..'
-p55
+p43
+sS'ASL2'
+p44
 S'Apache-2.0'
-p56
-sS'CC-BY-NC-SA-2.0'
-p57
-S'CC-BY-NC-SA-2.0'
-p58
-sS'CC-BY-NC-SA-2.5'
-p59
-S'CC-BY-NC-SA-2.5'
-p60
-sS'LGPL-3.0+'
-p61
-S'LGPL-3.0+'
-p62
-sS'ECL-1.0'
-p63
-S'ECL-1.0'
-p64
-sS'GLPv2'
-p65
-S'GPL-2.0'
-p66
-sS'Artistic License'
-p67
-S'Artistic-1.0'
-p68
-sS'Eclipse Public License'
-p69
-S'EPL-1.0'
-p70
-sS'SUSE-Apache-2.0+'
-p71
+p45
+sS'http://pastebin.com/PkSpfTbr (part of spectcl)'
+p46
+S'SUSE-Xenonsoft-1.00'
+p47
+sS'SAX-PD'
+p48
+S'SAX-PD'
+p49
+sS'ASLv2.0+'
+p50
 S'Apache-2.0+'
-p72
-sS'CPL-1.0'
-p73
-S'CPL-1.0'
-p74
-sS'JPEG License'
-p75
-S'SUSE-IJG'
-p76
-sS'MIT license'
-p77
-S'MIT'
-p78
-sS'GPL-3.0-with-autoconf-exception'
-p79
-S'GPL-3.0-with-autoconf-exception'
-p80
-sS'Freeware'
-p81
-S'SUSE-Freeware'
-p82
-sS'GFDLv1.2+'
-p83
-S'GFDL-1.2+'
-p84
-sS'CC-BY-2.0'
-p85
-S'CC-BY-2.0'
-p86
-sS'Zlib License'
-p87
-S'Zlib'
-p88
-sS'CC-BY-2.5'
-p89
-S'CC-BY-2.5'
-p90
-sS'http://pastebin.com/cFxX3zCb (probably deprecated but found in docbook-dsssl-stylesheets)'
-p91
-S'SUSE-XSL-Lint'
-p92
-sS'GPL-2.0-with-font-exception'
-p93
-S'GPL-2.0-with-font-exception'
-p94
-sS'BSD-Mark-Modifications'
-p95
-S'SUSE-BSD-Mark-Modifications'
-p96
-sS'MIT licence'
-p97
-S'MIT'
-p98
-sS'GPL-2.0-with-autoconf-exception'
-p99
-S'GPL-2.0-with-autoconf-exception'
-p100
-sS'GPL-2.0+ or Ruby'
-p101
-S'Ruby'
-p102
-sS'EFL-2.0'
-p103
-S'EFL-2.0'
-p104
-sS'AFL-2.1'
-p105
-S'AFL-2.1'
-p106
-sS'AFL-2.0'
-p107
-S'AFL-2.0'
-p108
-sS'Common Public License 0.5'
-p109
-S'SUSE-CPL-0.5'
-p110
-sS'LGPL-2.0+'
-p111
-S'LGPL-2.0+'
-p112
-sS'Copyright (C) 1999-2007 Norman Walsh'
-p113
-S'SUSE-Docbook-XSL'
-p114
-sS'Entessa'
-p115
-S'Entessa'
-p116
-sS'PHP-3.0.1'
-p117
-S'PHP-3.01'
-p118
-sS'BSD-3-Clause with addition which clarifies the software is not licensed for use in design, build or operation of nuclear facility'
-p119
-S'SUSE-BSD-3-Clause-with-non-nuclear-addition'
-p120
-sS'Erlang Public License'
-p121
-S'ErlPL-1.1'
-p122
-sS'MOZILLA PUBLIC LICENSE (MPL/NPL)'
-p123
-S'MPL-1.1'
-p124
-sS'GNU GPL version 3'
-p125
-S'GPL-3.0'
-p126
-sS'NTP'
-p127
-S'NTP'
-p128
-sS'Naumen'
-p129
-S'Naumen'
-p130
-sS'GPL-3+'
-p131
-S'GPL-3.0+'
-p132
-sS'SNIA 1.1'
-p133
-S'SUSE-SNIA-1.1'
-p134
-sS'WXwindows'
-p135
-S'WXwindows'
-p136
-sS'SPL-1.0'
-p137
-S'SPL-1.0'
-p138
-sS'GPLv2'
-p139
-S'GPL-2.0'
-p140
-sS'GPLv3'
-p141
-S'GPL-3.0'
-p142
-sS'Apache Software License, Version 2.0'
-p143
-S'Apache-2.0'
-p144
-sS'GPL-3.0+'
-p145
-S'GPL-3.0+'
-p146
-sS'LGPL v2.0 or later'
-p147
-S'LGPL-2.0+'
-p148
-sS'TeX-License ..'
-p149
-S'LPPL-1.3c'
-p150
-sS'QPL ..'
-p151
-S'QPL-1.0'
-p152
-sS'NonFree licenses'
-p153
-S'SUSE-NonFree'
-p154
-sS'RHeCos-1.1'
-p155
-S'RHeCos-1.1'
-p156
-sS'Apache-1.0'
-p157
-S'Apache-1.0'
-p158
-sS'OpenSSL'
-p159
-S'OpenSSL'
-p160
-sS'OSL-2.0'
-p161
-S'OSL-2.0'
-p162
-sS'OSL-2.1'
-p163
-S'OSL-2.1'
-p164
-sS'LGPL v3 or later'
-p165
-S'LGPL-3.0+'
-p166
-sS'LGPL-2.0'
-p167
-S'LGPL-2.0'
-p168
-sS'LGPL-2.1'
-p169
-S'LGPL-2.1'
-p170
-sS'BSD-2-Clause'
-p171
-S'BSD-2-Clause'
-p172
-sS'MS-PL'
-p173
-S'MS-PL'
-p174
-sS'X11 MIT'
-p175
-S'X11'
-p176
-sS'GNU Lesser General Public License (LGPL), Version 3'
-p177
-S'LGPL-3.0'
-p178
-sS'Apache License Version 2.0'
-p179
-S'Apache-2.0'
-p180
-sS'GPLv2 or later'
-p181
-S'GPL-2.0+'
-p182
-sS'ErlPL-1.1'
-p183
-S'ErlPL-1.1'
-p184
-sS'GPL-2.0 with linking exception for OSI licenses (see elfutils e.g.)'
-p185
-S'SUSE-GPL-2.0-with-OSI-exception'
-p186
-sS'X11'
-p187
-S'X11'
-p188
-sS'GPL v3 only'
-p189
-S'GPL-3.0'
-p190
-sS'LGPLv2.0+'
-p191
-S'LGPL-2.0+'
-p192
-sS'FDL-1.3+'
-p193
-S'GFDL-1.3+'
-p194
-sS'SUSE-Vim'
-p195
-S'SUSE-Vim'
-p196
-sS'EFL-1.0'
-p197
-S'EFL-1.0'
-p198
-sS'This license can _only_ be used for content (i.e. no code, no documentation). Provided there are no restrictions on free (re)distribution of the content, use this license. SUSE-Firmware is a subset of this category.'
-p199
-S'SUSE-Redistributable-Content'
-p200
-sS'Inner Net License 2'
-p201
-S'SUSE-Innernet-2.0'
-p202
-sS'XFree86-1.1'
-p203
-S'XFree86-1.1'
-p204
-sS'SUSE-GFDL-1.1+'
-p205
-S'GFDL-1.1+'
-p206
-sS'GNU General Public License version 2 or later (GPL v2 or later)'
-p207
-S'GPL-2.0+'
-p208
-sS'CECILL-C'
-p209
-S'CECILL-C'
-p210
-sS'CECILL-B'
-p211
-S'CECILL-B'
-p212
-sS'Distributed Management Task Force ( see https://fedoraproject.org/wiki/Licensing/DMTF )'
-p213
-S'SUSE-DMTF'
-p214
-sS'Python-2.0'
-p215
-S'Python-2.0'
-p216
-sS'Apache-1.1'
-p217
+p51
+sS'Artistic-2.0'
+p52
+S'Artistic-2.0'
+p53
+sS'Apache 1.1 (Indiana University)'
+p54
 S'Apache-1.1'
-p218
-sS'CC0-1.0'
-p219
-S'CC0-1.0'
-p220
-sS'MPL-1.0'
-p221
-S'MPL-1.0'
-p222
-sS'AFL-3.0'
-p223
-S'AFL-3.0'
-p224
-sS'LPL-1.02'
-p225
-S'LPL-1.02'
-p226
-sS'BSD 3-Clause'
-p227
-S'BSD-3-Clause'
-p228
-sS'LGPLv2+'
-p229
-S'LGPL-2.1+'
-p230
-sS'Similar to SUSE-Permissive but copyright holder has specified that modification is only allowed by patch'
-p231
-S'SUSE-Permissive-Modify-By-Patch'
-p232
-sS'QPL'
-p233
-S'QPL-1.0'
-p234
-sS'W3C Software License'
-p235
-S'W3C'
-p236
-sS'AFL 2.1'
-p237
-S'AFL-2.1'
-p238
-sS'FDLv1.2+'
-p239
-S'GFDL-1.2+'
-p240
-sS'Watcom-1.0'
-p241
-S'Watcom-1.0'
-p242
-sS'ASL 2.0'
-p243
+p55
+sS'Apache Software License ..'
+p56
 S'Apache-2.0'
-p244
-sS'CC-BY-NC-1.0'
-p245
-S'CC-BY-NC-1.0'
-p246
-sS'LGPL v2.1+'
-p247
-S'LGPL-2.1+'
-p248
-sS'CECILL-2.0'
-p249
-S'CECILL-2.0'
-p250
-sS'openldap 2.8'
-p251
-S'OLDAP-2.8'
-p252
-sS'GPLv2+ with openssl linking exception'
-p253
-S'SUSE-GPL-2.0+-with-openssl-exception'
-p254
-sS'IPA'
-p255
-S'IPA'
-p256
-sS'CNRI-Python'
-p257
-S'CNRI-Python'
-p258
-sS'See for example, the "FHS" license here: https://launchpad.net/ubuntu/precise/+source/debian-policy/+copyright'
-p259
-S'SUSE-FHS'
-p260
-sS'GNU General Public License version 2 or later (GPLv2 or later)'
-p261
-S'GPL-2.0+'
-p262
-sS'GPL v3 or later'
-p263
-S'GPL-3.0+'
-p264
-sS'BSD-3-Clause'
-p265
-S'BSD-3-Clause'
-p266
-sS'IPL-1.0'
-p267
-S'IPL-1.0'
-p268
-sS'Freeware license'
-p269
-S'SUSE-Freeware'
-p270
-sS'CC-BY-ND-1.0'
-p271
-S'CC-BY-ND-1.0'
-p272
-sS'Artistic 1.0'
-p273
-S'Artistic-1.0'
-p274
-sS'IBM PL'
-p275
-S'IPL-1.0'
-p276
-sS'GPL v2 or later'
-p277
-S'GPL-2.0+'
-p278
-sS'ODbL-1.0'
-p279
-S'ODbL-1.0'
-p280
-sS'Apache v2.0'
-p281
-S'Apache-2.0'
-p282
-sS'Freetype'
-p283
-S'SUSE-Freetype'
-p284
-sS'IBM Public License ..'
-p285
-S'IPL-1.0'
-p286
-sS'GPL-2.0'
-p287
+p57
+sS'CC-BY-NC-SA-2.0'
+p58
+S'CC-BY-NC-SA-2.0'
+p59
+sS'CC-BY-NC-SA-2.5'
+p60
+S'CC-BY-NC-SA-2.5'
+p61
+sS'LGPL-3.0+'
+p62
+S'LGPL-3.0+'
+p63
+sS'ECL-1.0'
+p64
+S'ECL-1.0'
+p65
+sS'GLPv2'
+p66
 S'GPL-2.0'
-p288
-sS'ZPL'
-p289
-S'ZPL-2.0'
-p290
-sS'CPL (Common Public License) v1'
-p291
+p67
+sS'Artistic License'
+p68
+S'Artistic-1.0'
+p69
+sS'Eclipse Public License'
+p70
+S'EPL-1.0'
+p71
+sS'SUSE-Apache-2.0+'
+p72
+S'Apache-2.0+'
+p73
+sS'CPL-1.0'
+p74
 S'CPL-1.0'
+p75
+sS'JPEG License'
+p76
+S'SUSE-IJG'
+p77
+sS'MIT license'
+p78
+S'MIT'
+p79
+sS'GPL-3.0-with-autoconf-exception'
+p80
+S'GPL-3.0-with-autoconf-exception'
+p81
+sS'Freeware'
+p82
+S'SUSE-Freeware'
+p83
+sS'GFDLv1.2+'
+p84
+S'GFDL-1.2+'
+p85
+sS'CC-BY-2.0'
+p86
+S'CC-BY-2.0'
+p87
+sS'Zlib License'
+p88
+S'Zlib'
+p89
+sS'CC-BY-2.5'
+p90
+S'CC-BY-2.5'
+p91
+sS'http://pastebin.com/cFxX3zCb (probably deprecated but found in docbook-dsssl-stylesheets)'
+p92
+S'SUSE-XSL-Lint'
+p93
+sS'GPL-2.0-with-font-exception'
+p94
+S'GPL-2.0-with-font-exception'
+p95
+sS'BSD-Mark-Modifications'
+p96
+S'SUSE-BSD-Mark-Modifications'
+p97
+sS'MIT licence'
+p98
+S'MIT'
+p99
+sS'GPL-2.0-with-autoconf-exception'
+p100
+S'GPL-2.0-with-autoconf-exception'
+p101
+sS'GPL-2.0+ or Ruby'
+p102
+S'Ruby'
+p103
+sS'EFL-2.0'
+p104
+S'EFL-2.0'
+p105
+sS'AFL-2.1'
+p106
+S'AFL-2.1'
+p107
+sS'AFL-2.0'
+p108
+S'AFL-2.0'
+p109
+sS'Common Public License 0.5'
+p110
+S'SUSE-CPL-0.5'
+p111
+sS'LGPL-2.0+'
+p112
+S'LGPL-2.0+'
+p113
+sS'Copyright (C) 1999-2007 Norman Walsh'
+p114
+S'SUSE-Docbook-XSL'
+p115
+sS'Entessa'
+p116
+S'Entessa'
+p117
+sS'PHP-3.0.1'
+p118
+S'PHP-3.01'
+p119
+sS'BSD-3-Clause with addition which clarifies the software is not licensed for use in design, build or operation of nuclear facility'
+p120
+S'SUSE-BSD-3-Clause-with-non-nuclear-addition'
+p121
+sS'Erlang Public License'
+p122
+S'ErlPL-1.1'
+p123
+sS'MOZILLA PUBLIC LICENSE (MPL/NPL)'
+p124
+S'MPL-1.1'
+p125
+sS'GNU GPL version 3'
+p126
+S'GPL-3.0'
+p127
+sS'NTP'
+p128
+S'NTP'
+p129
+sS'Naumen'
+p130
+S'Naumen'
+p131
+sS'GPL-3+'
+p132
+S'GPL-3.0+'
+p133
+sS'SNIA 1.1'
+p134
+S'SUSE-SNIA-1.1'
+p135
+sS'WXwindows'
+p136
+S'WXwindows'
+p137
+sS'SPL-1.0'
+p138
+S'SPL-1.0'
+p139
+sS'GPLv2'
+p140
+S'GPL-2.0'
+p141
+sS'GPLv3'
+p142
+S'GPL-3.0'
+p143
+sS'Apache Software License, Version 2.0'
+p144
+S'Apache-2.0'
+p145
+sS'GPL-3.0+'
+p146
+S'GPL-3.0+'
+p147
+sS'LGPL v2.0 or later'
+p148
+S'LGPL-2.0+'
+p149
+sS'TeX-License ..'
+p150
+S'LPPL-1.3c'
+p151
+sS'QPL ..'
+p152
+S'QPL-1.0'
+p153
+sS'NonFree licenses'
+p154
+S'SUSE-NonFree'
+p155
+sS'RHeCos-1.1'
+p156
+S'RHeCos-1.1'
+p157
+sS'Apache-1.0'
+p158
+S'Apache-1.0'
+p159
+sS'OpenSSL'
+p160
+S'OpenSSL'
+p161
+sS'OSL-2.0'
+p162
+S'OSL-2.0'
+p163
+sS'OSL-2.1'
+p164
+S'OSL-2.1'
+p165
+sS'LGPL v3 or later'
+p166
+S'LGPL-3.0+'
+p167
+sS'LGPL-2.0'
+p168
+S'LGPL-2.0'
+p169
+sS'LGPL-2.1'
+p170
+S'LGPL-2.1'
+p171
+sS'BSD-2-Clause'
+p172
+S'BSD-2-Clause'
+p173
+sS'MS-PL'
+p174
+S'MS-PL'
+p175
+sS'X11 MIT'
+p176
+S'X11'
+p177
+sS'GNU Lesser General Public License (LGPL), Version 3'
+p178
+S'LGPL-3.0'
+p179
+sS'Apache License Version 2.0'
+p180
+S'Apache-2.0'
+p181
+sS'GPLv2 or later'
+p182
+S'GPL-2.0+'
+p183
+sS'ErlPL-1.1'
+p184
+S'ErlPL-1.1'
+p185
+sS'GPL-2.0 with linking exception for OSI licenses (see elfutils e.g.)'
+p186
+S'SUSE-GPL-2.0-with-OSI-exception'
+p187
+sS'X11'
+p188
+S'X11'
+p189
+sS'GPL v3 only'
+p190
+S'GPL-3.0'
+p191
+sS'LGPLv2.0+'
+p192
+S'LGPL-2.0+'
+p193
+sS'FDL-1.3+'
+p194
+S'GFDL-1.3+'
+p195
+sS'SUSE-Vim'
+p196
+S'SUSE-Vim'
+p197
+sS'EFL-1.0'
+p198
+S'EFL-1.0'
+p199
+sS'This license can _only_ be used for content (i.e. no code, no documentation). Provided there are no restrictions on free (re)distribution of the content, use this license. SUSE-Firmware is a subset of this category.'
+p200
+S'SUSE-Redistributable-Content'
+p201
+sS'Inner Net License 2'
+p202
+S'SUSE-Innernet-2.0'
+p203
+sS'XFree86-1.1'
+p204
+S'XFree86-1.1'
+p205
+sS'SUSE-GFDL-1.1+'
+p206
+S'GFDL-1.1+'
+p207
+sS'GNU General Public License version 2 or later (GPL v2 or later)'
+p208
+S'GPL-2.0+'
+p209
+sS'CECILL-C'
+p210
+S'CECILL-C'
+p211
+sS'CECILL-B'
+p212
+S'CECILL-B'
+p213
+sS'Distributed Management Task Force ( see https://fedoraproject.org/wiki/Licensing/DMTF )'
+p214
+S'SUSE-DMTF'
+p215
+sS'Python-2.0'
+p216
+S'Python-2.0'
+p217
+sS'Apache-1.1'
+p218
+S'Apache-1.1'
+p219
+sS'CC0-1.0'
+p220
+S'CC0-1.0'
+p221
+sS'MPL-1.0'
+p222
+S'MPL-1.0'
+p223
+sS'AFL-3.0'
+p224
+S'AFL-3.0'
+p225
+sS'LPL-1.02'
+p226
+S'LPL-1.02'
+p227
+sS'BSD 3-Clause'
+p228
+S'BSD-3-Clause'
+p229
+sS'LGPLv2+'
+p230
+S'LGPL-2.1+'
+p231
+sS'Similar to SUSE-Permissive but copyright holder has specified that modification is only allowed by patch'
+p232
+S'SUSE-Permissive-Modify-By-Patch'
+p233
+sS'QPL'
+p234
+S'QPL-1.0'
+p235
+sS'W3C Software License'
+p236
+S'W3C'
+p237
+sS'AFL 2.1'
+p238
+S'AFL-2.1'
+p239
+sS'FDLv1.2+'
+p240
+S'GFDL-1.2+'
+p241
+sS'Watcom-1.0'
+p242
+S'Watcom-1.0'
+p243
+sS'ASL 2.0'
+p244
+S'Apache-2.0'
+p245
+sS'CC-BY-NC-1.0'
+p246
+S'CC-BY-NC-1.0'
+p247
+sS'LGPL v2.1+'
+p248
+S'LGPL-2.1+'
+p249
+sS'CECILL-2.0'
+p250
+S'CECILL-2.0'
+p251
+sS'openldap 2.8'
+p252
+S'OLDAP-2.8'
+p253
+sS'GPLv2+ with openssl linking exception'
+p254
+S'SUSE-GPL-2.0+-with-openssl-exception'
+p255
+sS'IPA'
+p256
+S'IPA'
+p257
+sS'CNRI-Python'
+p258
+S'CNRI-Python'
+p259
+sS'See for example, the "FHS" license here: https://launchpad.net/ubuntu/precise/+source/debian-policy/+copyright'
+p260
+S'SUSE-FHS'
+p261
+sS'GNU General Public License version 2 or later (GPLv2 or later)'
+p262
+S'GPL-2.0+'
+p263
+sS'GPL v3 or later'
+p264
+S'GPL-3.0+'
+p265
+sS'BSD-3-Clause'
+p266
+S'BSD-3-Clause'
+p267
+sS'IPL-1.0'
+p268
+S'IPL-1.0'
+p269
+sS'Freeware license'
+p270
+S'SUSE-Freeware'
+p271
+sS'CC-BY-ND-1.0'
+p272
+S'CC-BY-ND-1.0'
+p273
+sS'Artistic 1.0'
+p274
+S'Artistic-1.0'
+p275
+sS'IBM PL'
+p276
+S'IPL-1.0'
+p277
+sS'GPL v2 or later'
+p278
+S'GPL-2.0+'
+p279
+sS'ODbL-1.0'
+p280
+S'ODbL-1.0'
+p281
+sS'Apache v2.0'
+p282
+S'Apache-2.0'
+p283
+sS'Freetype'
+p284
+S'SUSE-Freetype'
+p285
+sS'IBM Public License ..'
+p286
+S'IPL-1.0'
+p287
+sS'GPL-2.0'
+p288
+S'GPL-2.0'
+p289
+sS'ZPL'
+p290
+S'ZPL-2.0'
+p291
+sS'CPL (Common Public License) v1'
 p292
-sS'SUSE-GPL-2.0-with-FLOSS-exception'
+S'CPL-1.0'
 p293
-S'SUSE-GPL-2.0-with-FLOSS-exception'
+sS'SUSE-GPL-2.0-with-FLOSS-exception'
 p294
-sS'OGTSL'
+S'SUSE-GPL-2.0-with-FLOSS-exception'
 p295
-S'OGTSL'
+sS'OGTSL'
 p296
-sS'Similar to LGPL-2.1 but without sections 3 and 13'
+S'OGTSL'
 p297
-S'SUSE-Gitslave'
+sS'Similar to LGPL-2.1 but without sections 3 and 13'
 p298
-sS'SIL Open Font License 1.1'
+S'SUSE-Gitslave'
 p299
-S'OFL-1.1'
+sS'SIL Open Font License 1.1'
 p300
-sNS'SUSE-Xano'
+S'OFL-1.1'
 p301
 sS'Common Public License - v 1.0'
 p302
@@ -1009,9 +1009,9 @@ sS'EPL-1'
 p504
 S'EPL-1.0'
 p505
-sS'RPSL-1.0'
+sS'MIT'
 p506
-S'RPSL-1.0'
+S'MIT'
 p507
 sS'FDL-1.2+'
 p508
@@ -1049,720 +1049,732 @@ sS'Public Domain License'
 p524
 S'SUSE-Public-Domain'
 p525
-sS'MIT'
-p526
-S'MIT'
-p527
 sS'Fltk'
-p528
+p526
 S'SUSE-FLTK'
-p529
+p527
 sS'Eclipse Public License 1.0'
-p530
+p528
 S'EPL-1.0'
-p531
+p529
 sS'Zope Public License'
-p532
+p530
 S'ZPL-2.0'
-p533
+p531
 sS'AGPLv3'
-p534
+p532
 S'AGPL-3.0'
-p535
+p533
 sS'Multics'
-p536
+p534
 S'Multics'
-p537
+p535
 sS'LGPL v2+'
-p538
+p536
 S'LGPL-2.1+'
-p539
+p537
 sS'OSL-1.0'
-p540
+p538
 S'OSL-1.0'
-p541
+p539
 sS'BSD3c(or similar)'
+p540
+S'BSD-3-Clause'
+p541
+sS'BSD3c'
 p542
 S'BSD-3-Clause'
 p543
-sS'BSD3c'
-p544
-S'BSD-3-Clause'
-p545
 sS'Firmware license, redistributable unmodified'
-p546
+p544
 S'SUSE-Firmware'
-p547
+p545
 sS'RPL-1.5'
-p548
+p546
 S'RPL-1.5'
-p549
+p547
 sS'Artistic-1.0'
-p550
+p548
 S'Artistic-1.0'
-p551
+p549
 sS'Xinedt license (Fedora also uses a custom license here)'
-p552
+p550
 S'SUSE-xinetd'
-p553
+p551
 sS'OSL-3.0'
-p554
+p552
 S'OSL-3.0'
-p555
+p553
 sS'ECL-2.0'
-p556
+p554
 S'ECL-2.0'
-p557
+p555
 sS'see IPA_Font_License_Agreement_v1.0.txt'
-p558
+p556
 S'IPA'
-p559
+p557
 sS'VSL-1.0'
-p560
+p558
 S'VSL-1.0'
-p561
+p559
 sS'CC-BY-NC-SA-1.0'
-p562
+p560
 S'CC-BY-NC-SA-1.0'
-p563
+p561
 sS'GFDL-1.3'
-p564
+p562
 S'GFDL-1.3'
-p565
+p563
 sS'GFDL-1.2'
-p566
+p564
 S'GFDL-1.2'
-p567
+p565
 sS'GFDL-1.1'
+p566
+S'GFDL-1.1'
+p567
+sS'GFDL v1.1'
 p568
 S'GFDL-1.1'
 p569
-sS'GFDL v1.1'
-p570
-S'GFDL-1.1'
-p571
 sS'GFDL v1.2'
-p572
+p570
 S'GFDL-1.2'
-p573
+p571
 sS'MS-RL'
-p574
+p572
 S'MS-RL'
-p575
+p573
 sS'CC by-sa V2.5'
-p576
+p574
 S'CC-BY-SA-2.5'
-p577
+p575
 sS'GPLv3 with openssl linking exception (see e.g. courier-authlib 0.64.0)'
-p578
+p576
 S'SUSE-GPL-3.0-with-openssl-exception'
-p579
+p577
 sS'LPPL ..'
-p580
+p578
 S'LPPL-1.3c'
-p581
+p579
 sS'BSD 2-Clause'
-p582
+p580
 S'BSD-2-Clause'
-p583
+p581
 sS'Expat'
-p584
+p582
 S'MIT'
+p583
+sS'RPSL-1.0'
+p584
+S'RPSL-1.0'
 p585
 sS'Frameworx-1.0'
 p586
 S'Frameworx-1.0'
 p587
-sS'Many GPL-2.0 licensed applications grant an exception that permits non-free plugins (e.g. from gstreamer) to be linked against them'
+sS'SUSE-GPL-3.0-with-font-exception'
 p588
-S'SUSE-GPL-2.0-with-plugin-exception'
+S'SUSE-GPL-3.0-with-font-exception'
 p589
-sS'Eclipse-1.0'
+sS'Many GPL-2.0 licensed applications grant an exception that permits non-free plugins (e.g. from gstreamer) to be linked against them'
 p590
-S'EPL-1.0'
+S'SUSE-GPL-2.0-with-plugin-exception'
 p591
-sS'CPAL-1.0'
+sS'Eclipse-1.0'
 p592
-S'CPAL-1.0'
+S'EPL-1.0'
 p593
-sS'CDDL 1.0'
+sS'CPAL-1.0'
 p594
-S'CDDL-1.0'
+S'CPAL-1.0'
 p595
-sS'BSD-2c'
+sS'CDDL 1.0'
 p596
-S'BSD-2-Clause'
+S'CDDL-1.0'
 p597
-sS'Apache-2.0'
+sS'BSD-2c'
 p598
-S'Apache-2.0'
+S'BSD-2-Clause'
 p599
-sS'AFL-1.1'
+sS'Apache-2.0'
 p600
-S'AFL-1.1'
-p601
-sS'AFL-1.2'
-p602
-S'AFL-1.2'
-p603
-sS'LGPL 2.1'
-p604
-S'LGPL-2.1'
-p605
-sS'APL-1.0'
-p606
-S'APL-1.0'
-p607
-sS'Python'
-p608
-S'Python-2.0'
-p609
-sS'ClArtistic'
-p610
-S'ClArtistic'
-p611
-sS'LGPL v2.1'
-p612
-S'LGPL-2.1'
-p613
-sS'Academic Free License 2.1'
-p614
-S'AFL-2.1'
-p615
-sS'LGPL v2'
-p616
-S'LGPL-2.0'
-p617
-sS'PDDL-1.0'
-p618
-S'PDDL-1.0'
-p619
-sS'MPLv1.1'
-p620
-S'MPL-1.1'
-p621
-sS'MPLv1.0'
-p622
-S'MPL-1.0'
-p623
-sS'SUSE-NetCDF'
-p624
-S'SUSE-NetCDF'
-p625
-sS'LGPL V2+'
-p626
-S'LGPL-2.1+'
-p627
-sS'SUSE-GFDL-1.3+'
-p628
-S'GFDL-1.3+'
-p629
-sS'Corresponds to https://fedoraproject.org/wiki/Licensing/IEEEDocLicense'
-p630
-S'SUSE-IEEE'
-p631
-sS'LiberationFontsLicense (Fedora calls this the Liberation license - it will be easier to get it upstream if we adopt that)'
-p632
-S'SUSE-Liberation'
-p633
-sS'eCos-2.0'
-p634
-S'eCos-2.0'
-p635
-sS'Creative Commons Sampling Plus 1.0'
-p636
-S'SUSE-CC-Sampling-Plus-1.0'
-p637
-sS'CECILL-1.0'
-p638
-S'CECILL-1.0'
-p639
-sS'CECILL-1.1'
-p640
-S'CECILL-1.1'
-p641
-sS'EPL v1.0'
-p642
-S'EPL-1.0'
-p643
-sS'http://pastebin.com/CYB22gju (the license used in csindex)'
-p644
-S'SUSE-MakeIndex'
-p645
-sS'Sleepycat'
-p646
-S'Sleepycat'
-p647
-sS'Fedora calls this MIT (it is very similar to the MIT)'
-p648
-S'SUSE-SGI-FreeB-2.0'
-p649
-sS'Mozilla Public License 1.1'
-p650
-S'MPL-1.1'
-p651
-sS'MIT License (or similar)'
-p652
-S'MIT'
-p653
-sS'GNU Lesser General Public License version 3 (LGPL v3)'
-p654
-S'LGPL-3.0'
-p655
-sS'GNU LGPL v2.1 or later'
-p656
-S'LGPL-2.1+'
-p657
-sS'CC-BY-ND-2.5'
-p658
-S'CC-BY-ND-2.5'
-p659
-sS'Tracked by Fedora as OldFSFDocLicense (see https://fedoraproject.org/wiki/Licensing:OldFSFDocLicense?rd=Licensing/OldFSFDocLicense)'
-p660
-S'SUSE-OldFSFDocLicense'
-p661
-sS'CC-BY-ND-2.0'
-p662
-S'CC-BY-ND-2.0'
-p663
-sS'EPL'
-p664
-S'EPL-1.0'
-p665
-sS'EPL 1.0 ...'
-p666
-S'EPL-1.0'
-p667
-sS'Open Market License (tracked by Fedora as OML)'
-p668
-S'SUSE-OML'
-p669
-sS'Artistic license'
-p670
-S'Artistic-1.0'
-p671
-sS'Nokia'
-p672
-S'Nokia'
-p673
-sS'BSD4c(or similar)'
-p674
-S'BSD-4-Clause'
-p675
-sS'SimPL-2.0'
-p676
-S'SimPL-2.0'
-p677
-sS'Apache 2.0'
-p678
 S'Apache-2.0'
+p601
+sS'AFL-1.1'
+p602
+S'AFL-1.1'
+p603
+sS'AFL-1.2'
+p604
+S'AFL-1.2'
+p605
+sS'LGPL 2.1'
+p606
+S'LGPL-2.1'
+p607
+sS'APL-1.0'
+p608
+S'APL-1.0'
+p609
+sS'Python'
+p610
+S'Python-2.0'
+p611
+sS'ClArtistic'
+p612
+S'ClArtistic'
+p613
+sS'LGPL v2.1'
+p614
+S'LGPL-2.1'
+p615
+sS'Academic Free License 2.1'
+p616
+S'AFL-2.1'
+p617
+sS'LGPL v2'
+p618
+S'LGPL-2.0'
+p619
+sS'PDDL-1.0'
+p620
+S'PDDL-1.0'
+p621
+sS'MPLv1.1'
+p622
+S'MPL-1.1'
+p623
+sS'MPLv1.0'
+p624
+S'MPL-1.0'
+p625
+sS'SUSE-NetCDF'
+p626
+S'SUSE-NetCDF'
+p627
+sS'LGPL V2+'
+p628
+S'LGPL-2.1+'
+p629
+sS'SUSE-GFDL-1.3+'
+p630
+S'GFDL-1.3+'
+p631
+sS'Corresponds to https://fedoraproject.org/wiki/Licensing/IEEEDocLicense'
+p632
+S'SUSE-IEEE'
+p633
+sS'LiberationFontsLicense (Fedora calls this the Liberation license - it will be easier to get it upstream if we adopt that)'
+p634
+S'SUSE-Liberation'
+p635
+sS'e.g python-psycopg2'
+p636
+S'SUSE-LGPL-3.0-with-openssl-exception'
+p637
+sS'eCos-2.0'
+p638
+S'eCos-2.0'
+p639
+sS'Creative Commons Sampling Plus 1.0'
+p640
+S'SUSE-CC-Sampling-Plus-1.0'
+p641
+sS'CECILL-1.0'
+p642
+S'CECILL-1.0'
+p643
+sS'CECILL-1.1'
+p644
+S'CECILL-1.1'
+p645
+sS'EPL v1.0'
+p646
+S'EPL-1.0'
+p647
+sS'http://pastebin.com/CYB22gju (the license used in csindex)'
+p648
+S'SUSE-MakeIndex'
+p649
+sS'Sleepycat'
+p650
+S'Sleepycat'
+p651
+sS'Fedora calls this MIT (it is very similar to the MIT)'
+p652
+S'SUSE-SGI-FreeB-2.0'
+p653
+sS'Mozilla Public License 1.1'
+p654
+S'MPL-1.1'
+p655
+sS'Open Publication License 1.0'
+p656
+S'OPL-1.0'
+p657
+sS'MIT License (or similar)'
+p658
+S'MIT'
+p659
+sS'GNU Lesser General Public License version 3 (LGPL v3)'
+p660
+S'LGPL-3.0'
+p661
+sS'GNU LGPL v2.1 or later'
+p662
+S'LGPL-2.1+'
+p663
+sS'CC-BY-ND-2.5'
+p664
+S'CC-BY-ND-2.5'
+p665
+sS'Tracked by Fedora as OldFSFDocLicense (see https://fedoraproject.org/wiki/Licensing:OldFSFDocLicense?rd=Licensing/OldFSFDocLicense)'
+p666
+S'SUSE-OldFSFDocLicense'
+p667
+sS'CC-BY-ND-2.0'
+p668
+S'CC-BY-ND-2.0'
+p669
+sS'EPL'
+p670
+S'EPL-1.0'
+p671
+sS'EPL 1.0 ...'
+p672
+S'EPL-1.0'
+p673
+sS'Open Market License (tracked by Fedora as OML)'
+p674
+S'SUSE-OML'
+p675
+sS'Artistic license'
+p676
+S'Artistic-1.0'
+p677
+sS'Nokia'
+p678
+S'Nokia'
 p679
-sS'PHP 2.02'
+sS'BSD4c(or similar)'
 p680
-S'SUSE-PHP-2.02'
+S'BSD-4-Clause'
 p681
-sS'GPLv2+'
+sS'SimPL-2.0'
 p682
-S'GPL-2.0+'
+S'SimPL-2.0'
 p683
-sS'ASLv2.0'
+sS'Apache 2.0'
 p684
 S'Apache-2.0'
 p685
-sS'Part of the license choice in libqt4'
+sS'PHP 2.02'
 p686
-S'SUSE-LGPL-2.1-with-nokia-exception-1.1'
+S'SUSE-PHP-2.02'
 p687
-sS'X11 (BSD like)'
+sS'GPLv2+'
 p688
-S'X11'
+S'GPL-2.0+'
 p689
-sS'OFL-1.0'
+sS'ASLv2.0'
 p690
-S'OFL-1.0'
+S'Apache-2.0'
 p691
-sS'OFL-1.1'
+sS'Part of the license choice in libqt4'
 p692
-S'OFL-1.1'
+S'SUSE-LGPL-2.1-with-nokia-exception-1.1'
 p693
-sS'GPL v2.0 or later'
+sS'X11 (BSD like)'
 p694
-S'GPL-2.0+'
-p695
-sS'GPL-2.0-with-bison-exception'
-p696
-S'GPL-2.0-with-bison-exception'
-p697
-sS'LGPL-3.0'
-p698
-S'LGPL-3.0'
-p699
-sS'LGPL-2.1 with clarifications. See http://qwt.sourceforge.net/'
-p700
-S'SUSE-QWT-1.0'
-p701
-sS'Common Public License Version 1.0 (CPL1.0)'
-p702
-S'CPL-1.0'
-p703
-sS'SUSE-MPL-1.1+'
-p704
-S'MPL-1.1+'
-p705
-sS'CUA-OPL-1.0'
-p706
-S'CUA-OPL-1.0'
-p707
-sS'ASLv..'
-p708
-S'Apache-2.0'
-p709
-sS'SUSE-AGPL-3.0+'
-p710
-S'AGPL-3.0+'
-p711
-sS'QPL-1.0'
-p712
-S'QPL-1.0'
-p713
-sS'X11/MIT'
-p714
 S'X11'
+p695
+sS'OFL-1.0'
+p696
+S'OFL-1.0'
+p697
+sS'OFL-1.1'
+p698
+S'OFL-1.1'
+p699
+sS'GPL v2.0 or later'
+p700
+S'GPL-2.0+'
+p701
+sS'GPL-2.0-with-bison-exception'
+p702
+S'GPL-2.0-with-bison-exception'
+p703
+sS'LGPL-3.0'
+p704
+S'LGPL-3.0'
+p705
+sS'LGPL-2.1 with clarifications. See http://qwt.sourceforge.net/'
+p706
+S'SUSE-QWT-1.0'
+p707
+sS'Common Public License Version 1.0 (CPL1.0)'
+p708
+S'CPL-1.0'
+p709
+sS'SUSE-MPL-1.1+'
+p710
+S'MPL-1.1+'
+p711
+sS'CUA-OPL-1.0'
+p712
+S'CUA-OPL-1.0'
+p713
+sS'ASLv..'
+p714
+S'Apache-2.0'
 p715
-sS'GNU Lesser General Public License version 2.1 (LGPL v2.1)'
+sS'SUSE-AGPL-3.0+'
 p716
-S'LGPL-2.1'
+S'AGPL-3.0+'
 p717
-sS'LGPL v2.1 or later'
+sS'QPL-1.0'
 p718
-S'LGPL-2.1+'
+S'QPL-1.0'
 p719
-sS'CC-BY-NC-2.0'
+sS'X11/MIT'
 p720
-S'CC-BY-NC-2.0'
+S'X11'
 p721
-sS'CDDL'
+sS'GNU Lesser General Public License version 2.1 (LGPL v2.1)'
 p722
-S'CDDL-1.0'
+S'LGPL-2.1'
 p723
-sS'W3C'
+sS'LGPL v2.1 or later'
 p724
-S'W3C'
-p725
-sS'Sendmail License (http://www.sendmail.org/ftp/LICENSE)'
-p726
-S'SUSE-Sendmail'
-p727
-sS'ASL 1.1'
-p728
-S'Apache-1.1'
-p729
-sS'YPL-1.1'
-p730
-S'YPL-1.1'
-p731
-sS'CNRI (http://www.handle.net/python_licenses/python1.6_9-5-00.html)'
-p732
-S'SUSE-Python-1.6'
-p733
-sS'SIL Open Font License'
-p734
-S'OFL-1.1'
-p735
-sS'EUPL-1.0'
-p736
-S'EUPL-1.0'
-p737
-sS'EUPL-1.1'
-p738
-S'EUPL-1.1'
-p739
-sS'Zimbra-1.3'
-p740
-S'Zimbra-1.3'
-p741
-sS'EPL-1.0'
-p742
-S'EPL-1.0'
-p743
-sS'Ruby'
-p744
-S'Ruby'
-p745
-sS'GNU Free Documentation License, Version 1.2 (GFDL 1.2)'
-p746
-S'GFDL-1.2'
-p747
-sS'GPL-2.0 or later'
-p748
-S'GPL-2.0+'
-p749
-sS"Must not be copyleft. Must not contain patent clauses of any nature. Most not limit ability to copy, modifiy, distribute (through multiple tiers of distribution) and distribute modified versions. Must not impose obligations such as 'advertising clauses' or anything that could be viewed as an 'additional restriction' under GPL-2.0+ or GPL-3.0+. Must not impose obligations such as modification by patch only, or reciprocal clauses."
-p750
-S'SUSE-Permissive'
-p751
-sS'GNU GPL v3 or later'
-p752
-S'GPL-3.0+'
-p753
-sS'PHP-3.0'
-p754
-S'PHP-3.0'
-p755
-sS'CC-BY-NC-SA-3.0'
-p756
-S'CC-BY-NC-SA-3.0'
-p757
-sS'CC-BY-SA-1.0'
-p758
-S'CC-BY-SA-1.0'
-p759
-sS'Manpages licenses (linux man pages e.g.)'
-p760
-S'SUSE-Manpages'
-p761
-sS'Fair'
-p762
-S'Fair'
-p763
-sS'GPLv3+ with exceptions (Fedora)'
-p764
-S'SUSE-GPL-3.0+-with-font-exception'
-p765
-sS'ASLv2'
-p766
-S'Apache-2.0'
-p767
-sS'RSCPL'
-p768
-S'RSCPL'
-p769
-sS'GPL v2 or later  '
-p770
-S'GPL-2.0+'
-p771
-sS'GNU LGPLv2.1'
-p772
-S'LGPL-2.1'
-p773
-sS'GPL v2 only'
-p774
-S'GPL-2.0'
-p775
-sS'BSD 2 Clause'
-p776
-S'BSD-2-Clause'
-p777
-sS'GFDL 1.1'
-p778
-S'GFDL-1.1'
-p779
-sS'GFDL 1.2'
-p780
-S'GFDL-1.2'
-p781
-sS'MirOS'
-p782
-S'MirOS'
-p783
-sS'Sane contains many files with an exception to permit linking against proprietary libraries'
-p784
-S'SUSE-GPL-2.0+-with-sane-exception'
-p785
-sS'GPL v2.0'
-p786
-S'GPL-2.0'
-p787
-sS'GPL 3'
-p788
-S'GPL-3.0'
-p789
-sS'OLDAP-2.8'
-p790
-S'OLDAP-2.8'
-p791
-sS'GPL-1.0'
-p792
-S'GPL-1.0'
-p793
-sS'Artistic License ..'
-p794
-S'Artistic-1.0'
-p795
-sS'ISC License'
-p796
-S'ISC'
-p797
-sS'GPL-3.0'
-p798
-S'GPL-3.0'
-p799
-sS'LPPL-1.0'
-p800
-S'LPPL-1.0'
-p801
-sS'LPPL-1.1'
-p802
-S'LPPL-1.1'
-p803
-sS'LPPL-1.2'
-p804
-S'LPPL-1.2'
-p805
-sS'GPL-2+'
-p806
-S'GPL-2.0+'
-p807
-sS'ZPL-1.1'
-p808
-S'ZPL-1.1'
-p809
-sS'Perl License'
-p810
-S'Artistic-1.0 or GPL-1.0+'
-p811
-sS'SUSE-Oasis-Specification-Notice'
-p812
-S'SUSE-Oasis-Specification-Notice'
-p813
-sS'LGPL2.1'
-p814
-S'LGPL-2.1'
-p815
-sS'Python Software Foundation License'
-p816
-S'Python-2.0'
-p817
-sS'MIT-Licence'
-p818
-S'MIT'
-p819
-sS'CC-BY-SA-3.0'
-p820
-S'CC-BY-SA-3.0'
-p821
-sS'CC-BY-NC-ND-2.5'
-p822
-S'CC-BY-NC-ND-2.5'
-p823
-sS'CC-BY-NC-ND-2.0'
-p824
-S'CC-BY-NC-ND-2.0'
-p825
-sS'BSD-4-Clause'
-p826
-S'BSD-4-Clause'
-p827
-sS'GNU Free Documentation License, Version 1.1 (GFDL 1.1)'
-p828
-S'GFDL-1.1'
-p829
-sS'Open Font License'
-p830
-S'OFL-1.1'
-p831
-sS'Gnuplot'
-p832
-S'SUSE-Gnuplot'
-p833
-sS'GPLv1+'
-p834
-S'GPL-1.0+'
-p835
-sS'Public Domain, Freeware'
-p836
-S'SUSE-Public-Domain'
-p837
-sS'SUSE-Artistic-1.0+'
-p838
-S'Artistic-1.0+'
-p839
-sS'EPL 1.0'
-p840
-S'EPL-1.0'
-p841
-sS'Apache License, Version 2.0'
-p842
-S'Apache-2.0'
-p843
-sS'CC-BY-NC-2.5'
-p844
-S'CC-BY-NC-2.5'
-p845
-sS'Beerware License like http://en.wikipedia.org/wiki/Beerware#License'
-p846
-S'SUSE-Beerware'
-p847
-sS'LGPLv2.1+'
-p848
 S'LGPL-2.1+'
-p849
-sS'Python License ..'
-p850
+p725
+sS'CC-BY-NC-2.0'
+p726
+S'CC-BY-NC-2.0'
+p727
+sS'CDDL'
+p728
+S'CDDL-1.0'
+p729
+sS'W3C'
+p730
+S'W3C'
+p731
+sS'Sendmail License (http://www.sendmail.org/ftp/LICENSE)'
+p732
+S'SUSE-Sendmail'
+p733
+sS'ASL 1.1'
+p734
+S'Apache-1.1'
+p735
+sS'YPL-1.1'
+p736
+S'YPL-1.1'
+p737
+sS'CNRI (http://www.handle.net/python_licenses/python1.6_9-5-00.html)'
+p738
+S'SUSE-Python-1.6'
+p739
+sS'SIL Open Font License'
+p740
+S'OFL-1.1'
+p741
+sS'EUPL-1.0'
+p742
+S'EUPL-1.0'
+p743
+sS'EUPL-1.1'
+p744
+S'EUPL-1.1'
+p745
+sS'Zimbra-1.3'
+p746
+S'Zimbra-1.3'
+p747
+sS'EPL-1.0'
+p748
+S'EPL-1.0'
+p749
+sS'Ruby'
+p750
+S'Ruby'
+p751
+sS'GNU Free Documentation License, Version 1.2 (GFDL 1.2)'
+p752
+S'GFDL-1.2'
+p753
+sS'GPL-2.0 or later'
+p754
+S'GPL-2.0+'
+p755
+sS"Must not be copyleft. Must not contain patent clauses of any nature. Most not limit ability to copy, modifiy, distribute (through multiple tiers of distribution) and distribute modified versions. Must not impose obligations such as 'advertising clauses' or anything that could be viewed as an 'additional restriction' under GPL-2.0+ or GPL-3.0+. Must not impose obligations such as modification by patch only, or reciprocal clauses."
+p756
+S'SUSE-Permissive'
+p757
+sS'GNU GPL v3 or later'
+p758
+S'GPL-3.0+'
+p759
+sS'PHP-3.0'
+p760
+S'PHP-3.0'
+p761
+sS'CC-BY-NC-SA-3.0'
+p762
+S'CC-BY-NC-SA-3.0'
+p763
+sS'CC-BY-SA-1.0'
+p764
+S'CC-BY-SA-1.0'
+p765
+sS'Manpages licenses (linux man pages e.g.)'
+p766
+S'SUSE-Manpages'
+p767
+sS'Fair'
+p768
+S'Fair'
+p769
+sS'GPLv3+ with exceptions (Fedora)'
+p770
+S'SUSE-GPL-3.0+-with-font-exception'
+p771
+sS'ASLv2'
+p772
+S'Apache-2.0'
+p773
+sS'RSCPL'
+p774
+S'RSCPL'
+p775
+sS'GPL v2 or later  '
+p776
+S'GPL-2.0+'
+p777
+sS'GNU LGPLv2.1'
+p778
+S'LGPL-2.1'
+p779
+sS'GPL v2 only'
+p780
+S'GPL-2.0'
+p781
+sS'BSD 2 Clause'
+p782
+S'BSD-2-Clause'
+p783
+sS'GFDL 1.1'
+p784
+S'GFDL-1.1'
+p785
+sS'GFDL 1.2'
+p786
+S'GFDL-1.2'
+p787
+sS'MirOS'
+p788
+S'MirOS'
+p789
+sS'Sane contains many files with an exception to permit linking against proprietary libraries'
+p790
+S'SUSE-GPL-2.0+-with-sane-exception'
+p791
+sS'GPL v2.0'
+p792
+S'GPL-2.0'
+p793
+sS'GPL 3'
+p794
+S'GPL-3.0'
+p795
+sS'OLDAP-2.8'
+p796
+S'OLDAP-2.8'
+p797
+sS'GPL-1.0'
+p798
+S'GPL-1.0'
+p799
+sS'Artistic License ..'
+p800
+S'Artistic-1.0'
+p801
+sS'ISC License'
+p802
+S'ISC'
+p803
+sS'GPL-3.0'
+p804
+S'GPL-3.0'
+p805
+sS'LPPL-1.0'
+p806
+S'LPPL-1.0'
+p807
+sS'LPPL-1.1'
+p808
+S'LPPL-1.1'
+p809
+sS'LPPL-1.2'
+p810
+S'LPPL-1.2'
+p811
+sS'GPL-2+'
+p812
+S'GPL-2.0+'
+p813
+sS'ZPL-1.1'
+p814
+S'ZPL-1.1'
+p815
+sS'Perl License'
+p816
+S'Artistic-1.0 or GPL-1.0+'
+p817
+sS'SUSE-Oasis-Specification-Notice'
+p818
+S'SUSE-Oasis-Specification-Notice'
+p819
+sS'LGPL2.1'
+p820
+S'LGPL-2.1'
+p821
+sS'Python Software Foundation License'
+p822
 S'Python-2.0'
+p823
+sS'MIT-Licence'
+p824
+S'MIT'
+p825
+sS'CC-BY-SA-3.0'
+p826
+S'CC-BY-SA-3.0'
+p827
+sS'CC-BY-NC-ND-2.5'
+p828
+S'CC-BY-NC-ND-2.5'
+p829
+sS'CC-BY-NC-ND-2.0'
+p830
+S'CC-BY-NC-ND-2.0'
+p831
+sS'BSD-4-Clause'
+p832
+S'BSD-4-Clause'
+p833
+sS'GNU Free Documentation License, Version 1.1 (GFDL 1.1)'
+p834
+S'GFDL-1.1'
+p835
+sS'Open Font License'
+p836
+S'OFL-1.1'
+p837
+sS'Gnuplot'
+p838
+S'SUSE-Gnuplot'
+p839
+sS'GPLv1+'
+p840
+S'GPL-1.0+'
+p841
+sS'Public Domain, Freeware'
+p842
+S'SUSE-Public-Domain'
+p843
+sS'SUSE-Artistic-1.0+'
+p844
+S'Artistic-1.0+'
+p845
+sS'EPL 1.0'
+p846
+S'EPL-1.0'
+p847
+sS'Apache License, Version 2.0'
+p848
+S'Apache-2.0'
+p849
+sS'CC-BY-NC-2.5'
+p850
+S'CC-BY-NC-2.5'
 p851
-sS'zlib/libpng License'
+sS'Beerware License like http://en.wikipedia.org/wiki/Beerware#License'
 p852
-S'Zlib'
+S'SUSE-Beerware'
 p853
-sS'LGPLv3+'
+sS'LGPLv2.1+'
 p854
-S'LGPL-3.0+'
+S'LGPL-2.1+'
 p855
-sS'ANTLR-PD'
+sS'Python License ..'
 p856
-S'ANTLR-PD'
+S'Python-2.0'
 p857
-sS'Zlib'
+sS'zlib/libpng License'
 p858
 S'Zlib'
 p859
-sS'Python Copyright'
+sS'LGPLv3+'
 p860
-S'Python-2.0'
+S'LGPL-3.0+'
 p861
-sS'MIT/X11'
+sS'ANTLR-PD'
 p862
-S'X11'
+S'ANTLR-PD'
 p863
-sS'MPLv1.1 ..'
+sS'Zlib'
 p864
-S'MPL-1.1'
+S'Zlib'
 p865
-sS'Affero GPL'
+sS'Python Copyright'
 p866
-S'AGPL-3.0'
+S'Python-2.0'
 p867
-sS'GPL2+'
+sS'MIT/X11'
 p868
-S'GPL-2.0+'
+S'X11'
 p869
-sS'The PHP License, version 3.01'
+sS'MPLv1.1 ..'
 p870
-S'PHP-3.01'
+S'MPL-1.1'
 p871
-sS'PostgreSQL'
+sS'Affero GPL'
 p872
-S'PostgreSQL'
+S'AGPL-3.0'
 p873
-sS"License for TCL (Fedora calls this TCL too. SPDX doesn't have it)"
+sS'GPL2+'
 p874
-S'SUSE-TCL'
+S'GPL-2.0+'
 p875
-sS'CNRI-Python-GPL-Compatible'
+sS'The PHP License, version 3.01'
 p876
-S'CNRI-Python-GPL-Compatible'
+S'PHP-3.01'
 p877
-sS'BSD2c'
+sS'PostgreSQL'
 p878
-S'BSD-2-Clause'
+S'PostgreSQL'
 p879
-sS'NCSA'
+sS"License for TCL (Fedora calls this TCL too. SPDX doesn't have it)"
 p880
-S'NCSA'
+S'SUSE-TCL'
 p881
-sS'OSL-1.1'
+sS'CNRI-Python-GPL-Compatible'
 p882
-S'SUSE-OSL-1.1'
+S'CNRI-Python-GPL-Compatible'
 p883
+sS'BSD2c'
+p884
+S'BSD-2-Clause'
+p885
+sS'NCSA'
+p886
+S'NCSA'
+p887
+sS'OSL-1.1'
+p888
+S'SUSE-OSL-1.1'
+p889
 s.
