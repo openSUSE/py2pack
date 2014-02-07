@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2013, Sascha Peilicke <saschpe@gmx.de>
+# Copyright (c) 2014, Sascha Peilicke <saschpe@gmx.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
@@ -49,7 +49,7 @@ setup(
                 ('share/doc/py2pack/html', ['doc/py2pack.html']),
                 #('share/doc/py2pack/pdf', ['doc/py2pack.pdf']),
                 ('man/man1', ['doc/py2pack.1'])],
-    setup_requires=["lxml", "requests"],
+    setup_requires=["cssselect", "lxml", "requests"],
     install_requires=install_requires,
     cmdclass=py2pack.setup.get_cmdclass(),
     tests_require=tests_requires,
