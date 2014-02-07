@@ -71,7 +71,7 @@ class DocCommand(Command):
 class SPDXUpdateCommand(Command):
     description = "Update SDPX license map"
     user_options = []
-    LICENSE_FILE = 'py2pack/suse_spdx_license_map.p'
+    LICENSE_FILE = 'py2pack/spdx_license_map.p'
 
     def initialize_options(self):
         pass

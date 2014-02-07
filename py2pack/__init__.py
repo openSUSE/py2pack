@@ -54,7 +54,7 @@ env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))      # Ji
 env.filters['parenthesize_version'] = \
     lambda s: re.sub('([=<>]+)(.+)', r' (\1 \2)', s)
 
-SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'suse_spdx_license_map.p')  # absolute template path
+SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spdx_license_map.p')  # absolute template path
 SDPX_LICENSES = pickle.load(open(SPDX_LICENSES_FILE, 'rb'))
 
 
