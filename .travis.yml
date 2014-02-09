@@ -7,6 +7,6 @@ install:
   - pip install --use-mirrors -r test-requirements.txt
   - pip install --use-mirrors coveralls
 script:
-  coverage run --source=lesscpy setup.py test
+  coverage run --source=py2pack setup.py test
 after_success:
   coveralls
