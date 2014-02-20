@@ -49,7 +49,7 @@ import jinja2
 
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')  # absolute template path
-pypi = xmlrpclib.ServerProxy('http://python.org/pypi')                      # XML RPC connection to PyPI
+pypi = xmlrpclib.ServerProxy('https://pypi.python.org/pypi')
 env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))      # Jinja2 template environment
 env.filters['parenthesize_version'] = \
     lambda s: re.sub('([=<>]+)(.+)', r' (\1 \2)', s)
