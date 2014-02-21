@@ -58,7 +58,7 @@ SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 's
 SDPX_LICENSES = pickle.load(open(SPDX_LICENSES_FILE, 'rb'))
 
 
-def list(args):
+def list(args=None):
     print('listing all PyPI packages...')
     for package in pypi.list_packages():                                    # nothing fancy
         print(package)
