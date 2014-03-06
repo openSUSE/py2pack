@@ -22,7 +22,7 @@ from __future__ import absolute_import
 __doc__ = 'Generate distribution packages from PyPI'
 __docformat__ = 'restructuredtext en'
 __author__ = 'Sascha Peilicke <saschpe@gmx.de>'
-__version__ = '0.4.9'
+__version__ = '0.4.10'
 
 import argparse
 import datetime
