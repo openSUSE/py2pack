@@ -130,8 +130,8 @@ configurations (py27, py33, pep8), you can also use `tox`_:
     $ tox
 
 
- :copyright: (c) 2013 Sascha Peilicke.
- :license: GPLv2, see LICENSE for more details.
+:copyright: (c) 2013 Sascha Peilicke.
+:license: GPLv2, see LICENSE for more details.
 
 
 .. _argparse: http://pypi.python.org/pypi/argparse
