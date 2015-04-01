@@ -24,6 +24,7 @@ Url:            {{ home_page }}
 Group:          Development/Languages/Python
 Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRequires:  python-devel {%- if requires_python %} = {{ requires_python }} {% endif %}
+BuildRequires:  python-setuptools
 {%- for req in requires %}
 BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
 Requires:       python-{{ req|replace('(','')|replace(')','') }}
