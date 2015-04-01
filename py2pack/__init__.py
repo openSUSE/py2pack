@@ -148,13 +148,13 @@ def generate(args):
         data['source_url'] = args.name + '-' + args.version + '.zip'
     data['year'] = datetime.datetime.now().year                             # set current year
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
-    data['summary_no_ending_dot'] = re.sub('(.*)\.', '\g<1>', data['summary'])
+    data['summary_no_ending_dot'] = re.sub('(.*)\.', '\g<1>', data.get('summary', ""))
 
     tarball_file = glob.glob("{0}-{1}.*".format(args.name, args.version))   # we have a local tarball, try to
     if tarball_file:                                                        # get some more info from that
         _augment_data_from_tarball(args, tarball_file[0], data)
 
-    if data['license'] in SDPX_LICENSES:                                    # if we have a mapping, transform
+    if data.get('license', "") in SDPX_LICENSES:                            # if we have a mapping, transform
         data['license'] = SDPX_LICENSES[data['license']]                    # license into SPDX style
 
     template = env.get_template(args.template)
