@@ -35,7 +35,7 @@ import re
 import sys
 import tarfile
 import urllib
-#import warnings
+# import warnings
 try:
     import xmlrpc.client as xmlrpclib
 except:
@@ -44,7 +44,7 @@ import zipfile
 
 import py2pack.proxy
 
-#warnings.filterwarnings('ignore', 'Module argparse was already imported')   # Filter a UserWarning from Jinja2
+# warnings.filterwarnings('ignore', 'Module argparse was already imported')   # Filter a UserWarning from Jinja2
 import jinja2
 
 
@@ -126,7 +126,7 @@ def _augment_data_from_tarball(args, filename, data):
     for name in names:
         match = re.match(docs_re, name)
         if match:
-            if not "doc_files" in data:
+            if "doc_files" not in data:
                 data["doc_files"] = []
             data["doc_files"].append(match.group(1))
         if "test" in name.lower():                                          # Very broad check for testsuites

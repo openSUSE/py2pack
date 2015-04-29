@@ -55,17 +55,17 @@ class DocCommand(Command):
         try:
             subprocess.call(["xsltproc", "--output", "doc/py2pack.html", "/usr/share/xml/docbook/stylesheet/nwalsh/current/html/docbook.xsl", "doc/src/py2pack.xml.in"])
             subprocess.call(["xsltproc", "--output", "doc/py2pack.1", "/usr/share/xml/docbook/stylesheet/nwalsh/current/manpages/docbook.xsl", "doc/src/py2pack.xml.in"])
-            #subprocess.call(["xsltproc", "--output", "doc/py2pack.fo",
-            #                 "--stringparam", "paper.type", "A4",
-            #                 "--stringparam", "body.start.indent", "0pt",
-            #                 "--stringparam", "title.margin.left", "0pt",
-            #                 "--stringparam", "variablelist.as.blocks", "1",
-            #                 "/usr/share/xml/docbook/stylesheet/nwalsh/current/fo/docbook.xsl", "doc/py2pack.xml.in"])
-            #subprocess.call(["fop", "doc/py2pack.fo", "doc/py2pack.pdf"])
+            # subprocess.call(["xsltproc", "--output", "doc/py2pack.fo",
+            #                  "--stringparam", "paper.type", "A4",
+            #                  "--stringparam", "body.start.indent", "0pt",
+            #                  "--stringparam", "title.margin.left", "0pt",
+            #                  "--stringparam", "variablelist.as.blocks", "1",
+            #                  "/usr/share/xml/docbook/stylesheet/nwalsh/current/fo/docbook.xsl", "doc/py2pack.xml.in"])
+            # subprocess.call(["fop", "doc/py2pack.fo", "doc/py2pack.pdf"])
         except:
             pass
-        #if os.path.exists("doc/py2pack.fo"):
-        #    os.remove("doc/py2pack.fo")
+        # if os.path.exists("doc/py2pack.fo"):
+        #     os.remove("doc/py2pack.fo")
 
 
 class SPDXUpdateCommand(Command):
