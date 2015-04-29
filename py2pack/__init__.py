@@ -21,9 +21,8 @@ from __future__ import absolute_import
 
 __doc__ = 'Generate distribution packages from PyPI'
 __docformat__ = 'restructuredtext en'
-__author__ = 'Sascha Peilicke <saschpe@gmx.de>'
-__version__ = '0.4.10'
 
+from pbr import version
 import argparse
 import datetime
 import glob
@@ -201,8 +200,9 @@ def package_template_list():
 
 
 def main():
+    version_info = version.VersionInfo('py2pack')
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--version', action='version', version='%(prog)s {0}'.format(__version__))
+    parser.add_argument('--version', action='version', version=version_info.version_string())
     parser.add_argument('--proxy', help='HTTP proxy to use')
     subparsers = parser.add_subparsers(title='commands')
 
