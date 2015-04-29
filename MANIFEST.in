@@ -1,4 +1,4 @@
-include AUTHORS LICENSE README.rst
+include AUTHORS LICENSE README.rst ChangeLog
 include requirements.txt test-requirements.txt
 include tox.ini
 include py2pack/spdx_license_map.p
