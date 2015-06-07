@@ -132,6 +132,13 @@ def _augment_data_from_tarball(args, filename, data):
         if "test" in name.lower():                                          # Very broad check for testsuites
             data["testsuite"] = True
 
+def _normalize_license(data):
+    """try to get SDPX license"""
+    l = data.get('license', None)
+    if l and l in SDPX_LICENSES.keys():
+        data['license'] = SDPX_LICENSES[l]
+    else:
+        data['license'] = ""
 
 def generate(args):
     check_or_set_version(args)
@@ -154,8 +161,7 @@ def generate(args):
     if tarball_file:                                                        # get some more info from that
         _augment_data_from_tarball(args, tarball_file[0], data)
 
-    if data.get('license', "") in SDPX_LICENSES:                            # if we have a mapping, transform
-        data['license'] = SDPX_LICENSES[data['license']]                    # license into SPDX style
+    _normalize_license(data)
 
     template = env.get_template(args.template)
     result = template.render(data).encode('utf-8')                          # render template and encode properly

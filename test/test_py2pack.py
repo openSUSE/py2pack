@@ -17,10 +17,12 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 import unittest
+from ddt import ddt, data, unpack
 
 import py2pack
 
 
+@ddt
 class Py2packTestCase(unittest.TestCase):
     def setUp(self):
         class Args:
@@ -45,3 +47,10 @@ class Py2packTestCase(unittest.TestCase):
         filename = "{0}-{1}.tar.gz".format(self.args.name, self.args.version)
         self.assertEqual(url["filename"], filename)
         self.assertEqual(url["packagetype"], "sdist")
+
+    @data((None, ""), ("Apache-2.0", "Apache-2.0"), ("", ""))
+    @unpack
+    def test_normalize_license(self, value, expected_result):
+        d = { 'license': value }
+        py2pack._normalize_license(d)
+        self.assertEqual(d['license'], expected_result)
