@@ -172,10 +172,6 @@ def generate(args):
         outfile.close()
 
 
-def create(args):
-    print('create package {0}...'.format(args.name))
-
-
 def check_or_set_version(args):
     if not args.version:                                                    # take first version found
         releases = pypi.package_releases(args.name)
@@ -200,10 +196,6 @@ def newest_download_url(args):
 
 def file_template_list():
     return [filename for filename in os.listdir(TEMPLATE_DIR) if not filename.startswith('.')]
-
-
-def package_template_list():
-    return ['obs']
 
 
 def main():
@@ -235,12 +227,6 @@ def main():
     parser_generate.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec', help='file template')
     parser_generate.add_argument('-f', '--filename', help='spec filename (optional)')
     parser_generate.set_defaults(func=generate)
-
-    parser_do = subparsers.add_parser('create', help='generate complete package')
-    parser_do.add_argument('name', help='package name')
-    parser_do.add_argument('version', nargs='?', help='package version (optional)')
-    parser_do.add_argument('-t', '--template', choices=package_template_list(), default='obs', help='package template')
-    parser_do.set_defaults(func=create)
 
     parser_help = subparsers.add_parser('help', help='show this help')
     parser_help.set_defaults(func=lambda args: parser.print_help())
