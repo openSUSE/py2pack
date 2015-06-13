@@ -35,17 +35,16 @@ import re
 import sys
 import tarfile
 import urllib
-#import warnings
+
 try:
     import xmlrpc.client as xmlrpclib
 except:
     import xmlrpclib
 import zipfile
 
-import py2pack.proxy
-
-#warnings.filterwarnings('ignore', 'Module argparse was already imported')   # Filter a UserWarning from Jinja2
 import jinja2
+
+import py2pack.proxy
 
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')  # absolute template path
@@ -126,11 +125,12 @@ def _augment_data_from_tarball(args, filename, data):
     for name in names:
         match = re.match(docs_re, name)
         if match:
-            if not "doc_files" in data:
+            if "doc_files" not in data:
                 data["doc_files"] = []
             data["doc_files"].append(match.group(1))
         if "test" in name.lower():                                          # Very broad check for testsuites
             data["testsuite"] = True
+
 
 def _normalize_license(data):
     """try to get SDPX license"""
@@ -139,6 +139,7 @@ def _normalize_license(data):
         data['license'] = SDPX_LICENSES[l]
     else:
         data['license'] = ""
+
 
 def generate(args):
     check_or_set_version(args)
