@@ -26,14 +26,19 @@ __version__ = '0.4.10'
 
 import argparse
 import datetime
+import distutils.core
 import glob
 import os
 import pickle
+import pkg_resources
 import pprint
 import pwd
 import re
+import setuptools.sandbox
+import shutil
 import sys
 import tarfile
+import tempfile
 import urllib
 
 try:
@@ -52,6 +57,8 @@ pypi = xmlrpclib.ServerProxy('https://pypi.python.org/pypi')                    
 env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))      # Jinja2 template environment
 env.filters['parenthesize_version'] = \
     lambda s: re.sub('([=<>]+)(.+)', r' (\1 \2)', s)
+env.filters['basename'] = \
+    lambda s: s[s.rfind('/') + 1:]
 
 SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spdx_license_map.p')  # absolute template path
 SDPX_LICENSES = pickle.load(open(SPDX_LICENSES_FILE, 'rb'))
@@ -92,7 +99,7 @@ def _parse_setup_py(file, data):
     match = re.search("ext_modules", contents)
     if match:
         data["is_extension"] = True
-    match = re.search("scripts\s*=\s*(\[.*?\])", contents, flags=re.DOTALL)
+    match = re.search("[(,]\s*scripts\s*=\s*(\[.*?\])", contents, flags=re.DOTALL)
     if match:
         data["scripts"] = eval(match.group(1))
     match = re.search("test_suite\s*=\s*(.*)", contents)
@@ -104,21 +111,93 @@ def _parse_setup_py(file, data):
     match = re.search("extras_require\s*=\s*(\{.*?\})", contents, flags=re.DOTALL)
     if match:
         data["extras_require"] = eval(match.group(1))
+    match = re.search("data_files\s*=\s*(\[.*?\])", contents, flags=re.DOTALL)
+    if match:
+        data["data_files"] = eval(match.group(1))
+    match = re.search('entry_points\s*=\s*(\{.*?\}|""".*?"""|".*?")', contents, flags=re.DOTALL)
+    if match:
+        data["entry_points"] = eval(match.group(1))
+
+
+def _run_setup_py(tarfile, setup_filename, data):
+    tempdir = tempfile.mkdtemp()
+    setuptools.sandbox.DirectorySandbox(tempdir).run(lambda: tarfile.extractall(tempdir))
+
+    setup_filename = os.path.join(tempdir, setup_filename)
+    distutils.core._setup_stop_after = "config"
+    setuptools.sandbox.run_setup(setup_filename, "")
+    dist = distutils.core._setup_distribution
+    shutil.rmtree(tempdir)
+
+    if dist.ext_modules:
+        data["is_extension"] = True
+    if dist.scripts:
+        data["scripts"] = dist.scripts
+    if dist.test_suite:
+        data["test_suite"] = dist.test_suite
+    if dist.install_requires:
+        data["install_requires"] = dist.install_requires
+    if dist.extras_require:
+        data["extras_require"] = dist.extras_require
+    if dist.data_files:
+        data["data_files"] = dist.data_files
+    if dist.entry_points:
+        data["entry_points"] = dist.entry_points
+
+
+def _canonicalize_setup_data(data):
+    if "install_requires" in data:
+        # install_requires may be a string, convert to list of strings:
+        if isinstance(data["install_requires"], str):
+            data["install_requires"] = data["install_requires"].splitlines()
+
+    if "extras_require" in data:
+        # extras_require value may be a string, convert to list of strings:
+        for (key, value) in data["extras_require"].items():
+            if isinstance(value, str):
+                data["extras_require"][key] = value.splitlines()
+
+    if "data_files" in data:
+        # data_files may be a sequence of files without a target directory:
+        if len(data["data_files"]) and isinstance(data["data_files"][0], str):
+            data["data_files"] = [("", data["data_files"])]
+        # directory paths may be relative to the installation prefix:
+        prefix = sys.exec_prefix if "is_extension" in data else sys.prefix
+        data["data_files"] = [
+            (dir if (len(dir) and dir[0] == '/') else os.path.join(prefix, dir), files)
+            for (dir, files) in data["data_files"]]
+
+    if "entry_points" in data:
+        # entry_points may be a string with .ini-style sections, convert to a dict:
+        if isinstance(data["entry_points"], str):
+            data["entry_points"] = pkg_resources.EntryPoint.parse_map(data["entry_points"])
+        if "console_scripts" in data["entry_points"]:
+            data["console_scripts"] = [
+                i[:i.index(" = ")] for i in data["entry_points"]["console_scripts"]]
 
 
 def _augment_data_from_tarball(args, filename, data):
     setup_filename = "{0}-{1}/setup.py".format(args.name, args.version)
     docs_re = re.compile("{0}-{1}\/((?:AUTHOR|ChangeLog|CHANGES|COPYING|LICENSE|NEWS|README).*)".format(args.name, args.version), re.IGNORECASE)
+    shell_metachars_re = re.compile("[|&;()<>\s]")
 
     if tarfile.is_tarfile(filename):
         with tarfile.open(filename) as f:
             names = f.getnames()
-            _parse_setup_py(f.extractfile(setup_filename), data)
+            if args.run:
+                _run_setup_py(f, setup_filename, data)
+            else:
+                _parse_setup_py(f.extractfile(setup_filename), data)
+            _canonicalize_setup_data(data)
     elif zipfile.is_zipfile(filename):
         with zipfile.ZipFile(filename) as f:
             names = f.namelist()
-            with f.open(setup_filename) as s:
-                _parse_setup_py(s, data)
+            if args.run:
+                _run_setup_py(f, setup_filename, data)
+            else:
+                with f.open(setup_filename) as s:
+                    _parse_setup_py(s, data)
+            _canonicalize_setup_data(data)
     else:
         return
 
@@ -127,7 +206,10 @@ def _augment_data_from_tarball(args, filename, data):
         if match:
             if "doc_files" not in data:
                 data["doc_files"] = []
-            data["doc_files"].append(match.group(1))
+            if re.search(shell_metachars_re, match.group(1)):               # quote filename if it contains shell metacharacters
+                data["doc_files"].append("'" + match.group(1) + "'")
+            else:
+                data["doc_files"].append(match.group(1))
         if "test" in name.lower():                                          # Very broad check for testsuites
             data["testsuite"] = True
 
@@ -227,6 +309,7 @@ def main():
     parser_generate.add_argument('version', nargs='?', help='package version (optional)')
     parser_generate.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec', help='file template')
     parser_generate.add_argument('-f', '--filename', help='spec filename (optional)')
+    parser_generate.add_argument('-r', '--run', action='store_true', help='run setup.py (optional, risky!)')
     parser_generate.set_defaults(func=generate)
 
     parser_help = subparsers.add_parser('help', help='show this help')
