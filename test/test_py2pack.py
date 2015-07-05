@@ -54,3 +54,26 @@ class Py2packTestCase(unittest.TestCase):
         d = { 'license': value }
         py2pack._normalize_license(d)
         self.assertEqual(d['license'], expected_result)
+
+    @data(
+        (
+            {'install_requires': ['six', 'monotonic>=0.1']},
+            {'install_requires': ['six', 'monotonic >= 0.1']},
+        ),
+        (
+            {'install_requires': ['six', 'foobar>=0.1,>=0.5']},
+            {'install_requires': ['six', 'foobar >= 0.1']},
+        ),
+        (
+            {'install_requires': ['six  >=1.9', 'foobar>=0.1,>=0.5']},
+            {'install_requires': ['six >= 1.9', 'foobar >= 0.1']}
+        ),
+        (
+            {'extras_require': {'extra1': ['foobar<=3.0, >= 2.1']}},
+            {'extras_require': {'extra1': ['foobar >= 2.1']}}
+        )
+    )
+    @unpack
+    def test_canonicalize_setup_data(self, data, expected_data):
+        py2pack._canonicalize_setup_data(data)
+        self.assertEqual(data, expected_data)

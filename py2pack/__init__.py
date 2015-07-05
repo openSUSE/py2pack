@@ -146,16 +146,40 @@ def _run_setup_py(tarfile, setup_filename, data):
 
 
 def _canonicalize_setup_data(data):
+    def _sanitize_requirements(req):
+        """ find lowest required version"""
+        version_dep = None
+        version_comp = None
+        pkg = pkg_resources.Requirement.parse(req)
+        for dep in pkg.specs:
+            version = pkg_resources.parse_version(dep[1])
+            # try to use the lowest version available
+            # i.e. for ">=0.8.4,>=0.9.7", select "0.8.4"
+            if (not version_dep or
+                    version < pkg_resources.parse_version(version_dep)):
+                version_dep = dep[1]
+                version_comp = dep[0]
+        return filter(lambda x: x is not None,
+                      [pkg.unsafe_name, version_comp, version_dep])
+
     if "install_requires" in data:
         # install_requires may be a string, convert to list of strings:
         if isinstance(data["install_requires"], str):
             data["install_requires"] = data["install_requires"].splitlines()
+
+        # find lowest version and take care of spaces between name and version
+        data["install_requires"] = [" ".join(_sanitize_requirements(req))
+                                    for req in data["install_requires"]]
 
     if "extras_require" in data:
         # extras_require value may be a string, convert to list of strings:
         for (key, value) in data["extras_require"].items():
             if isinstance(value, str):
                 data["extras_require"][key] = value.splitlines()
+            # find lowest version and take care of spaces between name and ver
+            data["extras_require"][key] = [
+                " ".join(_sanitize_requirements(req))
+                for req in data["extras_require"][key]]
 
     if "data_files" in data:
         # data_files may be a sequence of files without a target directory:
