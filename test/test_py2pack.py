@@ -77,3 +77,18 @@ class Py2packTestCase(unittest.TestCase):
     def test_canonicalize_setup_data(self, data, expected_data):
         py2pack._canonicalize_setup_data(data)
         self.assertEqual(data, expected_data)
+
+    @data(
+        (
+            {'entry_points': "[console_scripts]\nfoo = foo:main"},
+            ['foo']
+        ),
+        (
+            {'entry_points': "[console_scripts]\nfoo = foo:main\n\nbar=abc:xyz"},
+            ['foo', 'bar']
+        )
+    )
+    @unpack
+    def test_canonicalize_setup_data_console_scripts(self, data, expected_data):
+        py2pack._canonicalize_setup_data(data)
+        self.assertEqual(list(data['console_scripts']), expected_data)
