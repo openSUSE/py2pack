@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2013, Sascha Peilicke <saschpe@gmx.de>
+# Copyright (c) 2013, Sascha Peilicke <sascha@peilicke.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
@@ -21,8 +21,8 @@ from __future__ import absolute_import
 
 __doc__ = 'Generate distribution packages from PyPI'
 __docformat__ = 'restructuredtext en'
-__author__ = 'Sascha Peilicke <saschpe@gmx.de>'
-__version__ = '0.4.10'
+__author__ = 'Sascha Peilicke <sascha@peilicke.de>'
+__version__ = '0.5.0'
 
 import argparse
 import datetime

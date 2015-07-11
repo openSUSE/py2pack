@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2013, Sascha Peilicke <saschpe@gmx.de>
+# Copyright (c) 2015, Sascha Peilicke <sascha@peilicke.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
