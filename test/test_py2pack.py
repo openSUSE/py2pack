@@ -51,7 +51,7 @@ class Py2packTestCase(unittest.TestCase):
     @data((None, ""), ("Apache-2.0", "Apache-2.0"), ("", ""))
     @unpack
     def test_normalize_license(self, value, expected_result):
-        d = { 'license': value }
+        d = {'license': value}
         py2pack._normalize_license(d)
         self.assertEqual(d['license'], expected_result)
 

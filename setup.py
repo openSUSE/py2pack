@@ -47,7 +47,7 @@ setup(
     package_data={'py2pack': ['templates/*', 'spdx_license_map.p']},
     data_files=[('share/doc/py2pack', ['AUTHORS', 'LICENSE', 'README.rst']),
                 ('share/doc/py2pack/html', ['doc/py2pack.html']),
-                #('share/doc/py2pack/pdf', ['doc/py2pack.pdf']),
+                # ('share/doc/py2pack/pdf', ['doc/py2pack.pdf']),
                 ('man/man1', ['doc/py2pack.1'])],
     setup_requires=["cssselect", "lxml", "requests"],
     install_requires=install_requires,
