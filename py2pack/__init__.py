@@ -196,7 +196,10 @@ def _canonicalize_setup_data(data):
         if isinstance(data["entry_points"], str):
             data["entry_points"] = pkg_resources.EntryPoint.parse_map(data["entry_points"])
         if "console_scripts" in data["entry_points"]:
-            data["console_scripts"] = data["entry_points"]["console_scripts"].keys()
+            try:
+                data["console_scripts"] = data["entry_points"]["console_scripts"].keys()
+            except AttributeError:
+                pass
 
 
 def _augment_data_from_tarball(args, filename, data):
