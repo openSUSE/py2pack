@@ -91,4 +91,5 @@ class Py2packTestCase(unittest.TestCase):
     @unpack
     def test_canonicalize_setup_data_console_scripts(self, data, expected_data):
         py2pack._canonicalize_setup_data(data)
-        self.assertEqual(list(data['console_scripts']), expected_data)
+        self.assertEqual(sorted(list(data['console_scripts'])),
+                         sorted(expected_data))
