@@ -39,6 +39,7 @@ import shutil
 import sys
 import tarfile
 import tempfile
+import textwrap
 import urllib
 
 try:
@@ -94,29 +95,60 @@ def fetch(args):
     urllib.urlretrieve(url['url'], url['filename'])                         # download the object behind the URL
 
 
+def _safe_eval(descr, code, fallback):
+    try:
+        return eval(code)
+    except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        code = re.sub("(?m)^", "  ", code)
+        sys.stderr.write(
+            textwrap.dedent("""\
+
+            WARNING: Exception encountered:
+
+              %s: %s
+
+            whilst eval'ing code for '%s' parameter in setup.py:
+
+            %s
+
+            Try regenerating with the --run option.
+            """) % (exc_type.__name__, exc_value, descr, code))
+        return fallback
+
+
 def _parse_setup_py(file, data):
     contents = file.read().decode('utf-8')
+    fixme = "FIXME: failed to extract %s from setup.py"
     match = re.search("ext_modules", contents)
     if match:
         data["is_extension"] = True
     match = re.search("[(,]\s*scripts\s*=\s*(\[.*?\])", contents, flags=re.DOTALL)
     if match:
-        data["scripts"] = eval(match.group(1))
+        data["scripts"] = \
+            _safe_eval("scripts", match.group(1), [fixme % "scripts"])
     match = re.search("test_suite\s*=\s*(.*)", contents)
     if match:
-        data["test_suite"] = eval(match.group(1))
+        data["test_suite"] = \
+            _safe_eval("test_suite", match.group(1), fixme % "test_suite")
     match = re.search("install_requires\s*=\s*(\[.*?\])", contents, flags=re.DOTALL)
     if match:
-        data["install_requires"] = eval(match.group(1))
+        data["install_requires"] = \
+            _safe_eval("install_requires", match.group(1),
+                       [fixme % "install_requires"])
     match = re.search("extras_require\s*=\s*(\{.*?\})", contents, flags=re.DOTALL)
     if match:
-        data["extras_require"] = eval(match.group(1))
+        data["extras_require"] = \
+            _safe_eval("extras_require", match.group(1),
+                       { "FIXME" : "FIXME" })
     match = re.search("data_files\s*=\s*(\[.*?\])", contents, flags=re.DOTALL)
     if match:
-        data["data_files"] = eval(match.group(1))
+        data["data_files"] = \
+            _safe_eval("data_files", match.group(1), [fixme % "data_files"])
     match = re.search('entry_points\s*=\s*(\{.*?\}|""".*?"""|".*?")', contents, flags=re.DOTALL)
     if match:
-        data["entry_points"] = eval(match.group(1))
+        data["entry_points"] = \
+            _safe_eval("entry_points", match.group(1), {"FIXME" : fixme % "entry_points"})
 
 
 def _run_setup_py(tarfile, setup_filename, data):
@@ -128,6 +160,13 @@ def _run_setup_py(tarfile, setup_filename, data):
     setuptools.sandbox.run_setup(setup_filename, "")
     dist = distutils.core._setup_distribution
     shutil.rmtree(tempdir)
+
+    if dist is None:
+        sys.stderr.write(
+            "Failed to retrieve dist object from distutils! "
+            "--run cannot work effectively; aborting.\n"
+        )
+        sys.exit(1)
 
     if dist.ext_modules:
         data["is_extension"] = True
