@@ -161,6 +161,13 @@ def _run_setup_py(tarfile, setup_filename, data):
     dist = distutils.core._setup_distribution
     shutil.rmtree(tempdir)
 
+    if dist is None:
+        sys.stderr.write(
+            "Failed to retrieve dist object from distutils! "
+            "--run cannot work effectively; aborting.\n"
+        )
+        sys.exit(1)
+
     if dist.ext_modules:
         data["is_extension"] = True
     if dist.scripts:
