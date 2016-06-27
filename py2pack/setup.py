@@ -17,7 +17,6 @@ import os
 import re
 import shutil
 import subprocess
-import sys
 from distutils.core import Command
 
 
@@ -114,10 +113,6 @@ def parse_requirements(requirements_file='requirements.txt'):
                 pass
             # -r lines are for including other files, and don't get used here
             elif re.match(r'\s*-r\s+', line):
-                pass
-            # argparse is part of the standard library starting with 2.7
-            # adding it to the requirements list screws distro installs
-            elif line == 'argparse' and sys.version_info >= (2, 7):
                 pass
             else:
                 requirements.append(line.strip())
