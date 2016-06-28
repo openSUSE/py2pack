@@ -20,12 +20,13 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 import re
+import six
 
 
 def _requires_from_setup_py(file):
     """read requirements from the setup.py file"""
     data = {}
-    contents = file.read().decode('utf-8')
+    contents = six.u(file.read())
     match = re.search("ext_modules", contents)
     if match:
         data["is_extension"] = True
