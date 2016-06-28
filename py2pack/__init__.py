@@ -3,19 +3,18 @@
 #
 # Copyright (c) 2013, Sascha Peilicke <sascha@peilicke.de>
 #
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License version 2 as
-# published by the Free Software Foundation.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+#    http://www.apache.org/licenses/LICENSE-2.0
 #
-# You should have received a copy of the GNU General Public License
-# along with this program (see the file COPYING); if not, write to the
-# Free Software Foundation, Inc.,
-# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 from __future__ import absolute_import
 
@@ -26,7 +25,6 @@ __version__ = '0.5.0'
 
 import argparse
 import datetime
-import distutils.core
 import glob
 import os
 import pickle
@@ -34,11 +32,8 @@ import pkg_resources
 import pprint
 import pwd
 import re
-import setuptools.sandbox
-import shutil
 import sys
 import tarfile
-import tempfile
 import urllib
 
 try:
@@ -101,29 +96,8 @@ def _parse_setup_py(file, data):
 
 
 def _run_setup_py(tarfile, setup_filename, data):
-    tempdir = tempfile.mkdtemp()
-    setuptools.sandbox.DirectorySandbox(tempdir).run(lambda: tarfile.extractall(tempdir))
-
-    setup_filename = os.path.join(tempdir, setup_filename)
-    distutils.core._setup_stop_after = "config"
-    setuptools.sandbox.run_setup(setup_filename, "")
-    dist = distutils.core._setup_distribution
-    shutil.rmtree(tempdir)
-
-    if dist.ext_modules:
-        data["is_extension"] = True
-    if dist.scripts:
-        data["scripts"] = dist.scripts
-    if dist.test_suite:
-        data["test_suite"] = dist.test_suite
-    if dist.install_requires:
-        data["install_requires"] = dist.install_requires
-    if dist.extras_require:
-        data["extras_require"] = dist.extras_require
-    if dist.data_files:
-        data["data_files"] = dist.data_files
-    if dist.entry_points:
-        data["entry_points"] = dist.entry_points
+    d = py2pack.requires._requires_from_setup_py_run(tarfile, setup_filename)
+    data.update(d)
 
 
 def _canonicalize_setup_data(data):
