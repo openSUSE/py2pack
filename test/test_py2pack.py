@@ -87,6 +87,11 @@ class Py2packTestCase(unittest.TestCase):
         (
             {'entry_points': "[console_scripts]\nfoo = foo:main\n\nbar=abc:xyz"},
             ['foo', 'bar']
+        ),
+        (
+            {'entry_points': {'console_scripts': ['foo = foo:main',
+                                                  'bar=bar:main']}},
+            ['foo', 'bar']
         )
     )
     @unpack

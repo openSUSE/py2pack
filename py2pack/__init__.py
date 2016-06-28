@@ -173,9 +173,9 @@ def _canonicalize_setup_data(data):
             for (dir, files) in data["data_files"]]
 
     if "entry_points" in data:
-        # entry_points may be a string with .ini-style sections, convert to a dict:
-        if isinstance(data["entry_points"], str):
-            data["entry_points"] = pkg_resources.EntryPoint.parse_map(data["entry_points"])
+        # entry_points may be a string with .ini-style sections or a dict.
+        # convert to a dict and parse it
+        data["entry_points"] = pkg_resources.EntryPoint.parse_map(data["entry_points"])
         if "console_scripts" in data["entry_points"]:
             data["console_scripts"] = data["entry_points"]["console_scripts"].keys()
 
