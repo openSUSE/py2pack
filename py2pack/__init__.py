@@ -50,6 +50,7 @@ import zipfile
 import jinja2
 
 import py2pack.proxy
+import py2pack.requires
 
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')  # absolute template path
@@ -95,28 +96,8 @@ def fetch(args):
 
 
 def _parse_setup_py(file, data):
-    contents = file.read().decode('utf-8')
-    match = re.search("ext_modules", contents)
-    if match:
-        data["is_extension"] = True
-    match = re.search("[(,]\s*scripts\s*=\s*(\[.*?\])", contents, flags=re.DOTALL)
-    if match:
-        data["scripts"] = eval(match.group(1))
-    match = re.search("test_suite\s*=\s*(.*)", contents)
-    if match:
-        data["test_suite"] = eval(match.group(1))
-    match = re.search("install_requires\s*=\s*(\[.*?\])", contents, flags=re.DOTALL)
-    if match:
-        data["install_requires"] = eval(match.group(1))
-    match = re.search("extras_require\s*=\s*(\{.*?\})", contents, flags=re.DOTALL)
-    if match:
-        data["extras_require"] = eval(match.group(1))
-    match = re.search("data_files\s*=\s*(\[.*?\])", contents, flags=re.DOTALL)
-    if match:
-        data["data_files"] = eval(match.group(1))
-    match = re.search('entry_points\s*=\s*(\{.*?\}|""".*?"""|".*?")', contents, flags=re.DOTALL)
-    if match:
-        data["entry_points"] = eval(match.group(1))
+    d = py2pack.requires._requires_from_setup_py(file)
+    data.update(d)
 
 
 def _run_setup_py(tarfile, setup_filename, data):
@@ -192,9 +173,9 @@ def _canonicalize_setup_data(data):
             for (dir, files) in data["data_files"]]
 
     if "entry_points" in data:
-        # entry_points may be a string with .ini-style sections, convert to a dict:
-        if isinstance(data["entry_points"], str):
-            data["entry_points"] = pkg_resources.EntryPoint.parse_map(data["entry_points"])
+        # entry_points may be a string with .ini-style sections or a dict.
+        # convert to a dict and parse it
+        data["entry_points"] = pkg_resources.EntryPoint.parse_map(data["entry_points"])
         if "console_scripts" in data["entry_points"]:
             data["console_scripts"] = data["entry_points"]["console_scripts"].keys()
 

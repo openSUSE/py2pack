@@ -8,3 +8,4 @@ nosetests.xml
 *.egg-info
 .venv*
 .tox
+.eggs
