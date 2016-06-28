@@ -19,8 +19,13 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
+import distutils.core
+import os
 import re
+import setuptools.sandbox
+import shutil
 import six
+import tempfile
 
 
 def _requires_from_setup_py(file):
@@ -48,4 +53,33 @@ def _requires_from_setup_py(file):
     match = re.search('entry_points\s*=\s*(\{.*?\}|""".*?"""|".*?")', contents, flags=re.DOTALL)
     if match:
         data["entry_points"] = eval(match.group(1))
+    return data
+
+
+def _requires_from_setup_py_run(tar_file, setup_filename):
+    """run setup.py from a tarfile in a setuptools sandbox"""
+    tempdir = tempfile.mkdtemp()
+    setuptools.sandbox.DirectorySandbox(tempdir).run(lambda: tar_file.extractall(tempdir))
+
+    setup_filename = os.path.join(tempdir, setup_filename)
+    distutils.core._setup_stop_after = "config"
+    setuptools.sandbox.run_setup(setup_filename, "")
+    dist = distutils.core._setup_distribution
+    shutil.rmtree(tempdir)
+
+    data = {}
+    if dist.ext_modules:
+        data["is_extension"] = True
+    if dist.scripts:
+        data["scripts"] = dist.scripts
+    if dist.test_suite:
+        data["test_suite"] = dist.test_suite
+    if dist.install_requires:
+        data["install_requires"] = dist.install_requires
+    if dist.extras_require:
+        data["extras_require"] = dist.extras_require
+    if dist.data_files:
+        data["data_files"] = dist.data_files
+    if dist.entry_points:
+        data["entry_points"] = dist.entry_points
     return data

@@ -26,7 +26,6 @@ __version__ = '0.5.0'
 
 import argparse
 import datetime
-import distutils.core
 import glob
 import os
 import pickle
@@ -34,11 +33,8 @@ import pkg_resources
 import pprint
 import pwd
 import re
-import setuptools.sandbox
-import shutil
 import sys
 import tarfile
-import tempfile
 import urllib
 
 try:
@@ -101,29 +97,8 @@ def _parse_setup_py(file, data):
 
 
 def _run_setup_py(tarfile, setup_filename, data):
-    tempdir = tempfile.mkdtemp()
-    setuptools.sandbox.DirectorySandbox(tempdir).run(lambda: tarfile.extractall(tempdir))
-
-    setup_filename = os.path.join(tempdir, setup_filename)
-    distutils.core._setup_stop_after = "config"
-    setuptools.sandbox.run_setup(setup_filename, "")
-    dist = distutils.core._setup_distribution
-    shutil.rmtree(tempdir)
-
-    if dist.ext_modules:
-        data["is_extension"] = True
-    if dist.scripts:
-        data["scripts"] = dist.scripts
-    if dist.test_suite:
-        data["test_suite"] = dist.test_suite
-    if dist.install_requires:
-        data["install_requires"] = dist.install_requires
-    if dist.extras_require:
-        data["extras_require"] = dist.extras_require
-    if dist.data_files:
-        data["data_files"] = dist.data_files
-    if dist.entry_points:
-        data["entry_points"] = dist.entry_points
+    d = py2pack.requires._requires_from_setup_py_run(tarfile, setup_filename)
+    data.update(d)
 
 
 def _canonicalize_setup_data(data):
