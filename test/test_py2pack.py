@@ -48,7 +48,8 @@ class Py2packTestCase(unittest.TestCase):
         self.assertEqual(url["filename"], filename)
         self.assertEqual(url["packagetype"], "sdist")
 
-    @data((None, ""), ("Apache-2.0", "Apache-2.0"), ("", ""))
+    @data((None, ""), ("Apache-2.0", "Apache-2.0"), ("", ""),
+          ("Apache 2.0", "Apache-2.0"))
     @unpack
     def test_normalize_license(self, value, expected_result):
         d = {'license': value}

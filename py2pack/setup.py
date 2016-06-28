@@ -1,4 +1,5 @@
 # Copyright 2013 Sascha Peilicke
+# Copyright 2016 Thomas Bechtold
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -77,11 +78,13 @@ class SPDXUpdateCommand(Command):
         response = requests.get('https://docs.google.com/spreadsheet/pub?key=0AqPp4y2wyQsbdGQ1V3pRRDg5NEpGVWpubzdRZ0tjUWc')
         html = lxml.html.fromstring(response.text)
         licenses = {}
-        for i, tr in enumerate(html.cssselect('table#tblMain > tr[class!="rShim"]')):
-            if i == 0:
-                continue  # Skip the first tr, only contains row descriptions
+        for i, tr in enumerate(html.cssselect('table.waffle > tbody > tr')):
             _, td_new, td_old = tr.getchildren()
             licenses[td_old.text] = td_new.text
+            # also add the spdx license as key (i.e. key/value "Apache-2.0"->"Apache-2.0")
+            # Otherwise licenses for packages which already have a SPDX compatible license
+            # are not correctly recognized
+            licenses[td_new.text] = td_new.text
         pickle.dump(licenses, open(SPDXUpdateCommand.LICENSE_FILE, 'wb'))
 
 
