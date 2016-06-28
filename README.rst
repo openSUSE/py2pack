@@ -138,7 +138,7 @@ To run a single test class via `tox`_, use i.e.:
 
 
 :copyright: (c) 2013 Sascha Peilicke.
-:license: GPLv2, see LICENSE for more details.
+:license: Apache-2.0, see LICENSE for more details.
 
 
 .. _argparse: http://pypi.python.org/pypi/argparse
