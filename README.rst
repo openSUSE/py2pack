@@ -57,7 +57,7 @@ As a next step you may want to generate a package recipe for your distribution.
 For RPM_-based distributions (let's use openSUSE_ as an example), you want to
 generate a spec file (named 'python-zope.interface.spec'):
 
-.. code-block:: bash 
+.. code-block:: bash
 
     $ py2pack generate zope.interface -t opensuse.spec -f python-zope.interface.spec
 
@@ -72,7 +72,7 @@ results.
 This final step may depend on which distribution you use. Again,
 for openSUSE_ (and by using the `Open Build Service`_), the complete recipe is:
 
-.. code-block:: bash 
+.. code-block:: bash
 
     $ osc mkpac python-zope.interface
     $ cd python-zope.interface
@@ -84,7 +84,7 @@ for openSUSE_ (and by using the `Open Build Service`_), the complete recipe is:
 Depending on the module, you may have to adapt the resulting spec file slightly.
 To get further help about py2pack usage, issue the following command:
 
-.. code-block:: bash 
+.. code-block:: bash
 
     $ py2pack help
 
@@ -144,7 +144,7 @@ To run a single test class via `tox`_, use i.e.:
 
 
 .. _argparse: http://pypi.python.org/pypi/argparse
-.. _Jinja2: http://pypi.python.org/pypi/Jinja2 
+.. _Jinja2: http://pypi.python.org/pypi/Jinja2
 .. _zope.interface: http://pypi.python.org/pypi/zope.interface/
 .. _openSUSE: http://www.opensuse.org/en/
 .. _RPM: http://en.wikipedia.org/wiki/RPM_Package_Manager
