@@ -57,7 +57,7 @@ As a next step you may want to generate a package recipe for your distribution.
 For RPM_-based distributions (let's use openSUSE_ as an example), you want to
 generate a spec file (named 'python-zope.interface.spec'):
 
-.. code-block:: bash 
+.. code-block:: bash
 
     $ py2pack generate zope.interface -t opensuse.spec -f python-zope.interface.spec
 
@@ -72,7 +72,7 @@ results.
 This final step may depend on which distribution you use. Again,
 for openSUSE_ (and by using the `Open Build Service`_), the complete recipe is:
 
-.. code-block:: bash 
+.. code-block:: bash
 
     $ osc mkpac python-zope.interface
     $ cd python-zope.interface
@@ -84,7 +84,7 @@ for openSUSE_ (and by using the `Open Build Service`_), the complete recipe is:
 Depending on the module, you may have to adapt the resulting spec file slightly.
 To get further help about py2pack usage, issue the following command:
 
-.. code-block:: bash 
+.. code-block:: bash
 
     $ py2pack help
 
@@ -101,31 +101,7 @@ You can test py2pack from your git checkout by executing the py2pack module:
 Fork `the repository`_ on Github to start making your changes to the **master**
 branch (or branch off of it). Don't forget to write a test for fixed issues or
 implemented features whenever appropriate. You can invoke the testsuite from
-the repository root directory via:
-
-.. code-block:: bash
-
-    $ python setup.py test
-
-Or by running `nose`_ directly:
-
-.. code-block:: bash
-
-    $ nosetests
-
-Both assume you have the test dependencies installed (available on PYTHONPATH)
-on your system. If that doesn't work for you, you can create a `virtual
-environment`_ instead:
-
-.. code-block:: bash
-
-    $ virtualenv .venv
-    $ source .venv/bin/activate
-    (.venv)$ pip install -r test-requirements.txt
-    (.venv)$ nosetests
-
-Lastly, if using virtualenv is too tedious or you want to test different
-configurations (py27, py33, pep8), you can also use `tox`_:
+the repository root directory via `tox`_:
 
 .. code-block:: bash
 
@@ -138,13 +114,21 @@ To run a single test class via `tox`_, use i.e.:
     $ tox -epy27 test.test_py2pack:Py2packTestCase
 
 
+You can also run `nose`_ directly:
+
+.. code-block:: bash
+
+    $ nosetests
+
+It assumes you have the test dependencies installed (available on PYTHONPATH)
+on your system.
 
 :copyright: (c) 2013 Sascha Peilicke.
 :license: Apache-2.0, see LICENSE for more details.
 
 
 .. _argparse: http://pypi.python.org/pypi/argparse
-.. _Jinja2: http://pypi.python.org/pypi/Jinja2 
+.. _Jinja2: http://pypi.python.org/pypi/Jinja2
 .. _zope.interface: http://pypi.python.org/pypi/zope.interface/
 .. _openSUSE: http://www.opensuse.org/en/
 .. _RPM: http://en.wikipedia.org/wiki/RPM_Package_Manager
@@ -153,6 +137,5 @@ To run a single test class via `tox`_, use i.e.:
 .. _`Open Build Service`: https://build.opensuse.org/package/show?package=rapport&project=devel:languages:python
 .. _`the repository`: https://github.com/saschpe/py2pack
 .. _`nose`: https://nose.readthedocs.org
-.. _`virtual environment`: http://www.virtualenv.org
 .. _`tox`: http://testrun.org/tox
 
