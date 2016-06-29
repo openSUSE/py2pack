@@ -70,8 +70,26 @@ class Py2packTestCase(unittest.TestCase):
             {'install_requires': ['six >= 1.9', 'foobar >= 0.1']}
         ),
         (
+            {'install_requires': 'six  >=1.9\nfoobar>=0.1,>=0.5'},
+            {'install_requires': ['six >= 1.9', 'foobar >= 0.1']}
+        ),
+        (
+            {'tests_require': ['six  >=1.9', 'foobar>=0.1,>=0.5']},
+            {'tests_require': ['six >= 1.9', 'foobar >= 0.1']}
+        ),
+        (
+            {'tests_require': 'six  >=1.9\nfoobar>=0.1,>=0.5'},
+            {'tests_require': ['six >= 1.9', 'foobar >= 0.1']}
+        ),
+        (
             {'extras_require': {'extra1': ['foobar<=3.0, >= 2.1']}},
             {'extras_require': {'extra1': ['foobar >= 2.1']}}
+        ),
+        (
+            {'extras_require': {'extra1': 'foobar<=3.0, >= 2.1\ntest1',
+                                'extra2': ['test2']}},
+            {'extras_require': {'extra1': ['foobar >= 2.1', 'test1'],
+                                'extra2': ['test2']}}
         )
     )
     @unpack

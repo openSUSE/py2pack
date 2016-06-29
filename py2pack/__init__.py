@@ -140,6 +140,15 @@ def _canonicalize_setup_data(data):
         data["install_requires"] = [" ".join(_sanitize_requirements(req))
                                     for req in data["install_requires"]]
 
+    if "tests_require" in data:
+        # tests_require may be a string, convert to list of strings:
+        if isinstance(data["tests_require"], str):
+            data["tests_require"] = data["tests_require"].splitlines()
+
+        # find lowest version and take care of spaces between name and version
+        data["tests_require"] = [" ".join(_sanitize_requirements(req))
+                                 for req in data["tests_require"]]
+
     if "extras_require" in data:
         # extras_require value may be a string, convert to list of strings:
         for (key, value) in data["extras_require"].items():
