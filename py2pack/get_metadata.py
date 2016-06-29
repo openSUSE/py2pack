@@ -49,6 +49,8 @@ class get_metadata(Command):
             data["install_requires"] = self.distribution.install_requires
         if getattr(self.distribution, "extras_require"):
             data["extras_require"] = self.distribution.extras_require
+        if getattr(self.distribution, "tests_require"):
+            data["tests_require"] = self.distribution.tests_require
         if getattr(self.distribution, "data_files"):
             data["data_files"] = self.distribution.data_files
         if getattr(self.distribution, "entry_points"):

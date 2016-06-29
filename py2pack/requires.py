@@ -45,6 +45,9 @@ def _requires_from_setup_py(file):
     match = re.search("extras_require\s*=\s*(\{.*?\})", contents, flags=re.DOTALL)
     if match:
         data["extras_require"] = eval(match.group(1))
+    match = re.search("tests_require\s*=\s*(\{.*?\})", contents, flags=re.DOTALL)
+    if match:
+        data["tests_require"] = eval(match.group(1))
     match = re.search("data_files\s*=\s*(\[.*?\])", contents, flags=re.DOTALL)
     if match:
         data["data_files"] = eval(match.group(1))
