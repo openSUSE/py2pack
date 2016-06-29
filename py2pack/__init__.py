@@ -36,6 +36,8 @@ import sys
 import tarfile
 import urllib
 from six.moves import xmlrpc_client
+from six.moves import filter
+from six.moves import map
 import zipfile
 import jinja2
 
@@ -114,13 +116,22 @@ def _run_setup_py(tarfile, data):
     return names
 
 
-def _canonicalize_setup_data(data):
-    def _sanitize_requirements(req):
+def _requirement_filter_by_marker(req):
+    """check if the requirement is satisfied by the marker"""
+    if req.marker:
+        # TODO (toabctl): currently we hardcode python 2.7 and linux2
+        # see https://www.python.org/dev/peps/pep-0508/#environment-markers
+        marker_env = {'python_version': '2.7', 'sys_platform': 'linux'}
+        if not req.marker.evaluate(environment=marker_env):
+            return False
+    return True
+
+
+def _requirement_find_lowest_possible(req):
         """ find lowest required version"""
         version_dep = None
         version_comp = None
-        pkg = pkg_resources.Requirement.parse(req)
-        for dep in pkg.specs:
+        for dep in req.specs:
             version = pkg_resources.parse_version(dep[1])
             # try to use the lowest version available
             # i.e. for ">=0.8.4,>=0.9.7", select "0.8.4"
@@ -129,35 +140,39 @@ def _canonicalize_setup_data(data):
                 version_dep = dep[1]
                 version_comp = dep[0]
         return filter(lambda x: x is not None,
-                      [pkg.unsafe_name, version_comp, version_dep])
+                      [req.unsafe_name, version_comp, version_dep])
 
+
+def _requirements_sanitize(req_list):
+    filtered_req_list = map(
+        _requirement_find_lowest_possible, filter(
+            _requirement_filter_by_marker,
+            map(lambda x: pkg_resources.Requirement.parse(x), req_list)
+        )
+    )
+    return [" ".join(req) for req in filtered_req_list]
+
+
+def _canonicalize_setup_data(data):
     if "install_requires" in data:
         # install_requires may be a string, convert to list of strings:
         if isinstance(data["install_requires"], str):
             data["install_requires"] = data["install_requires"].splitlines()
-
-        # find lowest version and take care of spaces between name and version
-        data["install_requires"] = [" ".join(_sanitize_requirements(req))
-                                    for req in data["install_requires"]]
+        data["install_requires"] = _requirements_sanitize(data["install_requires"])
 
     if "tests_require" in data:
         # tests_require may be a string, convert to list of strings:
         if isinstance(data["tests_require"], str):
             data["tests_require"] = data["tests_require"].splitlines()
-
-        # find lowest version and take care of spaces between name and version
-        data["tests_require"] = [" ".join(_sanitize_requirements(req))
-                                 for req in data["tests_require"]]
+        data["tests_require"] = _requirements_sanitize(data["tests_require"])
 
     if "extras_require" in data:
         # extras_require value may be a string, convert to list of strings:
         for (key, value) in data["extras_require"].items():
             if isinstance(value, str):
                 data["extras_require"][key] = value.splitlines()
-            # find lowest version and take care of spaces between name and ver
-            data["extras_require"][key] = [
-                " ".join(_sanitize_requirements(req))
-                for req in data["extras_require"][key]]
+            data["extras_require"][key] = _requirements_sanitize(
+                data["extras_require"][key])
 
     if "data_files" in data:
         # data_files may be a sequence of files without a target directory:
