@@ -21,6 +21,7 @@ import shutil
 import tarfile
 import tempfile
 import zipfile
+from six.moves import filter
 
 
 @contextmanager
@@ -42,7 +43,7 @@ def _extract_to_tempdir(filename):
         else:
             raise Exception("Can not extract '%s'. Not a tar or zip file" % filename)
         os.chdir(tempdir)
-        yield tempdir, names
+        yield tempdir, filter(lambda x: x != './', names)
     finally:
         os.chdir(current_cwd)
         shutil.rmtree(tempdir)
