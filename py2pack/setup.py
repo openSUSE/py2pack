@@ -13,32 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import glob
-import os
 import re
-import shutil
 import subprocess
 from distutils.core import Command
 
-
-class CleanupCommand(Command):
-    patterns = [".coverage", ".tox", ".venv", "build", "dist", "*.egg", "*.egg-info"]
-    description = "Clean up project directory"
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        for pattern in CleanupCommand.patterns:
-            for f in glob.glob(pattern):
-                if os.path.isdir(f):
-                    shutil.rmtree(f, ignore_errors=True)
-                else:
-                    os.remove(f)
+from py2pack.get_metadata import get_metadata
 
 
 class DocCommand(Command):
@@ -91,8 +70,10 @@ class SPDXUpdateCommand(Command):
 def get_cmdclass():
     """Dictionary of all distutils commands defined in this module.
     """
-    return {"cleanup": CleanupCommand,
-            "spdx_update": SPDXUpdateCommand}
+    return {
+        "spdx_update": SPDXUpdateCommand,
+        "get_metadata": get_metadata,
+    }
 
 
 def parse_requirements(requirements_file='requirements.txt'):

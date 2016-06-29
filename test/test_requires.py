@@ -22,6 +22,7 @@ import unittest
 from ddt import ddt, data, unpack
 
 import py2pack
+import py2pack.utils
 
 
 @ddt
@@ -83,6 +84,23 @@ setuptools.setup(
 
     @data(
         ("{}", {}),
+        ("{'ssh': ['paramiko']}", {'ssh': ['paramiko']}),
+        ("""{'ssh':
+        # a comment
+        ['paramiko']}""", {'ssh': ['paramiko']}),
+    )
+    @unpack
+    def test__requires_from_setup_py_tests_require(self, req, expected_req):
+        self._write_setup_py("""
+setuptools.setup(
+    tests_require=%s,
+        )""" % req)
+        with open(self.setup_py) as f:
+            data = py2pack.requires._requires_from_setup_py(f)
+        self.assertEqual(data, {'tests_require': expected_req})
+
+    @data(
+        ("{}", {}),
         ("{'console_scripts':['script1=pkg:main']}",
          {'console_scripts': ['script1=pkg:main']}),
         ("{'console_scripts':\n#a comment\n['script1=\\\npkg:main']}",
@@ -101,3 +119,29 @@ setuptools.setup(
         with open(self.setup_py) as f:
             data = py2pack.requires._requires_from_setup_py(f)
         self.assertEqual(data, {'entry_points': expected_req})
+
+    def test__requires_from_setup_py_run(self):
+        self._write_setup_py("""
+import setuptools
+setuptools.setup(
+    name='testpkg',
+    install_requires=['foo', 'bar'],
+)
+""")
+        data = py2pack.requires._requires_from_setup_py_run(self.tmpdir)
+        self.assertEqual(data, {'install_requires': ['foo', 'bar']})
+
+    def test__requires_from_setup_py_run_with_variables(self):
+        self._write_setup_py("""
+import setuptools
+req = ['foo', 'bar']
+test_req = ['test']
+setuptools.setup(
+    name='testpkg',
+    install_requires=req,
+    tests_require=test_req
+)
+""")
+        data = py2pack.requires._requires_from_setup_py_run(self.tmpdir)
+        self.assertEqual(data, {'install_requires': ['foo', 'bar'],
+                                'tests_require': ['test']})

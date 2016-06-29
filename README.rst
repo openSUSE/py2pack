@@ -4,11 +4,6 @@ Py2pack: Generate distribution packages from PyPI
 .. image:: https://travis-ci.org/saschpe/py2pack.png?branch=master
         :target: https://travis-ci.org/saschpe/py2pack
 
-.. image:: https://pypip.in/d/py2pack/badge.png
-        :target: https://pypi.python.org/pypi/py2pack
-
-.. image:: https://pypip.in/v/py2pack/badge.png
-        :target: https://pypi.python.org/pypi/py2pack
 
 This script allows to generate RPM spec or DEB dsc files from Python modules.
 It allows to list Python modules or search for them on the Python Package Index
@@ -153,9 +148,4 @@ To run a single test class via `tox`_, use i.e.:
 .. _`nose`: https://nose.readthedocs.org
 .. _`virtual environment`: http://www.virtualenv.org
 .. _`tox`: http://testrun.org/tox
-
-
-.. image:: https://d2weczhvl823v0.cloudfront.net/saschpe/py2pack/trend.png
-   :alt: Bitdeli badge
-   :target: https://bitdeli.com/free
 
