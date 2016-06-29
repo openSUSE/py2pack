@@ -90,11 +90,11 @@ class Py2packTestCase(unittest.TestCase):
 
     @data(
         (
-            {'install_requires': ["pywin32>=1.0;sys_platform=='win32'", 'monotonic>=0.1']},
+            {'install_requires': ["pywin32>=1.0;sys_platform=='win32'", 'monotonic>=0.1 #comment']},
             {'install_requires': ['monotonic >= 0.1']},
         ),
         (
-            {'install_requires': 'six  >=1.9\nfoobar>=0.1,>=0.5'},
+            {'install_requires': 'six  >=1.9,!=1.0  # comment\nfoobar>=0.1,>=0.5'},
             {'install_requires': ['six >= 1.9', 'foobar >= 0.1']}
         ),
         (
@@ -110,7 +110,7 @@ class Py2packTestCase(unittest.TestCase):
             {'extras_require': {'extra1': ['foobar >= 2.1']}}
         ),
         (
-            {'extras_require': {'extra1': 'foobar<=3.0, >= 2.1\ntest1',
+            {'extras_require': {'extra1': 'foobar<=3.0, >= 2.1\ntest1  # comment',
                                 'extra2': ['test2']}},
             {'extras_require': {'extra1': ['foobar >= 2.1', 'test1'],
                                 'extra2': ['test2']}}
