@@ -46,6 +46,7 @@ import jinja2
 
 import py2pack.proxy
 import py2pack.requires
+import py2pack.utils
 
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')  # absolute template path
@@ -90,14 +91,30 @@ def fetch(args):
     urllib.urlretrieve(url['url'], url['filename'])                         # download the object behind the URL
 
 
-def _parse_setup_py(file, data):
-    d = py2pack.requires._requires_from_setup_py(file)
-    data.update(d)
+def _parse_setup_py(filename, setup_filename, data):
+    """parse the given setup_filename from the filename (usually a tarball)
+    this is not executing the setup.py file but parsing it with regex."""
+    names = []
+    if tarfile.is_tarfile(filename):
+        with tarfile.open(filename) as f:
+            names = f.getnames()
+            d = py2pack.requires._requires_from_setup_py(
+                f.extractfile(setup_filename))
+            data.update(d)
+    elif zipfile.is_zipfile(filename):
+        with zipfile.ZipFile(filename) as f:
+            names = f.namelist()
+            with f.open(setup_filename) as s:
+                d = py2pack.requires._requires_from_setup_py(s)
+                data.update(d)
+    return names
 
 
-def _run_setup_py(tarfile, setup_filename, data):
-    d = py2pack.requires._requires_from_setup_py_run(tarfile, setup_filename)
+def _run_setup_py(tarfile, data):
+    with py2pack.utils._extract_to_tempdir(tarfile) as (tmp_dir, names):
+        d = py2pack.requires._requires_from_setup_py_run(tmp_dir)
     data.update(d)
+    return names
 
 
 def _canonicalize_setup_data(data):
@@ -159,25 +176,10 @@ def _augment_data_from_tarball(args, filename, data):
     docs_re = re.compile("{0}-{1}\/((?:AUTHOR|ChangeLog|CHANGES|COPYING|LICENSE|NEWS|README).*)".format(args.name, args.version), re.IGNORECASE)
     shell_metachars_re = re.compile("[|&;()<>\s]")
 
-    if tarfile.is_tarfile(filename):
-        with tarfile.open(filename) as f:
-            names = f.getnames()
-            if args.run:
-                _run_setup_py(f, setup_filename, data)
-            else:
-                _parse_setup_py(f.extractfile(setup_filename), data)
-            _canonicalize_setup_data(data)
-    elif zipfile.is_zipfile(filename):
-        with zipfile.ZipFile(filename) as f:
-            names = f.namelist()
-            if args.run:
-                _run_setup_py(f, setup_filename, data)
-            else:
-                with f.open(setup_filename) as s:
-                    _parse_setup_py(s, data)
-            _canonicalize_setup_data(data)
+    if args.run:
+        names = _run_setup_py(filename, data)
     else:
-        return
+        names = _parse_setup_py(filename, setup_filename, data)
 
     for name in names:
         match = re.match(docs_re, name)

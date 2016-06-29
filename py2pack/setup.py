@@ -20,6 +20,8 @@ import shutil
 import subprocess
 from distutils.core import Command
 
+from py2pack.get_metadata import get_metadata
+
 
 class CleanupCommand(Command):
     patterns = [".coverage", ".tox", ".venv", "build", "dist", "*.egg", "*.egg-info"]
@@ -91,8 +93,11 @@ class SPDXUpdateCommand(Command):
 def get_cmdclass():
     """Dictionary of all distutils commands defined in this module.
     """
-    return {"cleanup": CleanupCommand,
-            "spdx_update": SPDXUpdateCommand}
+    return {
+        "cleanup": CleanupCommand,
+        "spdx_update": SPDXUpdateCommand,
+        "get_metadata": get_metadata,
+    }
 
 
 def parse_requirements(requirements_file='requirements.txt'):

@@ -18,12 +18,11 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-import distutils.core
+import json
 import os
 import re
-import setuptools.sandbox
-import shutil
 import six
+import subprocess
 import tempfile
 
 
@@ -55,30 +54,26 @@ def _requires_from_setup_py(file):
     return data
 
 
-def _requires_from_setup_py_run(tar_file, setup_filename):
-    """run setup.py from a tarfile in a setuptools sandbox"""
-    tempdir = tempfile.mkdtemp()
-    setuptools.sandbox.DirectorySandbox(tempdir).run(lambda: tar_file.extractall(tempdir))
-
-    setup_filename = os.path.join(tempdir, setup_filename)
-    distutils.core._setup_stop_after = "config"
-    setuptools.sandbox.run_setup(setup_filename, "")
-    dist = distutils.core._setup_distribution
-    shutil.rmtree(tempdir)
-
+def _requires_from_setup_py_run(tmp_dir):
+    """run the get_metadata command via the setup.py in the given tmp_dir.
+    the output of get_metadata is json and is stored in a tempfile
+    which is then read in and returned as data"""
     data = {}
-    if dist.ext_modules:
-        data["is_extension"] = True
-    if dist.scripts:
-        data["scripts"] = dist.scripts
-    if dist.test_suite:
-        data["test_suite"] = dist.test_suite
-    if dist.install_requires:
-        data["install_requires"] = dist.install_requires
-    if dist.extras_require:
-        data["extras_require"] = dist.extras_require
-    if dist.data_files:
-        data["data_files"] = dist.data_files
-    if dist.entry_points:
-        data["entry_points"] = dist.entry_points
+    try:
+        current_cwd = os.getcwd()
+        tempfile_json = tempfile.NamedTemporaryFile()
+        # if there is a single subdir, enter that one
+        dir_list = os.listdir(tmp_dir)
+        if len(dir_list) == 1 and os.path.isdir(dir_list[0]):
+            os.chdir(os.path.join(tmp_dir, dir_list[0]))
+        else:
+            os.chdir(tmp_dir)
+        # generate a temporary json file which contains the metadata
+        cmd = "python setup.py -q --command-packages py2pack " \
+              "get_metadata -o %s " % tempfile_json.name
+        subprocess.check_output(cmd, shell=True)
+        with open(tempfile_json.name, "r") as f:
+            data = json.loads(f.read())
+    finally:
+        os.chdir(current_cwd)
     return data
