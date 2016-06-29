@@ -35,13 +35,8 @@ import re
 import sys
 import tarfile
 import urllib
-
-try:
-    import xmlrpc.client as xmlrpclib
-except:
-    import xmlrpclib
+from six.moves import xmlrpc_client
 import zipfile
-
 import jinja2
 
 import py2pack.proxy
@@ -50,7 +45,7 @@ import py2pack.utils
 
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')  # absolute template path
-pypi = xmlrpclib.ServerProxy('https://pypi.python.org/pypi')                      # XML RPC connection to PyPI
+pypi = xmlrpc_client.ServerProxy('https://pypi.python.org/pypi')
 env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))      # Jinja2 template environment
 env.filters['parenthesize_version'] = \
     lambda s: re.sub('([=<>]+)(.+)', r' (\1 \2)', s)
