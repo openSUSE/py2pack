@@ -133,6 +133,9 @@ def _requirement_find_lowest_possible(req):
         version_comp = None
         for dep in req.specs:
             version = pkg_resources.parse_version(dep[1])
+            # we don't want to have a not supported version as minimal version
+            if dep[0] == '!=':
+                continue
             # try to use the lowest version available
             # i.e. for ">=0.8.4,>=0.9.7", select "0.8.4"
             if (not version_dep or

@@ -72,8 +72,8 @@ class Py2packTestCase(unittest.TestCase):
         ("foobar>=1.0", ["foobar", ">=", "1.0"]),
         ("foobar>=1.0,>2", ["foobar", ">=", "1.0"]),
         ("foobar>=2,>1.0,<=3", ["foobar", ">", "1.0"]),
-        # FIXME (toabctl): this test should be activated and fixed!
-        # ("foobar>=2,>1.0,!=0.5", ["foobar", ">", "1.0"]),
+        ("foobar>=2,>1.0,!=0.5", ["foobar", ">", "1.0"]),
+        ("foobar!=0.5", ["foobar"]),
     )
     @unpack
     def test__requirement_find_lowest_possible(self, req, expected):
