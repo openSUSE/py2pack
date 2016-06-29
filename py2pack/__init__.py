@@ -205,6 +205,8 @@ def _augment_data_from_tarball(args, filename, data):
     else:
         names = _parse_setup_py(filename, setup_filename, data)
 
+    _canonicalize_setup_data(data)
+
     for name in names:
         match = re.match(docs_re, name)
         if match:
