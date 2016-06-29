@@ -44,21 +44,23 @@ import py2pack.requires
 import py2pack.utils
 
 
-TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')  # absolute template path
+TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 pypi = xmlrpc_client.ServerProxy('https://pypi.python.org/pypi')
-env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))      # Jinja2 template environment
+
+# setup jinja2 environment with custom filters
+env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))
 env.filters['parenthesize_version'] = \
     lambda s: re.sub('([=<>]+)(.+)', r' (\1 \2)', s)
 env.filters['basename'] = \
     lambda s: s[s.rfind('/') + 1:]
 
-SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spdx_license_map.p')  # absolute template path
+SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spdx_license_map.p')
 SDPX_LICENSES = pickle.load(open(SPDX_LICENSES_FILE, 'rb'))
 
 
 def list(args=None):
     print('listing all PyPI packages...')
-    for package in pypi.list_packages():                                    # nothing fancy
+    for package in pypi.list_packages():
         print(package)
 
 
@@ -71,7 +73,7 @@ def search(args):
 def show(args):
     check_or_set_version(args)
     print('showing package {0}...'.format(args.name))
-    data = pypi.release_data(args.name, args.version)                       # fetch all meta data
+    data = pypi.release_data(args.name, args.version)
     pprint.pprint(data)
 
 
@@ -79,11 +81,11 @@ def fetch(args):
     check_or_set_version(args)
     url = newest_download_url(args)
     if not url:
-        print("unable to find a source release for {0}!".format(args.name))  # pass out if nothing is found
+        print("unable to find a source release for {0}!".format(args.name))
         sys.exit(1)
     print('downloading package {0}-{1}...'.format(args.name, args.version))
     print('from {0}'.format(url['url']))
-    urllib.urlretrieve(url['url'], url['filename'])                         # download the object behind the URL
+    urllib.urlretrieve(url['url'], url['filename'])
 
 
 def _parse_setup_py(filename, setup_filename, data):
