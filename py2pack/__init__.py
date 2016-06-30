@@ -21,7 +21,7 @@ from __future__ import absolute_import
 __doc__ = 'Generate distribution packages from PyPI'
 __docformat__ = 'restructuredtext en'
 __author__ = 'Sascha Peilicke <sascha@peilicke.de>'
-__version__ = '0.6.2'
+__version__ = '0.6.3'
 
 import argparse
 import datetime
@@ -46,13 +46,6 @@ import py2pack.utils
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 pypi = xmlrpc_client.ServerProxy('https://pypi.python.org/pypi')
-
-# setup jinja2 environment with custom filters
-env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))
-env.filters['parenthesize_version'] = \
-    lambda s: re.sub('([=<>]+)(.+)', r' (\1 \2)', s)
-env.filters['basename'] = \
-    lambda s: s[s.rfind('/') + 1:]
 
 SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spdx_license_map.p')
 SDPX_LICENSES = pickle.load(open(SPDX_LICENSES_FILE, 'rb'))
@@ -153,20 +146,49 @@ def _augment_data_from_tarball(args, filename, data):
                 data["doc_files"].append("'" + match.group(1) + "'")
             else:
                 data["doc_files"].append(match.group(1))
-        if "test" in name.lower():                                          # Very broad check for testsuites
+        # Very broad check for testsuites
+        if "test" in name.lower():
             data["testsuite"] = True
+
+
+def _license_from_classifiers(data):
+    """try to get a license from the classifiers"""
+    classifiers = data.get('classifiers', [])
+    found_license = None
+    for c in classifiers:
+        if c.startswith("License :: OSI Approved :: "):
+            found_license = c.replace("License :: OSI Approved :: ", "")
+    return found_license
 
 
 def _normalize_license(data):
     """try to get SDPX license"""
     l = data.get('license', None)
+    if not l:
+        # try to get license from classifiers
+        l = _license_from_classifiers(data)
     if l and l in SDPX_LICENSES.keys():
         data['license'] = SDPX_LICENSES[l]
     else:
         data['license'] = ""
 
 
+def _prepare_template_env(template_dir):
+    # setup jinja2 environment with custom filters
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
+    env.filters['parenthesize_version'] = \
+        lambda s: re.sub('([=<>]+)(.+)', r' (\1 \2)', s)
+    env.filters['basename'] = \
+        lambda s: s[s.rfind('/') + 1:]
+    return env
+
+
 def generate(args):
+    # TODO (toabctl): remove this is a later release
+    if args.run:
+        warnings.warn("the '--run' switch is deprecated and a noop",
+                      DeprecationWarning)
+
     check_or_set_version(args)
     if not args.template:
         args.template = file_template_list()[0]
@@ -189,6 +211,7 @@ def generate(args):
 
     _normalize_license(data)
 
+    env = _prepare_template_env(TEMPLATE_DIR)
     template = env.get_template(args.template)
     result = template.render(data).encode('utf-8')                          # render template and encode properly
     outfile = open(args.filename, 'wb')                                     # write result to spec file
@@ -262,11 +285,6 @@ def main():
     parser_help.set_defaults(func=lambda args: parser.print_help())
 
     args = parser.parse_args()
-
-    # TODO (toabctl): remove this is a later release
-    if args.run:
-        warnings.warn("the '--run' switch is deprecated and a noop",
-                      DeprecationWarning)
 
     # set HTTP proxy if one is provided
     if args.proxy:

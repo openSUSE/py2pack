@@ -40,6 +40,12 @@ class Py2packRequiresTestCase(unittest.TestCase):
         with open(self.setup_py, 'w+') as f:
             f.write(content)
 
+    def test__set_source_encoding_utf8(self):
+        self._write_setup_py("")
+        py2pack.requires._set_source_encoding_utf8(self.setup_py)
+        with open(self.setup_py, 'r') as f:
+            self.assertEqual(f.read(), "# -*- coding: utf-8 -*-\n")
+
     def test__requires_from_setup_py_run(self):
         self._write_setup_py("""
 import setuptools
@@ -65,6 +71,38 @@ setuptools.setup(
         data = py2pack.requires._requires_from_setup_py_run(self.tmpdir)
         self.assertEqual(data, {'install_requires': ['foo', 'bar'],
                                 'tests_require': ['test']})
+
+    def test__requires_from_setup_py_run_distutils(self):
+        self._write_setup_py("""# -*- coding: utf8 -*-
+from distutils.core import setup
+setup(
+    version="0.3.1",
+    author="的å",
+    package_dir={"": "test"},
+    py_modules=["test"],
+    scripts=[
+        "bin/test",
+        ]
+)
+""")
+        data = py2pack.requires._requires_from_setup_py_run(self.tmpdir)
+        self.assertEqual(data, {'scripts': ['bin/test']})
+
+    def test__requires_from_setup_py_run_unknown_encoding(self):
+        self._write_setup_py("""
+from distutils.core import setup
+setup(
+    version="0.3.1",
+    author="的å",
+    package_dir={"": "test"},
+    py_modules=["test"],
+    scripts=[
+        "bin/test",
+        ]
+)
+""")
+        data = py2pack.requires._requires_from_setup_py_run(self.tmpdir)
+        self.assertEqual(data, {'scripts': ['bin/test']})
 
     @data(
         ("pywin32>=1.0;sys_platform=='win32'  # PSF", False),

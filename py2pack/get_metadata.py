@@ -41,19 +41,19 @@ class get_metadata(Command):
         data = {}
         if self.distribution.has_ext_modules():
             data["is_extension"] = True
-        if getattr(self.distribution, "scripts"):
+        if getattr(self.distribution, "scripts", None):
             data["scripts"] = self.distribution.scripts
-        if getattr(self.distribution, "test_suite"):
+        if getattr(self.distribution, "test_suite", None):
             data["test_suite"] = self.distribution.test_suite
-        if getattr(self.distribution, "install_requires"):
+        if getattr(self.distribution, "install_requires", None):
             data["install_requires"] = self.distribution.install_requires
-        if getattr(self.distribution, "extras_require"):
+        if getattr(self.distribution, "extras_require", None):
             data["extras_require"] = self.distribution.extras_require
-        if getattr(self.distribution, "tests_require"):
+        if getattr(self.distribution, "tests_require", None):
             data["tests_require"] = self.distribution.tests_require
-        if getattr(self.distribution, "data_files"):
+        if getattr(self.distribution, "data_files", None):
             data["data_files"] = self.distribution.data_files
-        if getattr(self.distribution, "entry_points"):
+        if getattr(self.distribution, "entry_points", None):
             data["entry_points"] = self.distribution.entry_points
 
         if self.output:
