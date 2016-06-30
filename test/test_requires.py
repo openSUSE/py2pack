@@ -66,6 +66,22 @@ setuptools.setup(
         self.assertEqual(data, {'install_requires': ['foo', 'bar'],
                                 'tests_require': ['test']})
 
+    def test__requires_from_setup_py_run_distutils(self):
+        self._write_setup_py("""# -*- coding: utf8 -*-
+from distutils.core import setup
+setup(
+    version="0.3.1",
+    author="的å",
+    package_dir={"": "test"},
+    py_modules=["test"],
+    scripts=[
+        "bin/test",
+        ]
+)
+""")
+        data = py2pack.requires._requires_from_setup_py_run(self.tmpdir)
+        self.assertEqual(data, {'scripts': ['bin/test']})
+
     @data(
         ("pywin32>=1.0;sys_platform=='win32'  # PSF", False),
         ("foobar", True),
