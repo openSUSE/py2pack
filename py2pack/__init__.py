@@ -40,6 +40,8 @@ from six.moves import filter
 from six.moves import map
 import zipfile
 import jinja2
+import warnings
+warnings.simplefilter('always', DeprecationWarning)
 
 import py2pack.proxy
 import py2pack.requires
@@ -196,14 +198,10 @@ def _canonicalize_setup_data(data):
 
 
 def _augment_data_from_tarball(args, filename, data):
-    setup_filename = "{0}-{1}/setup.py".format(args.name, args.version)
     docs_re = re.compile("{0}-{1}\/((?:AUTHOR|ChangeLog|CHANGES|COPYING|LICENSE|NEWS|README).*)".format(args.name, args.version), re.IGNORECASE)
     shell_metachars_re = re.compile("[|&;()<>\s]")
 
-    if args.run:
-        names = _run_setup_py(filename, data)
-    else:
-        names = _parse_setup_py(filename, setup_filename, data)
+    names = _run_setup_py(filename, data)
 
     _canonicalize_setup_data(data)
 
@@ -315,13 +313,21 @@ def main():
     parser_generate.add_argument('version', nargs='?', help='package version (optional)')
     parser_generate.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec', help='file template')
     parser_generate.add_argument('-f', '--filename', help='spec filename (optional)')
-    parser_generate.add_argument('-r', '--run', action='store_true', help='run setup.py (optional, risky!)')
+    # TODO (toabctl): remove this is a later release
+    parser_generate.add_argument(
+        '-r', '--run', action='store_true',
+        help='DEPRECATED and noop. will be removed in future releases!')
     parser_generate.set_defaults(func=generate)
 
     parser_help = subparsers.add_parser('help', help='show this help')
     parser_help.set_defaults(func=lambda args: parser.print_help())
 
     args = parser.parse_args()
+
+    # TODO (toabctl): remove this is a later release
+    if args.run:
+        warnings.warn("the '--run' switch is deprecated and a noop",
+                      DeprecationWarning)
 
     # set HTTP proxy if one is provided
     if args.proxy:
