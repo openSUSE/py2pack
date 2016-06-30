@@ -33,12 +33,10 @@ import pprint
 import pwd
 import re
 import sys
-import tarfile
 import urllib
 from six.moves import xmlrpc_client
 from six.moves import filter
 from six.moves import map
-import zipfile
 import jinja2
 import warnings
 warnings.simplefilter('always', DeprecationWarning)
@@ -90,25 +88,6 @@ def fetch(args):
     print('downloading package {0}-{1}...'.format(args.name, args.version))
     print('from {0}'.format(url['url']))
     urllib.urlretrieve(url['url'], url['filename'])
-
-
-def _parse_setup_py(filename, setup_filename, data):
-    """parse the given setup_filename from the filename (usually a tarball)
-    this is not executing the setup.py file but parsing it with regex."""
-    names = []
-    if tarfile.is_tarfile(filename):
-        with tarfile.open(filename) as f:
-            names = f.getnames()
-            d = py2pack.requires._requires_from_setup_py(
-                f.extractfile(setup_filename))
-            data.update(d)
-    elif zipfile.is_zipfile(filename):
-        with zipfile.ZipFile(filename) as f:
-            names = f.namelist()
-            with f.open(setup_filename) as s:
-                d = py2pack.requires._requires_from_setup_py(s)
-                data.update(d)
-    return names
 
 
 def _run_setup_py(tarfile, data):
