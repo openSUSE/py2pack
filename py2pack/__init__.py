@@ -153,7 +153,8 @@ def _augment_data_from_tarball(args, filename, data):
                 data["doc_files"].append("'" + match.group(1) + "'")
             else:
                 data["doc_files"].append(match.group(1))
-        if "test" in name.lower():                                          # Very broad check for testsuites
+        # Very broad check for testsuites
+        if "test" in name.lower():
             data["testsuite"] = True
 
 

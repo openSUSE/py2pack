@@ -71,13 +71,8 @@ BuildArch:      noarch
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 {%- if testsuite or test_suite %}
-
 %check
-  {%- if test_suite %}
 python setup.py test
-  {%- else %}
-nosetests
-  {%- endif %}
 {%- endif %}
 
 %files
