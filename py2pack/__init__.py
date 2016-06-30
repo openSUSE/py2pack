@@ -157,9 +157,22 @@ def _augment_data_from_tarball(args, filename, data):
             data["testsuite"] = True
 
 
+def _license_from_classifiers(data):
+    """try to get a license from the classifiers"""
+    classifiers = data.get('classifiers', [])
+    found_license = None
+    for c in classifiers:
+        if c.startswith("License :: OSI Approved :: "):
+            found_license = c.replace("License :: OSI Approved :: ", "")
+    return found_license
+
+
 def _normalize_license(data):
     """try to get SDPX license"""
     l = data.get('license', None)
+    if not l:
+        # try to get license from classifiers
+        l = _license_from_classifiers(data)
     if l and l in SDPX_LICENSES.keys():
         data['license'] = SDPX_LICENSES[l]
     else:
