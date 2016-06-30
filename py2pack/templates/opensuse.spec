@@ -25,13 +25,15 @@ Group:          Development/Languages/Python
 Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRequires:  python-devel {%- if requires_python %} = {{ requires_python }} {% endif %}
 BuildRequires:  python-setuptools
-{%- for req in install_requires %}
+{%- for req in install_requires|sort %}
 BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
-Requires:       python-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
 {%- if source_url.endswith('.zip') %}
 BuildRequires:  unzip
 {%- endif %}
+{%- for req in install_requires|sort %}
+Requires:       python-{{ req|replace('(','')|replace(')','') }}
+{%- endfor %}
 {%- if extras_require %}
 {%- for reqlist in extras_require.values() %}
 {%- for req in reqlist %}
