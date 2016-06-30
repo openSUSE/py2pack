@@ -20,6 +20,9 @@ from __future__ import print_function
 
 import json
 import os
+import pkg_resources
+from six.moves import filter
+from six.moves import map
 import subprocess
 import tempfile
 
@@ -47,3 +50,43 @@ def _requires_from_setup_py_run(tmp_dir):
     finally:
         os.chdir(current_cwd)
     return data
+
+
+def _requirement_filter_by_marker(req):
+    """check if the requirement is satisfied by the marker"""
+    if hasattr(req, 'marker') and req.marker:
+        # TODO (toabctl): currently we hardcode python 2.7 and linux2
+        # see https://www.python.org/dev/peps/pep-0508/#environment-markers
+        marker_env = {'python_version': '2.7', 'sys_platform': 'linux'}
+        if not req.marker.evaluate(environment=marker_env):
+            return False
+    return True
+
+
+def _requirement_find_lowest_possible(req):
+        """ find lowest required version"""
+        version_dep = None
+        version_comp = None
+        for dep in req.specs:
+            version = pkg_resources.parse_version(dep[1])
+            # we don't want to have a not supported version as minimal version
+            if dep[0] == '!=':
+                continue
+            # try to use the lowest version available
+            # i.e. for ">=0.8.4,>=0.9.7", select "0.8.4"
+            if (not version_dep or
+                    version < pkg_resources.parse_version(version_dep)):
+                version_dep = dep[1]
+                version_comp = dep[0]
+        return filter(lambda x: x is not None,
+                      [req.unsafe_name, version_comp, version_dep])
+
+
+def _requirements_sanitize(req_list):
+    filtered_req_list = map(
+        _requirement_find_lowest_possible, filter(
+            _requirement_filter_by_marker,
+            map(lambda x: pkg_resources.Requirement.parse(x), req_list)
+        )
+    )
+    return [" ".join(req) for req in filtered_req_list]
