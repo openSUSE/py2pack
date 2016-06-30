@@ -28,6 +28,12 @@ BuildRequires:  python-setuptools
 {%- for req in install_requires|sort %}
 BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
+{%- if tests_require %}
+# test requirements
+{%- for req in tests_require|sort %}
+BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
+{%- endfor %}
+{%- endif %}
 {%- if source_url.endswith('.zip') %}
 BuildRequires:  unzip
 {%- endif %}
