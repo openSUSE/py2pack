@@ -33,13 +33,11 @@ import pprint
 import pwd
 import re
 import sys
-import tarfile
 import urllib
 from six.moves import xmlrpc_client
-from six.moves import filter
-from six.moves import map
-import zipfile
 import jinja2
+import warnings
+warnings.simplefilter('always', DeprecationWarning)
 
 import py2pack.proxy
 import py2pack.requires
@@ -90,25 +88,6 @@ def fetch(args):
     urllib.urlretrieve(url['url'], url['filename'])
 
 
-def _parse_setup_py(filename, setup_filename, data):
-    """parse the given setup_filename from the filename (usually a tarball)
-    this is not executing the setup.py file but parsing it with regex."""
-    names = []
-    if tarfile.is_tarfile(filename):
-        with tarfile.open(filename) as f:
-            names = f.getnames()
-            d = py2pack.requires._requires_from_setup_py(
-                f.extractfile(setup_filename))
-            data.update(d)
-    elif zipfile.is_zipfile(filename):
-        with zipfile.ZipFile(filename) as f:
-            names = f.namelist()
-            with f.open(setup_filename) as s:
-                d = py2pack.requires._requires_from_setup_py(s)
-                data.update(d)
-    return names
-
-
 def _run_setup_py(tarfile, data):
     with py2pack.utils._extract_to_tempdir(tarfile) as (tmp_dir, names):
         d = py2pack.requires._requires_from_setup_py_run(tmp_dir)
@@ -116,66 +95,28 @@ def _run_setup_py(tarfile, data):
     return names
 
 
-def _requirement_filter_by_marker(req):
-    """check if the requirement is satisfied by the marker"""
-    if hasattr(req, 'marker') and req.marker:
-        # TODO (toabctl): currently we hardcode python 2.7 and linux2
-        # see https://www.python.org/dev/peps/pep-0508/#environment-markers
-        marker_env = {'python_version': '2.7', 'sys_platform': 'linux'}
-        if not req.marker.evaluate(environment=marker_env):
-            return False
-    return True
-
-
-def _requirement_find_lowest_possible(req):
-        """ find lowest required version"""
-        version_dep = None
-        version_comp = None
-        for dep in req.specs:
-            version = pkg_resources.parse_version(dep[1])
-            # we don't want to have a not supported version as minimal version
-            if dep[0] == '!=':
-                continue
-            # try to use the lowest version available
-            # i.e. for ">=0.8.4,>=0.9.7", select "0.8.4"
-            if (not version_dep or
-                    version < pkg_resources.parse_version(version_dep)):
-                version_dep = dep[1]
-                version_comp = dep[0]
-        return filter(lambda x: x is not None,
-                      [req.unsafe_name, version_comp, version_dep])
-
-
-def _requirements_sanitize(req_list):
-    filtered_req_list = map(
-        _requirement_find_lowest_possible, filter(
-            _requirement_filter_by_marker,
-            map(lambda x: pkg_resources.Requirement.parse(x), req_list)
-        )
-    )
-    return [" ".join(req) for req in filtered_req_list]
-
-
 def _canonicalize_setup_data(data):
     if "install_requires" in data:
         # install_requires may be a string, convert to list of strings:
         if isinstance(data["install_requires"], str):
             data["install_requires"] = data["install_requires"].splitlines()
-        data["install_requires"] = _requirements_sanitize(data["install_requires"])
+        data["install_requires"] = \
+            py2pack.requires._requirements_sanitize(data["install_requires"])
 
     if "tests_require" in data:
         # tests_require may be a string, convert to list of strings:
         if isinstance(data["tests_require"], str):
             data["tests_require"] = data["tests_require"].splitlines()
-        data["tests_require"] = _requirements_sanitize(data["tests_require"])
+        data["tests_require"] = \
+            py2pack.requires._requirements_sanitize(data["tests_require"])
 
     if "extras_require" in data:
         # extras_require value may be a string, convert to list of strings:
         for (key, value) in data["extras_require"].items():
             if isinstance(value, str):
                 data["extras_require"][key] = value.splitlines()
-            data["extras_require"][key] = _requirements_sanitize(
-                data["extras_require"][key])
+            data["extras_require"][key] = \
+                py2pack.requires._requirements_sanitize(data["extras_require"][key])
 
     if "data_files" in data:
         # data_files may be a sequence of files without a target directory:
@@ -196,14 +137,10 @@ def _canonicalize_setup_data(data):
 
 
 def _augment_data_from_tarball(args, filename, data):
-    setup_filename = "{0}-{1}/setup.py".format(args.name, args.version)
     docs_re = re.compile("{0}-{1}\/((?:AUTHOR|ChangeLog|CHANGES|COPYING|LICENSE|NEWS|README).*)".format(args.name, args.version), re.IGNORECASE)
     shell_metachars_re = re.compile("[|&;()<>\s]")
 
-    if args.run:
-        names = _run_setup_py(filename, data)
-    else:
-        names = _parse_setup_py(filename, setup_filename, data)
+    names = _run_setup_py(filename, data)
 
     _canonicalize_setup_data(data)
 
@@ -315,13 +252,21 @@ def main():
     parser_generate.add_argument('version', nargs='?', help='package version (optional)')
     parser_generate.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec', help='file template')
     parser_generate.add_argument('-f', '--filename', help='spec filename (optional)')
-    parser_generate.add_argument('-r', '--run', action='store_true', help='run setup.py (optional, risky!)')
+    # TODO (toabctl): remove this is a later release
+    parser_generate.add_argument(
+        '-r', '--run', action='store_true',
+        help='DEPRECATED and noop. will be removed in future releases!')
     parser_generate.set_defaults(func=generate)
 
     parser_help = subparsers.add_parser('help', help='show this help')
     parser_help.set_defaults(func=lambda args: parser.print_help())
 
     args = parser.parse_args()
+
+    # TODO (toabctl): remove this is a later release
+    if args.run:
+        warnings.warn("the '--run' switch is deprecated and a noop",
+                      DeprecationWarning)
 
     # set HTTP proxy if one is provided
     if args.proxy:

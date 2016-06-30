@@ -63,12 +63,6 @@ generate a spec file (named 'python-zope.interface.spec'):
 
 The source tarball and the package recipe is all you need to generate the RPM_
 (or DEB_) file.
-
-.. note:: The "generate" operation is parsing the setup.py and tries to extract
-the needed information to generate a .spec file. That doesn't work in all cases.
-There is a "--run" option (:code:`py2pack generate --run`) which may give better
-results.
-
 This final step may depend on which distribution you use. Again,
 for openSUSE_ (and by using the `Open Build Service`_), the complete recipe is:
 

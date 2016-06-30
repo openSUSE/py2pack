@@ -20,73 +20,11 @@ from __future__ import print_function
 
 import json
 import os
-import re
-import six
+import pkg_resources
+from six.moves import filter
+from six.moves import map
 import subprocess
-import sys
 import tempfile
-import textwrap
-
-
-def _safe_eval(descr, code, fallback):
-    try:
-        return eval(code)
-    except:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        code = re.sub("(?m)^", "  ", code)
-        sys.stderr.write(
-            textwrap.dedent("""\
-
-            WARNING: Exception encountered:
-
-              %s: %s
-
-            whilst eval'ing code for '%s' parameter in setup.py:
-
-            %s
-
-            Try regenerating with the --run option.
-            """) % (exc_type.__name__, exc_value, descr, code))
-        return fallback
-
-
-def _requires_from_setup_py(file):
-    """read requirements from the setup.py file"""
-    data = {}
-    contents = six.u(file.read())
-    fixme = "FIXME: failed to extract %s from setup.py"
-    match = re.search("ext_modules", contents)
-    if match:
-        data["is_extension"] = True
-    match = re.search("[(,]\s*scripts\s*=\s*(\[.*?\])", contents, flags=re.DOTALL)
-    if match:
-        data["scripts"] = \
-            _safe_eval("scripts", match.group(1), [fixme % "scripts"])
-    match = re.search("test_suite\s*=\s*(.*)", contents)
-    if match:
-        data["test_suite"] = \
-            _safe_eval("test_suite", match.group(1), [fixme % "test_suite"])
-    match = re.search("install_requires\s*=\s*(\[.*?\])", contents, flags=re.DOTALL)
-    if match:
-        data["install_requires"] = \
-            _safe_eval("install_requires", match.group(1), [fixme % "install_requires"])
-    match = re.search("extras_require\s*=\s*(\{.*?\})", contents, flags=re.DOTALL)
-    if match:
-        data["extras_require"] = \
-            _safe_eval("extras_require", match.group(1), [fixme % "extras_require"])
-    match = re.search("tests_require\s*=\s*(\{.*?\})", contents, flags=re.DOTALL)
-    if match:
-        data["tests_require"] = \
-            _safe_eval("tests_require", match.group(1), [fixme % "tests_require"])
-    match = re.search("data_files\s*=\s*(\[.*?\])", contents, flags=re.DOTALL)
-    if match:
-        data["data_files"] = \
-            _safe_eval("data_files", match.group(1), [fixme % "data_files"])
-    match = re.search('entry_points\s*=\s*(\{.*?\}|""".*?"""|".*?")', contents, flags=re.DOTALL)
-    if match:
-        data["entry_points"] = \
-            _safe_eval("entry_points", match.group(1), [fixme % "entry_points"])
-    return data
 
 
 def _requires_from_setup_py_run(tmp_dir):
@@ -112,3 +50,43 @@ def _requires_from_setup_py_run(tmp_dir):
     finally:
         os.chdir(current_cwd)
     return data
+
+
+def _requirement_filter_by_marker(req):
+    """check if the requirement is satisfied by the marker"""
+    if hasattr(req, 'marker') and req.marker:
+        # TODO (toabctl): currently we hardcode python 2.7 and linux2
+        # see https://www.python.org/dev/peps/pep-0508/#environment-markers
+        marker_env = {'python_version': '2.7', 'sys_platform': 'linux'}
+        if not req.marker.evaluate(environment=marker_env):
+            return False
+    return True
+
+
+def _requirement_find_lowest_possible(req):
+        """ find lowest required version"""
+        version_dep = None
+        version_comp = None
+        for dep in req.specs:
+            version = pkg_resources.parse_version(dep[1])
+            # we don't want to have a not supported version as minimal version
+            if dep[0] == '!=':
+                continue
+            # try to use the lowest version available
+            # i.e. for ">=0.8.4,>=0.9.7", select "0.8.4"
+            if (not version_dep or
+                    version < pkg_resources.parse_version(version_dep)):
+                version_dep = dep[1]
+                version_comp = dep[0]
+        return filter(lambda x: x is not None,
+                      [req.unsafe_name, version_comp, version_dep])
+
+
+def _requirements_sanitize(req_list):
+    filtered_req_list = map(
+        _requirement_find_lowest_possible, filter(
+            _requirement_filter_by_marker,
+            map(lambda x: pkg_resources.Requirement.parse(x), req_list)
+        )
+    )
+    return [" ".join(req) for req in filtered_req_list]
