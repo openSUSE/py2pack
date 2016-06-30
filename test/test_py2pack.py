@@ -16,6 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import unittest
 from ddt import ddt, data, unpack
 
@@ -71,6 +72,14 @@ class Py2packTestCase(unittest.TestCase):
     def test_license_from_classifiers(self, value, expected):
         d = {'classifiers': value}
         self.assertEqual(py2pack._license_from_classifiers(d), expected)
+
+    def test__prepare_template_env(self):
+        template_dir = os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), '..', 'py2pack', 'templates')
+        env = py2pack._prepare_template_env(template_dir)
+        self.assertTrue('opensuse.spec' in env.list_templates())
+        self.assertTrue('parenthesize_version' in env.filters)
+        self.assertTrue('basename' in env.filters)
 
     @data(
         (
