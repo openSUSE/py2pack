@@ -167,6 +167,11 @@ def _normalize_license(data):
 
 
 def generate(args):
+    # TODO (toabctl): remove this is a later release
+    if args.run:
+        warnings.warn("the '--run' switch is deprecated and a noop",
+                      DeprecationWarning)
+
     check_or_set_version(args)
     if not args.template:
         args.template = file_template_list()[0]
@@ -262,11 +267,6 @@ def main():
     parser_help.set_defaults(func=lambda args: parser.print_help())
 
     args = parser.parse_args()
-
-    # TODO (toabctl): remove this is a later release
-    if args.run:
-        warnings.warn("the '--run' switch is deprecated and a noop",
-                      DeprecationWarning)
 
     # set HTTP proxy if one is provided
     if args.proxy:
