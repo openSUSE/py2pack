@@ -34,6 +34,7 @@ import pwd
 import re
 import sys
 import urllib
+from six.moves.urllib.request import urlretrieve
 from six.moves import xmlrpc_client
 import jinja2
 import warnings
@@ -78,7 +79,7 @@ def fetch(args):
         sys.exit(1)
     print('downloading package {0}-{1}...'.format(args.name, args.version))
     print('from {0}'.format(url['url']))
-    urllib.urlretrieve(url['url'], url['filename'])
+    urlretrieve(url['url'], url['filename'])
 
 
 def _run_setup_py(tarfile, data):
