@@ -48,15 +48,7 @@ Suggests:       python-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
 {%- endif %}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-%if 0%{?suse_version} && 0%{?suse_version} <= 1110
-{%- if is_extension %}
-%{!?python_sitearch: %global python_sitearch %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
-{%- else %}
-%{!?python_sitelib: %global python_sitelib %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
-%else
 BuildArch:      noarch
-{%- endif %}
-%endif
 
 %description
 {{ description }}
