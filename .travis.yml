@@ -1,16 +1,23 @@
-# Docker Infrastructure (see http://blog.travis-ci.com/2014-12-17-faster-builds-with-container-based-infrastructure/ )
 sudo: false
-
 language: python
 matrix:
   include:
-    - python: 2.7
-      env: TOX_ENV=pep8
-    - python: 2.7
-      env: TOX_ENV=py27
-    - python: 3.5
-      env: TOX_ENV=py35
+  - python: 2.7
+    env: TOX_ENV=pep8
+  - python: 2.7
+    env: TOX_ENV=py27
+  - python: 3.5
+    env: TOX_ENV=py35
 install:
-  - pip install tox
+- pip install tox
 script:
-  - tox -e $TOX_ENV
+- tox -e $TOX_ENV
+deploy:
+  provider: pypi
+  user: suse
+  password:
+    secure: LbQtZR8I7ZgQoiNoDhCiWVPI8Q8GVCrnXVBooNutHRZzOnFKew3g7DKCEQjKKZCUkrbcs55Jl1y0uVkL31HFdciAiYMV2ZS0To5ari5ZqqHF82OCFkqZKRe7APYCVgJ+wuhLfbBy6XWNU9aHD0TLMV5bz4kHXQJ3qfgUfMvNJJ4=
+  on:
+    tags: true
+    distributions: sdist bdist_wheel
+    repo: saschpe/py2pack
