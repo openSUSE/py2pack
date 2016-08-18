@@ -40,7 +40,7 @@ setup(
     long_description=long_description,
     author=py2pack.__author__.rsplit(' ', 1)[0],
     author_email=py2pack.__author__.rsplit(' ', 1)[1][1:-1],
-    url='http://github.com/saschpe/py2pack',
+    url='http://github.com/openSUSE/py2pack',
     scripts=['scripts/py2pack'],
     packages=['py2pack'],
     package_data={'py2pack': ['templates/*', 'spdx_license_map.p']},

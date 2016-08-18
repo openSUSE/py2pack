@@ -38,7 +38,7 @@
     <manvolnum>1</manvolnum>
     <refmiscinfo class="version">@VERSION@</refmiscinfo>
     <refmiscinfo class="source"
-      >http://github.com/saschpe/py2pack</refmiscinfo>
+      >http://github.com/openSUSE/py2pack</refmiscinfo>
     <!--<refmiscinfo class="manual"></refmiscinfo>-->
   </refmeta>
 
