@@ -20,4 +20,4 @@ deploy:
   on:
     tags: true
     distributions: sdist bdist_wheel
-    repo: saschpe/py2pack
+    repo: openSUSE/py2pack

@@ -1,8 +1,8 @@
 Py2pack: Generate distribution packages from PyPI
 =================================================
 
-.. image:: https://travis-ci.org/saschpe/py2pack.png?branch=master
-        :target: https://travis-ci.org/saschpe/py2pack
+.. image:: https://travis-ci.org/openSUSE/py2pack.png?branch=master
+        :target: https://travis-ci.org/openSUSE/py2pack
 
 
 This script allows to generate RPM spec or DEB dsc files from Python modules.
@@ -129,7 +129,7 @@ on your system.
 .. _DEB: http://en.wikipedia.org/wiki/Deb_(file_format)
 .. _`Python Package Index`: https://pypi.python.org/pypi/rapport
 .. _`Open Build Service`: https://build.opensuse.org/package/show?package=rapport&project=devel:languages:python
-.. _`the repository`: https://github.com/saschpe/py2pack
+.. _`the repository`: https://github.com/openSUSE/py2pack
 .. _`nose`: https://nose.readthedocs.org
 .. _`tox`: http://testrun.org/tox
 
