@@ -15,35 +15,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from contextlib import contextmanager
-import os
-import shutil
 import tarfile
-import tempfile
 import zipfile
-from six.moves import filter
 
 
-@contextmanager
-def _extract_to_tempdir(filename):
-    """extract the given filename to a tempdir and change the cwd to the
-    new tempdir"""
-    tempdir = tempfile.mkdtemp(prefix="py2pack_")
-    current_cwd = os.getcwd()
+def _get_archive_filelist(filename):
     names = []
-    try:
-        if tarfile.is_tarfile(filename):
-            with tarfile.open(filename) as f:
-                names = f.getnames()
-                f.extractall(tempdir)
-        elif zipfile.is_zipfile(filename):
-            with zipfile.ZipFile(filename) as f:
-                names = f.namelist()
-                f.extractall(tempdir)
-        else:
-            raise Exception("Can not extract '%s'. Not a tar or zip file" % filename)
-        os.chdir(tempdir)
-        yield tempdir, filter(lambda x: x != './', names)
-    finally:
-        os.chdir(current_cwd)
-        shutil.rmtree(tempdir)
+    if tarfile.is_tarfile(filename):
+        with tarfile.open(filename) as f:
+            names = sorted(f.getnames())
+    elif zipfile.is_zipfile(filename):
+        with zipfile.ZipFile(filename) as f:
+            names = sorted(f.namelist())
+    else:
+        raise Exception("Can not get filenames from '%s'. "
+                        "Not a tar or zip file" % filename)
+    if "./" in names:
+        names.remove("./")
+    return names

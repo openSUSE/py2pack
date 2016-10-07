@@ -41,6 +41,8 @@ import jinja2
 import warnings
 warnings.simplefilter('always', DeprecationWarning)
 
+from metaextract import utils as meta_utils
+
 import py2pack.proxy
 import py2pack.requires
 import py2pack.utils
@@ -74,8 +76,12 @@ def show(args):
 
 def metadata(args):
     """extra the metadata from the given tarball"""
-    data = {}
-    _run_setup_py(args.filename, data)
+    warnings.warn("the 'metadata' commands is deprecated and will be removed "
+                  " in 2017. Please use directly the command 'metaextract' "
+                  "which is a requirement for py2pack",
+                  DeprecationWarning)
+
+    data = meta_utils.from_archive(args.filename)
     print(json.dumps(data, indent=4, sort_keys=True))
 
 
@@ -90,29 +96,22 @@ def fetch(args):
     urlretrieve(url['url'], url['filename'])
 
 
-def _run_setup_py(tarfile, data):
-    with py2pack.utils._extract_to_tempdir(tarfile) as (tmp_dir, names):
-        d = py2pack.requires._requires_from_setup_py_run(tmp_dir)
-    data.update(d)
-    return names
-
-
 def _canonicalize_setup_data(data):
-    if "install_requires" in data:
+    if data.get('install_requires', None):
         # install_requires may be a string, convert to list of strings:
         if isinstance(data["install_requires"], str):
             data["install_requires"] = data["install_requires"].splitlines()
         data["install_requires"] = \
             py2pack.requires._requirements_sanitize(data["install_requires"])
 
-    if "tests_require" in data:
+    if data.get('tests_require', None):
         # tests_require may be a string, convert to list of strings:
         if isinstance(data["tests_require"], str):
             data["tests_require"] = data["tests_require"].splitlines()
         data["tests_require"] = \
             py2pack.requires._requirements_sanitize(data["tests_require"])
 
-    if "extras_require" in data:
+    if data.get('extras_require', None):
         # extras_require value may be a string, convert to list of strings:
         for (key, value) in data["extras_require"].items():
             if isinstance(value, str):
@@ -120,7 +119,7 @@ def _canonicalize_setup_data(data):
             data["extras_require"][key] = \
                 py2pack.requires._requirements_sanitize(data["extras_require"][key])
 
-    if "data_files" in data:
+    if data.get('data_files', None):
         # data_files may be a sequence of files without a target directory:
         if len(data["data_files"]) and isinstance(data["data_files"][0], str):
             data["data_files"] = [("", data["data_files"])]
@@ -130,7 +129,7 @@ def _canonicalize_setup_data(data):
             (dir if (len(dir) and dir[0] == '/') else os.path.join(prefix, dir), files)
             for (dir, files) in data["data_files"]]
 
-    if "entry_points" in data:
+    if data.get('entry_points', None):
         # entry_points may be a string with .ini-style sections or a dict.
         # convert to a dict and parse it
         data["entry_points"] = pkg_resources.EntryPoint.parse_map(data["entry_points"])
@@ -142,8 +141,10 @@ def _augment_data_from_tarball(args, filename, data):
     docs_re = re.compile("{0}-{1}\/((?:AUTHOR|ChangeLog|CHANGES|COPYING|LICENSE|NEWS|README).*)".format(args.name, args.version), re.IGNORECASE)
     shell_metachars_re = re.compile("[|&;()<>\s]")
 
-    names = _run_setup_py(filename, data)
+    data_archive = meta_utils.from_archive(filename)
+    data.update(data_archive['data'])
 
+    names = py2pack.utils._get_archive_filelist(filename)
     _canonicalize_setup_data(data)
 
     for name in names:
@@ -275,7 +276,7 @@ def main():
     parser_show.set_defaults(func=show)
 
     parser_metadata = subparsers.add_parser('metadata',
-                                            help='show metadata for a given tarball')
+                                            help='show metadata for a given tarball (DEPRECATED)')
     parser_metadata.add_argument('filename', help='filename')
     parser_metadata.set_defaults(func=metadata)
 
