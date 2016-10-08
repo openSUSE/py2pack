@@ -17,8 +17,6 @@ import re
 import subprocess
 from distutils.core import Command
 
-from py2pack.get_metadata import get_metadata
-
 
 class DocCommand(Command):
     description = "Generate manpage, HTML and PDF documentation"
@@ -72,7 +70,6 @@ def get_cmdclass():
     """
     return {
         "spdx_update": SPDXUpdateCommand,
-        "get_metadata": get_metadata,
     }
 
 

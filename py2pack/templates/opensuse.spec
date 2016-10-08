@@ -25,10 +25,12 @@ Group:          Development/Languages/Python
 Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRequires:  python-devel {%- if requires_python %} = {{ requires_python }} {% endif %}
 BuildRequires:  python-setuptools
+{%- if install_requires and install_requires is not none %}
 {%- for req in install_requires|sort %}
 BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
-{%- if tests_require %}
+{%- endif %}
+{%- if tests_require and tests_require is not none %}
 # test requirements
 {%- for req in tests_require|sort %}
 BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
@@ -37,10 +39,12 @@ BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
 {%- if source_url.endswith('.zip') %}
 BuildRequires:  unzip
 {%- endif %}
+{%- if install_requires and install_requires is not none %}
 {%- for req in install_requires|sort %}
 Requires:       python-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
-{%- if extras_require %}
+{%- endif %}
+{%- if extras_require and extras_require is not none %}
 {%- for reqlist in extras_require.values() %}
 {%- for req in reqlist %}
 Suggests:       python-{{ req|replace('(','')|replace(')','') }}
@@ -69,20 +73,25 @@ python setup.py test
 
 %files
 %defattr(-,root,root,-)
-{%- if doc_files %}
+{%- if doc_files and doc_files is not none %}
 %doc {{ doc_files|join(" ") }}
 {%- endif %}
+{%- if scripts and scripts is not none %}
 {%- for script in scripts %}
 %{_bindir}/{{ script|basename }}
 {%- endfor %}
+{%- endif %}
+{%- if console_scripts and console_scripts is not none %}
 {%- for script in console_scripts %}
 %{_bindir}/{{ script }}
 {%- endfor %}
+{%- endif %}
 {%- if is_extension %}
 %{python_sitearch}/*
 {%- else %}
 %{python_sitelib}/*
 {%- endif %}
+{%- if data_files and data_files is not none %}
 {%- for dir, files in data_files %}
 {%- set dir = dir |
     replace('/usr/share/doc/'~name, '%doc %{_defaultdocdir}/%{name}', 1) |
@@ -94,5 +103,6 @@ python setup.py test
 {{ dir }}/{{file|basename }}
 {%- endfor %}
 {%- endfor %}
+{%- endif %}
 
 %changelog

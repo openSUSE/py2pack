@@ -53,22 +53,14 @@ class Py2packUtilsTestCase(unittest.TestCase):
         shutil.make_archive(zipfile_name, "zip", root_dir=zip_data)
         return zipfile_name + ".zip"
 
-    def test__extract_to_tempdir_tarfile(self):
-        tarfile_name = self._create_tarfile()
+    def test__get_archive_filelist_tarfile(self):
+        file_name = self._create_tarfile()
         expected_files = sorted(["file1", "file2", "file3"])
-        with py2pack.utils._extract_to_tempdir(tarfile_name) as (tmp_dir, names):
-            self.assertEqual(sorted(os.listdir(tmp_dir)),
-                             expected_files)
-            self.assertEqual(sorted(names), expected_files)
-        # tmpdir should be removed at the end
-        self.assertEqual(os.path.exists(tmp_dir), False)
+        files = py2pack.utils._get_archive_filelist(file_name)
+        self.assertEqual(expected_files, files)
 
-    def test__extract_to_tempdir_zipfile(self):
-        zipfile_name = self._create_zipfile()
+    def test__get_archive_filelist_zipfile(self):
+        file_name = self._create_zipfile()
         expected_files = sorted(["file1", "file2", "file3"])
-        with py2pack.utils._extract_to_tempdir(zipfile_name) as (tmp_dir, names):
-            self.assertEqual(sorted(os.listdir(tmp_dir)),
-                             expected_files)
-            self.assertEqual(sorted(names), expected_files)
-        # tmpdir should be removed at the end
-        self.assertEqual(os.path.exists(tmp_dir), False)
+        files = py2pack.utils._get_archive_filelist(file_name)
+        self.assertEqual(expected_files, files)
