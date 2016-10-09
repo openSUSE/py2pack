@@ -18,6 +18,7 @@
 import os
 import pkg_resources
 import shutil
+import sys
 import tempfile
 import unittest
 from ddt import ddt, data, unpack
@@ -43,8 +44,8 @@ class Py2packRequiresTestCase(unittest.TestCase):
     @data(
         ("pywin32>=1.0;sys_platform=='win32'  # PSF", False),
         ("foobar", True),
-        ("foobar;python_version=='2.7'", True),
-        ("foobar;python_version=='3.5'", False),
+        ("foobar;python_version=='2.7'", sys.version_info[:2] == (2, 7)),
+        ("foobar;python_version=='3.5'", sys.version_info[:2] == (3, 5)),
     )
     @unpack
     def test__requirement_filter_by_marker(self, req, expected):
