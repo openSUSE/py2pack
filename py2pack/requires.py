@@ -17,6 +17,7 @@
 
 from __future__ import absolute_import
 from __future__ import print_function
+import sys
 
 import pkg_resources
 from six.moves import filter
@@ -26,9 +27,7 @@ from six.moves import map
 def _requirement_filter_by_marker(req):
     """check if the requirement is satisfied by the marker"""
     if hasattr(req, 'marker') and req.marker:
-        # TODO (toabctl): currently we hardcode python 2.7 and linux2
-        # see https://www.python.org/dev/peps/pep-0508/#environment-markers
-        marker_env = {'python_version': '2.7', 'sys_platform': 'linux'}
+        marker_env = {'python_version': '.'.join(map(str, sys.version_info[:2])), 'sys_platform': sys.platform}
         if not req.marker.evaluate(environment=marker_env):
             return False
     return True
