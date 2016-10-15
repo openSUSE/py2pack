@@ -55,6 +55,7 @@ class Py2packTestCase(unittest.TestCase):
         ("", [], ""),
         ("Apache 2.0", [], "Apache-2.0"),
         ("", ["License :: OSI Approved :: Apache Software License"], "Apache-2.0"),
+        ("BSD", [], "BSD (FIXME:No SPDX)"),
     )
     @unpack
     def test_normalize_license(self, licenses, classifiers, expected_result):

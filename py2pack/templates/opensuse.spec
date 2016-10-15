@@ -52,7 +52,9 @@ Suggests:       python-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
 {%- endif %}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+{%- if not has_ext_modules %}
 BuildArch:      noarch
+{%- endif %}
 
 %description
 {{ description }}
@@ -61,7 +63,7 @@ BuildArch:      noarch
 %setup -q -n {{ name }}-%{version}
 
 %build
-{% if is_extension %}CFLAGS="%{optflags}" {% endif %}python setup.py build
+{% if has_ext_modules %}CFLAGS="%{optflags}" {% endif %}python setup.py build
 
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
@@ -86,7 +88,7 @@ python setup.py test
 %{_bindir}/{{ script }}
 {%- endfor %}
 {%- endif %}
-{%- if is_extension %}
+{%- if has_ext_modules %}
 %{python_sitearch}/*
 {%- else %}
 %{python_sitelib}/*
