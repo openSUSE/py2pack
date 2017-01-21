@@ -11,10 +11,7 @@ package Python modules.
    :maxdepth: 2
 
    templates
-
-CLI
----
-.. program-output:: py2pack -h
+   cli
 
 
 Indices and tables
