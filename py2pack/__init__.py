@@ -26,7 +26,6 @@ __version__ = '0.6.4'
 import argparse
 import datetime
 import glob
-import json
 import os
 import pickle
 import pkg_resources
@@ -85,17 +84,6 @@ def show(args):
     print('showing package {0}...'.format(args.name))
     data = pypi.release_data(args.name, args.version)
     pprint.pprint(data)
-
-
-def metadata(args):
-    """extra the metadata from the given tarball"""
-    warnings.warn("the 'metadata' commands is deprecated and will be removed "
-                  " in 2017. Please use directly the command 'metaextract' "
-                  "which is a requirement for py2pack",
-                  DeprecationWarning)
-
-    data = meta_utils.from_archive(args.filename)
-    print(json.dumps(data, indent=4, sort_keys=True))
 
 
 def fetch(args):
@@ -293,11 +281,6 @@ def main():
     parser_show.add_argument('name', help='package name')
     parser_show.add_argument('version', nargs='?', help='package version (optional)')
     parser_show.set_defaults(func=show)
-
-    parser_metadata = subparsers.add_parser('metadata',
-                                            help='show metadata for a given tarball (DEPRECATED)')
-    parser_metadata.add_argument('filename', help='filename')
-    parser_metadata.set_defaults(func=metadata)
 
     parser_fetch = subparsers.add_parser('fetch', help='download package source tarball from PyPI')
     parser_fetch.add_argument('name', help='package name')
