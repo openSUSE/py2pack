@@ -36,6 +36,7 @@ import re
 import sys
 import urllib
 from six.moves.urllib.request import urlretrieve
+from six.moves import filter
 from six.moves import xmlrpc_client
 import jinja2
 import warnings
@@ -48,11 +49,23 @@ import py2pack.requires
 import py2pack.utils
 
 
-TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 pypi = xmlrpc_client.ServerProxy('https://pypi.python.org/pypi')
 
 SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spdx_license_map.p')
 SDPX_LICENSES = pickle.load(open(SPDX_LICENSES_FILE, 'rb'))
+
+
+def _get_template_dirs():
+    """existing directories where to search for jinja2 templates. The order
+    is important. The first found template from the first found dir wins!"""
+    return filter(lambda x: os.path.exists(x), [
+        # user dir
+        os.path.join(os.path.expanduser('~'), '.py2pack', 'templates'),
+        # system wide dir
+        os.path.join('/', 'usr', 'share', 'py2pack', 'templates'),
+        # usually inside the site-packages dir
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates'),
+    ])
 
 
 def list(args=None):
@@ -224,7 +237,7 @@ def generate(args):
 
     _normalize_license(data)
 
-    env = _prepare_template_env(TEMPLATE_DIR)
+    env = _prepare_template_env(_get_template_dirs())
     template = env.get_template(args.template)
     result = template.render(data).encode('utf-8')                          # render template and encode properly
     outfile = open(args.filename, 'wb')                                     # write result to spec file
@@ -257,7 +270,10 @@ def newest_download_url(args):
 
 
 def file_template_list():
-    return [filename for filename in os.listdir(TEMPLATE_DIR) if not filename.startswith('.')]
+    template_files = []
+    for d in _get_template_dirs():
+        template_files += [f for f in os.listdir(d) if not f.startswith('.')]
+    return template_files
 
 
 def main():
