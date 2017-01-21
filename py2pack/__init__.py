@@ -197,6 +197,13 @@ def _prepare_template_env(template_dir):
     return env
 
 
+def _get_source_url(pypi_name, filename):
+    """get the source url"""
+    # example: https://pypi.io/packages/source/u/ujson/ujson-1.2.3.tar.gz
+    return 'https://pypi.io/packages/source/{}/{}/{}'.format(
+        pypi_name[0], pypi_name, filename)
+
+
 def generate(args):
     # TODO (toabctl): remove this is a later release
     if args.run:
@@ -212,7 +219,10 @@ def generate(args):
     data = pypi.release_data(args.name, args.version)                       # fetch all meta data
     url = newest_download_url(args)
     if url:
-        data['source_url'] = url['url']
+        # do not use the url delivered by pypi. that url contains a hash and
+        # needs to be adjusted with every package update. Instead use
+        # the pypi.io url
+        data['source_url'] = _get_source_url(args.name, url['filename'])
     else:
         data['source_url'] = args.name + '-' + args.version + '.zip'
     data['year'] = datetime.datetime.now().year                             # set current year
