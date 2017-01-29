@@ -26,7 +26,6 @@ __version__ = '0.6.4'
 import argparse
 import datetime
 import glob
-import json
 import os
 import pickle
 import pkg_resources
@@ -36,6 +35,7 @@ import re
 import sys
 import urllib
 from six.moves.urllib.request import urlretrieve
+from six.moves import filter
 from six.moves import xmlrpc_client
 import jinja2
 import warnings
@@ -48,11 +48,23 @@ import py2pack.requires
 import py2pack.utils
 
 
-TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 pypi = xmlrpc_client.ServerProxy('https://pypi.python.org/pypi')
 
 SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spdx_license_map.p')
 SDPX_LICENSES = pickle.load(open(SPDX_LICENSES_FILE, 'rb'))
+
+
+def _get_template_dirs():
+    """existing directories where to search for jinja2 templates. The order
+    is important. The first found template from the first found dir wins!"""
+    return filter(lambda x: os.path.exists(x), [
+        # user dir
+        os.path.join(os.path.expanduser('~'), '.py2pack', 'templates'),
+        # system wide dir
+        os.path.join('/', 'usr', 'share', 'py2pack', 'templates'),
+        # usually inside the site-packages dir
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates'),
+    ])
 
 
 def list(args=None):
@@ -72,17 +84,6 @@ def show(args):
     print('showing package {0}...'.format(args.name))
     data = pypi.release_data(args.name, args.version)
     pprint.pprint(data)
-
-
-def metadata(args):
-    """extra the metadata from the given tarball"""
-    warnings.warn("the 'metadata' commands is deprecated and will be removed "
-                  " in 2017. Please use directly the command 'metaextract' "
-                  "which is a requirement for py2pack",
-                  DeprecationWarning)
-
-    data = meta_utils.from_archive(args.filename)
-    print(json.dumps(data, indent=4, sort_keys=True))
 
 
 def fetch(args):
@@ -196,6 +197,13 @@ def _prepare_template_env(template_dir):
     return env
 
 
+def _get_source_url(pypi_name, filename):
+    """get the source url"""
+    # example: https://pypi.io/packages/source/u/ujson/ujson-1.2.3.tar.gz
+    return 'https://pypi.io/packages/source/{}/{}/{}'.format(
+        pypi_name[0], pypi_name, filename)
+
+
 def generate(args):
     # TODO (toabctl): remove this is a later release
     if args.run:
@@ -211,7 +219,10 @@ def generate(args):
     data = pypi.release_data(args.name, args.version)                       # fetch all meta data
     url = newest_download_url(args)
     if url:
-        data['source_url'] = url['url']
+        # do not use the url delivered by pypi. that url contains a hash and
+        # needs to be adjusted with every package update. Instead use
+        # the pypi.io url
+        data['source_url'] = _get_source_url(args.name, url['filename'])
     else:
         data['source_url'] = args.name + '-' + args.version + '.zip'
     data['year'] = datetime.datetime.now().year                             # set current year
@@ -224,7 +235,7 @@ def generate(args):
 
     _normalize_license(data)
 
-    env = _prepare_template_env(TEMPLATE_DIR)
+    env = _prepare_template_env(_get_template_dirs())
     template = env.get_template(args.template)
     result = template.render(data).encode('utf-8')                          # render template and encode properly
     outfile = open(args.filename, 'wb')                                     # write result to spec file
@@ -257,7 +268,10 @@ def newest_download_url(args):
 
 
 def file_template_list():
-    return [filename for filename in os.listdir(TEMPLATE_DIR) if not filename.startswith('.')]
+    template_files = []
+    for d in _get_template_dirs():
+        template_files += [f for f in os.listdir(d) if not f.startswith('.')]
+    return template_files
 
 
 def main():
@@ -277,11 +291,6 @@ def main():
     parser_show.add_argument('name', help='package name')
     parser_show.add_argument('version', nargs='?', help='package version (optional)')
     parser_show.set_defaults(func=show)
-
-    parser_metadata = subparsers.add_parser('metadata',
-                                            help='show metadata for a given tarball (DEPRECATED)')
-    parser_metadata.add_argument('filename', help='filename')
-    parser_metadata.set_defaults(func=metadata)
 
     parser_fetch = subparsers.add_parser('fetch', help='download package source tarball from PyPI')
     parser_fetch.add_argument('name', help='package name')

@@ -32,6 +32,17 @@ class Py2packTestCase(unittest.TestCase):
 
         self.args = Args()
 
+    @data(
+        ('py2pack', 'py2pack-0.6.4.tar.gz',
+         'https://pypi.io/packages/source/p/py2pack/py2pack-0.6.4.tar.gz'),
+        ("SQLAlchemy", 'SQLAlchemy-1.0.5.tar.gz',
+         'https://pypi.io/packages/source/S/SQLAlchemy/SQLAlchemy-1.0.5.tar.gz'),
+    )
+    @unpack
+    def test__get_source_url(self, pypi_name, extension, expected_url):
+        self.assertEqual(py2pack._get_source_url(pypi_name, extension),
+                         expected_url)
+
     def test_list(self):
         py2pack.list(self.args)
 
