@@ -229,7 +229,11 @@ def generate(args):
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
     data['summary_no_ending_dot'] = re.sub('(.*)\.', '\g<1>', data.get('summary', ""))
 
-    tarball_file = glob.glob("{0}-{1}.*".format(args.name, args.version))   # we have a local tarball, try to
+    tarball_file = glob.glob("{0}-{1}.*".format(args.name, args.version))
+    # also check tarball files with underscore. Some packages have a name with
+    # a - but the tarball name has a _ . Eg the package os-faults
+    tarball_file += glob.glob("{0}-{1}.*".format(args.name.replace('-', '_'),
+                                                 args.version))
     if tarball_file:                                                        # get some more info from that
         _augment_data_from_tarball(args, tarball_file[0], data)
 
