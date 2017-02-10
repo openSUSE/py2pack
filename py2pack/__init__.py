@@ -199,8 +199,8 @@ def _prepare_template_env(template_dir):
 
 def _get_source_url(pypi_name, filename):
     """get the source url"""
-    # example: https://pypi.io/packages/source/u/ujson/ujson-1.2.3.tar.gz
-    return 'https://pypi.io/packages/source/{}/{}/{}'.format(
+    # example: https://files.pythonhosted.org/packages/source/u/ujson/ujson-1.2.3.tar.gz
+    return 'https://files.pythonhosted.org/packages/source/{}/{}/{}'.format(
         pypi_name[0], pypi_name, filename)
 
 
