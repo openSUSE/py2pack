@@ -18,7 +18,7 @@ deploy:
   provider: pypi
   user: suse
   password:
-    secure: LbQtZR8I7ZgQoiNoDhCiWVPI8Q8GVCrnXVBooNutHRZzOnFKew3g7DKCEQjKKZCUkrbcs55Jl1y0uVkL31HFdciAiYMV2ZS0To5ari5ZqqHF82OCFkqZKRe7APYCVgJ+wuhLfbBy6XWNU9aHD0TLMV5bz4kHXQJ3qfgUfMvNJJ4=
+    secure: FLx7KdGhYsPzXO9uLVBsP7DWFPhPzZTKEXaZ4SZv6PbV7xTXNi7w/EnlGcP4OcqSofQxgEfOSty8GZ3MWASdHuIYGSWj2l3jj7Acro12TcA/XozHCDDr2kOq8pAlnz7G9ehmwjP2MyzMxl0dTM6KfAlyswjmXhXt03HiMPH2Cmc=
   on:
     tags: true
     distributions: sdist bdist_wheel
