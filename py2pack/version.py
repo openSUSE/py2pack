@@ -1,7 +1,6 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2015, Sascha Peilicke <sascha@peilicke.de>
+# Copyright (c) 2017, Thomas Bechtold <tbechtold@suse.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from py2pack import main
-
-main()
+try:
+    from pbr import version as pbr_version
+except:
+    # no pbr available
+    version = 'unknown'
+    pass
+else:
+    version = pbr_version.VersionInfo('py2pack').release_string()
