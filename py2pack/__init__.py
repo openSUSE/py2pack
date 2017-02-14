@@ -18,11 +18,6 @@
 
 from __future__ import absolute_import
 
-__doc__ = 'Generate distribution packages from PyPI'
-__docformat__ = 'restructuredtext en'
-__author__ = 'Sascha Peilicke <sascha@peilicke.de>'
-__version__ = '0.6.7'
-
 import argparse
 import datetime
 import glob
@@ -46,6 +41,7 @@ from metaextract import utils as meta_utils
 import py2pack.proxy
 import py2pack.requires
 import py2pack.utils
+from py2pack import version as py2pack_version
 
 
 pypi = xmlrpc_client.ServerProxy('https://pypi.python.org/pypi')
@@ -280,7 +276,7 @@ def file_template_list():
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--version', action='version', version='%(prog)s {0}'.format(__version__))
+    parser.add_argument('--version', action='version', version='%(prog)s {0}'.format(py2pack_version.version))
     parser.add_argument('--proxy', help='HTTP proxy to use')
     subparsers = parser.add_subparsers(title='commands')
 

@@ -1,7 +1,6 @@
--r requirements.txt
 coverage
 flake8
 nose
 ddt
-Sphinx
+Sphinx<1.4,>=1.2.1
 sphinxcontrib.programoutput

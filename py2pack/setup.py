@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import re
 import subprocess
 from distutils.core import Command
 
@@ -71,30 +70,3 @@ def get_cmdclass():
     return {
         "spdx_update": SPDXUpdateCommand,
     }
-
-
-def parse_requirements(requirements_file='requirements.txt'):
-    requirements = []
-    with open(requirements_file, 'r') as f:
-        for line in f:
-            # For the requirements list, we need to inject only the portion
-            # after egg= so that distutils knows the package it's looking for
-            # such as:
-            # -e git://github.com/openstack/nova/master#egg=nova
-            if re.match(r'\s*-e\s+', line):
-                requirements.append(re.sub(r'\s*-e\s+.*#egg=(.*)$', r'\1',
-                                    line))
-            # such as:
-            # http://github.com/openstack/nova/zipball/master#egg=nova
-            elif re.match(r'\s*https?:', line):
-                requirements.append(re.sub(r'\s*https?:.*#egg=(.*)$', r'\1',
-                                    line))
-            # -f lines are for index locations, and don't get used here
-            elif re.match(r'\s*-f\s+', line):
-                pass
-            # -r lines are for including other files, and don't get used here
-            elif re.match(r'\s*-r\s+', line):
-                pass
-            else:
-                requirements.append(line.strip())
-    return requirements

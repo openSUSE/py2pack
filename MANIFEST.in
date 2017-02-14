@@ -1,6 +1,0 @@
-include AUTHORS LICENSE README.rst
-include requirements.txt test-requirements.txt
-include tox.ini
-include py2pack/spdx_license_map.p
-include py2pack/templates/*
-recursive-include doc *
