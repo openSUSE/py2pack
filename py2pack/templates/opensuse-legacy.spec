@@ -15,7 +15,6 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 
 
-%{?!python_module:%define python_module() python-%{**} python3-%{**}}
 Name:           python-{{ name }}
 Version:        {{ version }}
 Release:        0
@@ -24,33 +23,31 @@ Summary:        {{ summary_no_ending_dot|default(summary, true) }}
 Url:            {{ home_page }}
 Group:          Development/Languages/Python
 Source:         {{ source_url|replace(version, '%{version}') }}
-BuildRequires:  python-rpm-macros
-BuildRequires:  %{python_module devel} {%- if requires_python %} = {{ requires_python }} {% endif %}
-BuildRequires:  %{python_module setuptools}
+BuildRequires:  python-devel {%- if requires_python %} = {{ requires_python }} {% endif %}
+BuildRequires:  python-setuptools
 {%- if install_requires and install_requires is not none %}
 {%- for req in install_requires|sort %}
-BuildRequires:  %{python_module {{ req }}}
+BuildRequires:  python-{{ req }}
 {%- endfor %}
 {%- endif %}
 {%- if tests_require and tests_require is not none %}
-# SECTION test requirements
+# test requirements
 {%- for req in tests_require|sort %}
-BuildRequires:  %{python_module {{ req }}}
+BuildRequires:  python-{{ req }}
 {%- endfor %}
-# /SECTION
 {%- endif %}
 {%- if source_url.endswith('.zip') %}
 BuildRequires:  unzip
 {%- endif %}
 {%- if install_requires and install_requires is not none %}
 {%- for req in install_requires|sort %}
-Requires:       %{python_module {{ req }}}
+Requires:       python-{{ req }}
 {%- endfor %}
 {%- endif %}
 {%- if extras_require and extras_require is not none %}
 {%- for reqlist in extras_require.values() %}
 {%- for req in reqlist %}
-Suggests:       %{python_module {{ req }}}
+Suggests:       python-{{ req }}
 {%- endfor %}
 {%- endfor %}
 {%- endif %}
@@ -59,8 +56,6 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
 {%- endif %}
 
-%python_subpackages
-
 %description
 {{ description }}
 
@@ -68,30 +63,29 @@ BuildArch:      noarch
 %setup -q -n {{ name }}-%{version}
 
 %build
-{% if has_ext_modules %}export CFLAGS="%{optflags}"{% endif %}
-%python_build
+{% if has_ext_modules %}CFLAGS="%{optflags}" {% endif %}python setup.py build
 
 %install
-%python_install
+python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 {%- if testsuite or test_suite %}
 %check
-%python_exec setup.py test
+python setup.py test
 {%- endif %}
 
-%files %{python_files}
+%files
 %defattr(-,root,root,-)
 {%- if doc_files and doc_files is not none %}
 %doc {{ doc_files|join(" ") }}
 {%- endif %}
 {%- if scripts and scripts is not none %}
 {%- for script in scripts %}
-%python3_only %{_bindir}/{{ script|basename }}
+%{_bindir}/{{ script|basename }}
 {%- endfor %}
 {%- endif %}
 {%- if console_scripts and console_scripts is not none %}
 {%- for script in console_scripts %}
-%python3_only %{_bindir}/{{ script }}
+%{_bindir}/{{ script }}
 {%- endfor %}
 {%- endif %}
 {%- if has_ext_modules %}
@@ -102,7 +96,7 @@ BuildArch:      noarch
 {%- if data_files and data_files is not none %}
 {%- for dir, files in data_files %}
 {%- set dir = dir |
-    replace('/usr/share/doc/'~name, '%doc %{_defaultdocdir}/%{python_prefix}-{{ name }}', 1) |
+    replace('/usr/share/doc/'~name, '%doc %{_defaultdocdir}/%{name}', 1) |
     replace('/usr/share/man/', '%doc %{_mandir}/', 1) |
     replace('/usr/share/', '%{_datadir}/', 1) |
     replace('/usr/', '%{_prefix}/', 1) %}
