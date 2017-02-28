@@ -27,6 +27,11 @@ Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRequires:  python-rpm-macros
 BuildRequires:  %{python_module devel} {%- if requires_python %} = {{ requires_python }} {% endif %}
 BuildRequires:  %{python_module setuptools}
+{%- if setup_requires and setup_requires is not none %}
+{%- for req in setup_requires|sort %}
+BuildRequires:  %{python_module {{ req }}}
+{%- endfor %}
+{%- endif %}
 {%- if install_requires and install_requires is not none %}
 {%- for req in install_requires|sort %}
 BuildRequires:  %{python_module {{ req }}}
