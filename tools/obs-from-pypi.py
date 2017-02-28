@@ -26,23 +26,18 @@ from __future__ import print_function
 
 import argparse
 import os
-from six.moves import xmlrpc_client
 
 import sh
 
 
 OBS_API = 'https://api.opensuse.org'
-PYPI = xmlrpc_client.ServerProxy('https://pypi.python.org/pypi')
-# a package whitelist - otherwise we would package the whole pypi
-# list taken from http://pypi-ranking.info/alltime
-PYPI_WHITELIST = ['simplejson', 'six', 'requests', 'virtualenv', 'pip',
-                  'python-dateutil', 'boto', 'pbr', 'docutils', 'pyasn1',
-                  'PyYAML', 'Jinja2', 'MarkupSafe', 'pytz']
 
 
 def main():
     parser = argparse.ArgumentParser(
         description='create OBS packages from pypi')
+    parser.add_argument('--pypi-names', help='pypi package names to add to OBS',
+                        nargs='*', default=[])
     parser.add_argument('workdir', help='some temp dir to do OBS checkout')
     parser.add_argument('obsproject', help='OBS project name')
     args = parser.parse_args()
@@ -58,9 +53,7 @@ def main():
         osc('checkout', '%s' % (args.obsproject))
     os.chdir(obs_project_path)
 
-    for pkg in PYPI.list_packages():
-        if pkg not in PYPI_WHITELIST:
-            continue
+    for pkg in args.pypi_names:
         print('packaging %s ...' % pkg)
         obs_pkg = 'python-%s' % pkg
         obs_pkg_path = os.path.join(obs_project_path, obs_pkg)
