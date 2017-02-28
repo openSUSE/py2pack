@@ -27,13 +27,13 @@ BuildRequires:  python-devel {%- if requires_python %} = {{ requires_python }} {
 BuildRequires:  python-setuptools
 {%- if install_requires and install_requires is not none %}
 {%- for req in install_requires|sort %}
-BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
+BuildRequires:  python-{{ req }}
 {%- endfor %}
 {%- endif %}
 {%- if tests_require and tests_require is not none %}
 # test requirements
 {%- for req in tests_require|sort %}
-BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
+BuildRequires:  python-{{ req }}
 {%- endfor %}
 {%- endif %}
 {%- if source_url.endswith('.zip') %}
@@ -41,13 +41,13 @@ BuildRequires:  unzip
 {%- endif %}
 {%- if install_requires and install_requires is not none %}
 {%- for req in install_requires|sort %}
-Requires:       python-{{ req|replace('(','')|replace(')','') }}
+Requires:       python-{{ req }}
 {%- endfor %}
 {%- endif %}
 {%- if extras_require and extras_require is not none %}
 {%- for reqlist in extras_require.values() %}
 {%- for req in reqlist %}
-Suggests:       python-{{ req|replace('(','')|replace(')','') }}
+Suggests:       python-{{ req }}
 {%- endfor %}
 {%- endfor %}
 {%- endif %}
