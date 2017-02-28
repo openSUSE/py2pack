@@ -94,6 +94,13 @@ def fetch(args):
 
 
 def _canonicalize_setup_data(data):
+    if data.get('setup_requires', None):
+        # setup_requires may be a string, convert to list of strings:
+        if isinstance(data["setup_requires"], str):
+            data["setup_requires"] = data["setup_requires"].splitlines()
+        data["setup_requires"] = \
+            py2pack.requires._requirements_sanitize(data["setup_requires"])
+
     if data.get('install_requires', None):
         # install_requires may be a string, convert to list of strings:
         if isinstance(data["install_requires"], str):

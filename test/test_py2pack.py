@@ -105,6 +105,10 @@ class Py2packTestCase(unittest.TestCase):
             {'install_requires': ['six >= 1.9', 'foobar >= 0.1']}
         ),
         (
+            {'setup_requires': 'six  >=1.9,!=1.0  # comment\nfoobar>=0.1,>=0.5'},
+            {'setup_requires': ['six >= 1.9', 'foobar >= 0.1']}
+        ),
+        (
             {'tests_require': ['six  >=1.9', 'foobar>=0.1,>=0.5']},
             {'tests_require': ['six >= 1.9', 'foobar >= 0.1']}
         ),
