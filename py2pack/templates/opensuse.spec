@@ -16,6 +16,7 @@
 
 
 %{?!python_module:%define python_module() python-%{**} python3-%{**}}
+%bcond_without test
 Name:           python-{{ name }}
 Version:        {{ version }}
 Release:        0
@@ -33,15 +34,19 @@ BuildRequires:  %{python_module {{ req }}}
 {%- endfor %}
 {%- endif %}
 {%- if install_requires and install_requires is not none %}
+%if %{with test}
 {%- for req in install_requires|sort %}
 BuildRequires:  %{python_module {{ req }}}
 {%- endfor %}
+%endif
 {%- endif %}
 {%- if tests_require and tests_require is not none %}
 # SECTION test requirements
+%if %{with test}
 {%- for req in tests_require|sort %}
 BuildRequires:  %{python_module {{ req }}}
 {%- endfor %}
+%endif
 # /SECTION
 {%- endif %}
 {%- if source_url.endswith('.zip') %}
@@ -80,8 +85,10 @@ BuildArch:      noarch
 %python_install
 
 {%- if testsuite or test_suite %}
+%if %{with test}
 %check
 %python_exec setup.py test
+%endif
 {%- endif %}
 
 %files %{python_files}
