@@ -14,27 +14,21 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-try:
-    import http.client as httplib
-except:
-    import httplib
-try:
-    import xmlrpc.client as xmlrpclib
-except:
-    import xmlrpclib
+import six.moves.http_client as httplib
+from six.moves import xmlrpc_client as xmlrpclib
 
 
 class ProxiedTransport(xmlrpclib.Transport):
-    def set_proxy(self, proxy):
-        self.proxy = proxy
+    def set_proxy(self, host, port=None, headers=None):
+        self.proxy = (host, port)
+        self.proxy_headers = headers
 
     def make_connection(self, host):
-        self.realhost = host
-        return httplib.HTTP(self.proxy)
+        if self._connection and host == self._connection[0]:
+            return self._connection[1]
 
-    def send_request(self, connection, handler, request_body):
-        connection.putrequest('POST', 'http://{0}{1}'.format(self.realhost, handler))
+        connection = httplib.HTTPSConnection(*self.proxy)
+        connection.set_tunnel(host, headers=self.proxy_headers)
 
-    def send_host(self, connection, host):
-        connection.putheader('Host', self.realhost)
+        self._connection = (host, connection)
+        return connection

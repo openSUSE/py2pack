@@ -28,8 +28,8 @@ import pprint
 import pwd
 import re
 import sys
-import urllib
-from six.moves.urllib.request import urlretrieve
+from six.moves.urllib import request as urllib
+from six.moves.urllib.parse import urlparse
 from six.moves import filter
 from six.moves import xmlrpc_client
 import jinja2
@@ -44,7 +44,7 @@ import py2pack.utils
 from py2pack import version as py2pack_version
 
 
-pypi = xmlrpc_client.ServerProxy('https://pypi.python.org/pypi')
+pypi = None
 
 SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spdx_license_map.p')
 SDPX_LICENSES = pickle.load(open(SPDX_LICENSES_FILE, 'rb'))
@@ -90,7 +90,7 @@ def fetch(args):
         sys.exit(1)
     print('downloading package {0}-{1}...'.format(args.name, args.version))
     print('from {0}'.format(url['url']))
-    urlretrieve(url['url'], url['filename'])
+    urllib.urlretrieve(url['url'], url['filename'])
 
 
 def _canonicalize_setup_data(data):
@@ -320,16 +320,24 @@ def main():
 
     args = parser.parse_args()
 
+    transport = None
     # set HTTP proxy if one is provided
     if args.proxy:
+        url_parts = urlparse(args.proxy)
+
         try:
-            urllib.urlopen(args.proxy)
+            handler = urllib.ProxyHandler({'https': url_parts.geturl()})
+            opener = urllib.build_opener(handler)
+            opener.open('https://pypi.python.org/pypi')
         except IOError:
             print('the proxy \'{0}\' is not responding'.format(args.proxy))
             sys.exit(1)
+
         transport = py2pack.proxy.ProxiedTransport()
-        transport.set_proxy(args.proxy)
-        pypi._ServerProxy__transport = transport  # Evil, but should do the trick
+        transport.set_proxy(url_parts.hostname, port=url_parts.port)
+
+    global pypi
+    pypi = xmlrpc_client.ServerProxy('https://pypi.python.org/pypi', transport=transport)
 
     args.func(args)
 
