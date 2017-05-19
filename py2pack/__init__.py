@@ -284,7 +284,7 @@ def file_template_list():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--version', action='version', version='%(prog)s {0}'.format(py2pack_version.version))
-    parser.add_argument('--proxy', help='HTTP proxy to use')
+    parser.add_argument('--proxy', help='HTTP proxy to use', default=os.environ.get('https_proxy', None))
     subparsers = parser.add_subparsers(title='commands')
 
     parser_list = subparsers.add_parser('list', help='list all packages on PyPI')
@@ -323,7 +323,12 @@ def main():
     transport = None
     # set HTTP proxy if one is provided
     if args.proxy:
-        url_parts = urlparse(args.proxy)
+        # add schema to url if it is not there
+        url = args.proxy
+        if "//" not in url:
+            url = "//{}".format(url)
+
+        url_parts = urlparse(url)
 
         try:
             handler = urllib.ProxyHandler({'https': url_parts.geturl()})
