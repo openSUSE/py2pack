@@ -43,8 +43,9 @@ import py2pack.utils
 from py2pack import version as py2pack_version
 
 
-pypi_url = 'https://pypi.python.org/pypi'
-pypi = xmlrpc_client.ServerProxy(pypi_url)
+PYPI_URL = 'https://pypi.python.org/pypi'
+
+pypi = xmlrpc_client.ServerProxy(PYPI_URL)
 
 SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spdx_license_map.p')
 SDPX_LICENSES = pickle.load(open(SPDX_LICENSES_FILE, 'rb'))
@@ -323,7 +324,6 @@ def main():
     # set HTTP proxy if one is provided
     if args.proxy:
         global pypi
-        global pypi_url
 
         # add schema to url if it is not there
         url = args.proxy
@@ -333,13 +333,13 @@ def main():
         try:
             handler = urllib.ProxyHandler({'https': url})
             opener = urllib.build_opener(handler)
-            opener.open(pypi_url)
+            opener.open(PYPI_URL)
         except IOError:
             print('the proxy \'{0}\' is not responding'.format(args.proxy))
             sys.exit(1)
 
         transport = py2pack.proxy.make_transport(url)
-        pypi = xmlrpc_client.ServerProxy(pypi_url, transport=transport)
+        pypi = xmlrpc_client.ServerProxy(PYPI_URL, transport=transport)
 
     args.func(args)
 
