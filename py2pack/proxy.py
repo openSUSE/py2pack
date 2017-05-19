@@ -18,6 +18,12 @@ import six.moves.http_client as httplib
 from six.moves.urllib.parse import urlparse
 from six.moves import xmlrpc_client as xmlrpclib
 
+# workaround python httplib bug (#7776)
+try:
+    import gzip
+except ImportError:
+    gzip = None  # python can be built without zlib/gzip support
+
 
 def make_transport(url):
     url_parts = urlparse(url)
@@ -42,3 +48,31 @@ class ProxiedTransport(xmlrpclib.Transport):
 
         self._connection = (host, connection)
         return connection
+
+    def send_request(self, connection, handler, request_body):
+        # workaround python httplib bug (#7776)
+
+        if (self.accept_gzip_encoding and gzip):
+            connection.putrequest("POST", handler, skip_host=True, skip_accept_encoding=True)
+            connection.putheader("Accept-Encoding", "gzip")
+        else:
+            connection.putrequest("POST", handler, skip_host=True)
+
+        if connection._tunnel_host:
+            host = connection._tunnel_host
+            port = connection._tunnel_port
+        else:
+            host = connection.host
+            port = connection.port
+
+        try:
+            host_enc = host.encode("ascii")
+        except UnicodeEncodeError:
+            host_enc = host.encode("idna")
+        # Wrap the IPv6 Host Header with [] (RFC 2732)
+        if host_enc.find(':') >= 0:
+            host_enc = "[" + host_enc + "]"
+        if port == connection.default_port:
+            connection.putheader('Host', host_enc)
+        else:
+            connection.putheader('Host', "%s:%s" % (host_enc, port))
