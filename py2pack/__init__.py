@@ -92,7 +92,9 @@ def fetch(args):
         sys.exit(1)
     print('downloading package {0}-{1}...'.format(args.name, args.version))
     print('from {0}'.format(url['url']))
-    urllib.urlretrieve(url['url'], url['filename'])
+    with open(url['filename'], 'wb') as f:
+        f.write(urllib.urlopen(url['url']).read())
+        f.close()
 
 
 def _canonicalize_setup_data(data):
