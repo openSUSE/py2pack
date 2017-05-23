@@ -334,6 +334,8 @@ def main():
             handler = urllib.ProxyHandler({'https': url})
             opener = urllib.build_opener(handler)
             opener.open(PYPI_URL)
+
+            urllib.install_opener(opener)
         except IOError:
             print('the proxy \'{0}\' is not responding'.format(args.proxy))
             sys.exit(1)
