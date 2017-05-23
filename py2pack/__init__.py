@@ -24,6 +24,7 @@ import glob
 import os
 import pickle
 import pkg_resources
+import pkginfo
 import pprint
 import pwd
 import re
@@ -142,8 +143,8 @@ def _canonicalize_setup_data(data):
             data["console_scripts"] = data["entry_points"]["console_scripts"].keys()
 
 
-def _augment_data_from_tarball(args, filename, data):
-    docs_re = re.compile("{0}-{1}\/((?:AUTHOR|ChangeLog|CHANGES|COPYING|LICENSE|NEWS|README).*)".format(args.name, args.version), re.IGNORECASE)
+def _augment_data_from_tarball(name, version, filename, data):
+    docs_re = re.compile("{0}-{1}\/((?:AUTHOR|ChangeLog|CHANGES|COPYING|LICENSE|NEWS|README).*)".format(name, version), re.IGNORECASE)
     shell_metachars_re = re.compile("[|&;()<>\s]")
 
     data_archive = meta_utils.from_archive(filename)
@@ -208,6 +209,17 @@ def _get_source_url(pypi_name, filename):
         pypi_name[0], pypi_name, filename)
 
 
+def _render(data, template, out_filename):
+    env = _prepare_template_env(_get_template_dirs())
+    template = env.get_template(template)
+    result = template.render(data).encode('utf-8')  # render template and encode properly
+    outfile = open(out_filename, 'wb')  # write result to spec file
+    try:
+        outfile.write(result)
+    finally:
+        outfile.close()
+
+
 def generate(args):
     # TODO (toabctl): remove this is a later release
     if args.run:
@@ -239,18 +251,88 @@ def generate(args):
     tarball_file += glob.glob("{0}-{1}.*".format(args.name.replace('-', '_'),
                                                  args.version))
     if tarball_file:                                                        # get some more info from that
-        _augment_data_from_tarball(args, tarball_file[0], data)
+        _augment_data_from_tarball(args.name, args.version, tarball_file[0], data)
 
     _normalize_license(data)
 
-    env = _prepare_template_env(_get_template_dirs())
-    template = env.get_template(args.template)
-    result = template.render(data).encode('utf-8')                          # render template and encode properly
-    outfile = open(args.filename, 'wb')                                     # write result to spec file
-    try:
-        outfile.write(result)
-    finally:
-        outfile.close()
+    _render(data, args.template, args.filename)
+
+
+def generate_local(args):
+    if not os.path.isfile(args.path):
+        print("incorrect path to python tarball")
+        exit(1)
+
+    filepath = os.path.abspath(args.path)
+    dirpath, filename = os.path.split(filepath)
+
+    print("reading metadata for '{}'".format(filename))
+    metadata = pkginfo.get_metadata(filepath)
+    if metadata is None:
+        print("{} is not a valid python package".format(filename))
+        exit(1)
+
+    if not args.template:
+        args.template = file_template_list()[0]
+    if not args.filename:
+        args.filename = metadata.name + '.' + args.template.rsplit('.', 1)[1]  # take template file ending
+
+    data = {
+        'name': metadata.name,
+        'version': metadata.version,
+    }
+
+    if metadata.license:
+        data['license'] = metadata.license
+    else:
+        _license_from_classifiers(data)
+
+    if metadata.summary:
+        data['summary'] = metadata.summary
+
+    if metadata.description:
+        data['description'] = metadata.description
+
+    if metadata.author:
+        data['author'] = metadata.author
+
+    if metadata.author_email:
+        data['author_email'] = metadata.author_email
+
+    if metadata.download_url:
+        data['download_url'] = metadata.download_url
+
+    if metadata.home_page:
+        data['home_page'] = metadata.home_page
+
+    if metadata.platforms:
+        data['platform'] = ', '.join(metadata.platforms)
+
+    if metadata.provides:
+        data['provides'] = metadata.provides
+
+    if metadata.requires:
+        data['requires'] = metadata.requires
+
+    if metadata.requires_dist:
+        data['requires_dist'] = metadata.requires_dist
+
+    if metadata.requires_external:
+        data['requires_external'] = metadata.requires_external
+
+    if metadata.requires_python:
+        data['requires_python'] = metadata.requires_python
+
+    data['year'] = datetime.datetime.now().year  # set current year
+    data['user_name'] = pwd.getpwuid(os.getuid())[4]  # set system user (packager)
+    data['source_url'] = filename
+
+    _normalize_license(data)
+    if filename.endswith(('tar.gz', 'zip')):
+        _augment_data_from_tarball(metadata.name, metadata.version, filepath, data)
+
+    print('generating spec file for {0}...'.format(metadata.name))
+    _render(data, args.template, args.filename)
 
 
 def check_or_set_version(args):
@@ -315,6 +397,14 @@ def main():
         '-r', '--run', action='store_true',
         help='DEPRECATED and noop. will be removed in future releases!')
     parser_generate.set_defaults(func=generate)
+
+    parser_local = subparsers.add_parser('local', help='generate RPM spec or DEB dsc file '
+                                                       'for a local package (.tar.gz or .whl)')
+    parser_local.add_argument('path', help='path to package')
+    parser_local.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec',
+                              help='file template')
+    parser_local.add_argument('-f', '--filename', help='spec filename (optional)')
+    parser_local.set_defaults(func=generate_local)
 
     parser_help = subparsers.add_parser('help', help='show this help')
     parser_help.set_defaults(func=lambda args: parser.print_help())
