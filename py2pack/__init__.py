@@ -289,38 +289,21 @@ def generate_local(args):
     else:
         _license_from_classifiers(data)
 
-    if metadata.summary:
-        data['summary'] = metadata.summary
-
-    if metadata.description:
-        data['description'] = metadata.description
-
-    if metadata.author:
-        data['author'] = metadata.author
-
-    if metadata.author_email:
-        data['author_email'] = metadata.author_email
-
-    if metadata.download_url:
-        data['download_url'] = metadata.download_url
-
-    if metadata.home_page:
-        data['home_page'] = metadata.home_page
-
     if metadata.platforms:
         data['platform'] = ', '.join(metadata.platforms)
+    else:
+        data['platform'] = ''
 
-    if metadata.provides:
-        data['provides'] = metadata.provides
-
-    if metadata.requires:
-        data['requires'] = metadata.requires
-
-    if metadata.requires_dist:
-        data['requires_dist'] = metadata.requires_dist
-
-    if metadata.requires_external:
-        data['requires_external'] = metadata.requires_external
+    data['summary'] = metadata.summary
+    data['description'] = metadata.description
+    data['author'] = metadata.author
+    data['author_email'] = metadata.author_email
+    data['download_url'] = metadata.download_url
+    data['home_page'] = metadata.home_page
+    data['provides'] = metadata.provides
+    data['requires'] = metadata.requires
+    data['requires_dist'] = metadata.requires_dist
+    data['requires_external'] = metadata.requires_external
 
     if metadata.requires_python:
         data['requires_python'] = metadata.requires_python
