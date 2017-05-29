@@ -215,11 +215,8 @@ def _render(data, template, out_filename):
     env = _prepare_template_env(_get_template_dirs())
     template = env.get_template(template)
     result = template.render(data).encode('utf-8')  # render template and encode properly
-    outfile = open(out_filename, 'wb')  # write result to spec file
-    try:
+    with open(out_filename, 'wb') as outfile:       # write result to spec file
         outfile.write(result)
-    finally:
-        outfile.close()
 
 
 def generate(args):
