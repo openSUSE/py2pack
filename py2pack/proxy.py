@@ -14,6 +14,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import sys
 import six.moves.http_client as httplib
 from six.moves.urllib.parse import urlparse
 from six.moves import xmlrpc_client as xmlrpclib
@@ -49,30 +50,33 @@ class ProxiedTransport(xmlrpclib.Transport):
         self._connection = (host, connection)
         return connection
 
-    def send_request(self, connection, handler, request_body):
-        # workaround python httplib bug (#7776)
+    # workaround python httplib bug (#7776)
+    if sys.version_info < (3, 0):
+        def send_request(self, connection, handler, request_body):
+            if (self.accept_gzip_encoding and gzip):
+                connection.putrequest("POST", handler, skip_host=True, skip_accept_encoding=True)
+                connection.putheader("Accept-Encoding", "gzip")
+            else:
+                connection.putrequest("POST", handler, skip_host=True)
 
-        if (self.accept_gzip_encoding and gzip):
-            connection.putrequest("POST", handler, skip_host=True, skip_accept_encoding=True)
-            connection.putheader("Accept-Encoding", "gzip")
-        else:
-            connection.putrequest("POST", handler, skip_host=True)
+        def send_host(self, connection, host):
+            xmlrpclib.Transport.send_host(self, connection, host)
 
-        if connection._tunnel_host:
-            host = connection._tunnel_host
-            port = connection._tunnel_port
-        else:
-            host = connection.host
-            port = connection.port
+            if connection._tunnel_host:
+                host = connection._tunnel_host
+                port = connection._tunnel_port
+            else:
+                host = connection.host
+                port = connection.port
 
-        try:
-            host_enc = host.encode("ascii")
-        except UnicodeEncodeError:
-            host_enc = host.encode("idna")
-        # Wrap the IPv6 Host Header with [] (RFC 2732)
-        if host_enc.find(':') >= 0:
-            host_enc = "[" + host_enc + "]"
-        if port == connection.default_port:
-            connection.putheader('Host', host_enc)
-        else:
-            connection.putheader('Host', "%s:%s" % (host_enc, port))
+            try:
+                host_enc = host.encode("ascii")
+            except UnicodeEncodeError:
+                host_enc = host.encode("idna")
+            # Wrap the IPv6 Host Header with [] (RFC 2732)
+            if host_enc.find(':') >= 0:
+                host_enc = "[" + host_enc + "]"
+            if port == connection.default_port:
+                connection.putheader('Host', host_enc)
+            else:
+                connection.putheader('Host', "%s:%s" % (host_enc, port))
