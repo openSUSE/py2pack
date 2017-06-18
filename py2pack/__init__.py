@@ -268,7 +268,7 @@ def newest_download_url(args):
             return url
     # No PyPI tarball release, let's see if an upstream download URL is provided:
     data = pypi.release_data(args.name, args.version)                       # Fetch all meta data
-    if 'download_url' in data:
+    if 'download_url' in data and data['download_url']:
         filename = os.path.basename(data['download_url'])
         return {'url': data['download_url'], 'filename': filename}
     return {}                                                               # We're all out of bubblegum
