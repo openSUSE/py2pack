@@ -26,6 +26,7 @@ try:
 except ImportError:
     pass
 
-setuptools.setup(
-    setup_requires=['pbr>=1.8'],
-    pbr=True)
+setuptools.setup(setup_requires=['pbr>=1.8'],
+                 pbr=True,
+                 test_suite='test',
+                 )
