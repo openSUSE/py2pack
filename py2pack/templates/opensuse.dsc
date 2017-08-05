@@ -12,3 +12,4 @@ Depends: {% for req in requires %}python-{{ req|lower|parenthesize_version }}{{ 
 {%- if extras_require %}
 Suggests: {% for reqlist in extras_require.values() %}{% for req in reqlist %}python-{{ req|lower|parenthesize_version }}{{ ', ' if not loop.last }}{%- endfor %}{{ ', ' if not loop.last }}{%- endfor %}
 {%- endif %}
+
