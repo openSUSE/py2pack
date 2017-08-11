@@ -52,19 +52,19 @@ BuildRequires:  %{python_module {{ req }}}
 {%- if source_url.endswith('.zip') %}
 BuildRequires:  unzip
 {%- endif %}
+BuildRequires:  fdupes
 {%- if install_requires and install_requires is not none %}
 {%- for req in install_requires|sort %}
-Requires:       %{python_module {{ req }}}
+Requires:       python-{{ req }}
 {%- endfor %}
 {%- endif %}
 {%- if extras_require and extras_require is not none %}
 {%- for reqlist in extras_require.values() %}
 {%- for req in reqlist %}
-Suggests:       %{python_module {{ req }}}
+Suggests:       python-{{ req }}
 {%- endfor %}
 {%- endfor %}
 {%- endif %}
-BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 {%- if not has_ext_modules %}
 BuildArch:      noarch
 {%- endif %}
@@ -78,11 +78,16 @@ BuildArch:      noarch
 %setup -q -n {{ name }}-%{version}
 
 %build
-{% if has_ext_modules %}export CFLAGS="%{optflags}"{% endif %}
-%python_build
+{% if has_ext_modules %}export CFLAGS="%{optflags}"
+{% endif %}%python_build
 
 %install
 %python_install
+{%- if has_ext_modules %}
+%python_expand %fdupes %{buildroot}%{$python_sitearch}
+{%- else %}
+%python_expand %fdupes %{buildroot}%{$python_sitelib}
+{%- endif %}
 
 {%- if testsuite or test_suite %}
 %if %{with test}
@@ -126,3 +131,4 @@ BuildArch:      noarch
 {%- endif %}
 
 %changelog
+
