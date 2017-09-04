@@ -221,7 +221,9 @@ def generate(args):
     print('generating spec file for {0}...'.format(args.name))
     data = pypi.release_data(args.name, args.version)                       # fetch all meta data
     url = newest_download_url(args)
-    if url:
+    if args.source_url:
+        data['source_url'] = args.source_url
+    elif url:
         # do not use the url delivered by pypi. that url contains a hash and
         # needs to be adjusted with every package update. Instead use
         # the pypi.io url
@@ -263,6 +265,9 @@ def check_or_set_version(args):
 
 
 def newest_download_url(args):
+    if args.source_url:
+        return {'url': args.source_url,
+                'filename': args.source_url[args.source_url.rfind("/") + 1:]}
     for url in pypi.package_urls(args.name, args.version):                  # Fetch all download URLs
         if url['packagetype'] == 'sdist':                                   # Found the source URL we care for
             return url
@@ -302,11 +307,13 @@ def main():
     parser_fetch = subparsers.add_parser('fetch', help='download package source tarball from PyPI')
     parser_fetch.add_argument('name', help='package name')
     parser_fetch.add_argument('version', nargs='?', help='package version (optional)')
+    parser_fetch.add_argument('--source-url', nargs='?', default='', help='source url')
     parser_fetch.set_defaults(func=fetch)
 
     parser_generate = subparsers.add_parser('generate', help='generate RPM spec or DEB dsc file for a package')
     parser_generate.add_argument('name', help='package name')
     parser_generate.add_argument('version', nargs='?', help='package version (optional)')
+    parser_generate.add_argument('--source-url', nargs='?', default='', help='source url')
     parser_generate.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec', help='file template')
     parser_generate.add_argument('-f', '--filename', help='spec filename (optional)')
     # TODO (toabctl): remove this is a later release
