@@ -307,13 +307,13 @@ def main():
     parser_fetch = subparsers.add_parser('fetch', help='download package source tarball from PyPI')
     parser_fetch.add_argument('name', help='package name')
     parser_fetch.add_argument('version', nargs='?', help='package version (optional)')
-    parser_fetch.add_argument('--source-url', default='', help='source url')
+    parser_fetch.add_argument('--source-url', default=None, help='source url')
     parser_fetch.set_defaults(func=fetch)
 
     parser_generate = subparsers.add_parser('generate', help='generate RPM spec or DEB dsc file for a package')
     parser_generate.add_argument('name', help='package name')
     parser_generate.add_argument('version', nargs='?', help='package version (optional)')
-    parser_generate.add_argument('--source-url', default='', help='source url')
+    parser_generate.add_argument('--source-url', default=None, help='source url')
     parser_generate.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec', help='file template')
     parser_generate.add_argument('-f', '--filename', help='spec filename (optional)')
     # TODO (toabctl): remove this is a later release
