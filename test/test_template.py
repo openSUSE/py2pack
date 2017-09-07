@@ -31,6 +31,7 @@ class Args(object):
     filename = ''
     name = 'py2pack'
     version = '0.8.0'
+    source_url = None
 
 
 def generate_template_function(template):

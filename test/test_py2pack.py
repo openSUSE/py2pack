@@ -29,6 +29,7 @@ class Py2packTestCase(unittest.TestCase):
         class Args:
             name = "py2pack"
             version = "0.4.4"
+            source_url = None
 
         self.args = Args()
 
