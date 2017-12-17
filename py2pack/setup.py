@@ -31,7 +31,7 @@ class DocCommand(Command):
         try:
             subprocess.call(["xsltproc", "--output", "doc/py2pack.html", "/usr/share/xml/docbook/stylesheet/nwalsh/current/html/docbook.xsl", "doc/src/py2pack.xml.in"])
             subprocess.call(["xsltproc", "--output", "doc/py2pack.1", "/usr/share/xml/docbook/stylesheet/nwalsh/current/manpages/docbook.xsl", "doc/src/py2pack.xml.in"])
-        except:
+        except OSError:
             pass
 
 

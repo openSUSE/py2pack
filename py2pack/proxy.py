@@ -17,11 +17,11 @@
 
 try:
     import http.client as httplib
-except:
+except ImportError:
     import httplib
 try:
     import xmlrpc.client as xmlrpclib
-except:
+except ImportError:
     import xmlrpclib
 
 
