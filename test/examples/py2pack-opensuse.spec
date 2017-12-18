@@ -16,7 +16,6 @@
 
 
 %{?!python_module:%define python_module() python-%{**} python3-%{**}}
-%bcond_without test
 Name:           python-py2pack
 Version:        0.8.0
 Release:        0
@@ -180,7 +179,6 @@ on your system.
 %python_expand %fdupes %{buildroot}%{$python_sitelib}
 
 %files %{python_files}
-%defattr(-,root,root,-)
 %{python_sitelib}/*
 
 %changelog

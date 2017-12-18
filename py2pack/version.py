@@ -17,7 +17,7 @@
 
 try:
     from pbr import version as pbr_version
-except:
+except ImportError:
     # no pbr available
     version = 'unknown'
     pass

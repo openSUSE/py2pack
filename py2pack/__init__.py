@@ -177,15 +177,15 @@ def _license_from_classifiers(data):
 
 def _normalize_license(data):
     """try to get SDPX license"""
-    l = data.get('license', None)
-    if not l:
+    license = data.get('license', None)
+    if not license:
         # try to get license from classifiers
-        l = _license_from_classifiers(data)
-    if l:
-        if l in SDPX_LICENSES.keys():
-            data['license'] = SDPX_LICENSES[l]
+        license = _license_from_classifiers(data)
+    if license:
+        if license in SDPX_LICENSES.keys():
+            data['license'] = SDPX_LICENSES[license]
         else:
-            data['license'] = "%s (FIXME:No SPDX)" % (l)
+            data['license'] = "%s (FIXME:No SPDX)" % (license)
     else:
         data['license'] = ""
 
