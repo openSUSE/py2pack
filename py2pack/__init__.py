@@ -268,7 +268,7 @@ def newest_download_url(args):
     if args.source_url:
         return {'url': args.source_url,
                 'filename': args.source_url[args.source_url.rfind("/") + 1:]}
-    for url in pypi.package_urls(args.name, args.version):                  # Fetch all download URLs
+    for url in pypi.release_urls(args.name, args.version):                  # Fetch all download URLs
         if url['packagetype'] == 'sdist':                                   # Found the source URL we care for
             return url
     # No PyPI tarball release, let's see if an upstream download URL is provided:
