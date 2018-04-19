@@ -1,7 +1,7 @@
 #
 # spec file for package python-py2pack
 #
-# Copyright (c) 2017 __USER__.
+# Copyright (c) 2018 __USER__.
 #
 
 Name:           python-py2pack
