@@ -5,7 +5,7 @@
 #
 
 # Fedora and RHEL split python2 and python3
-# EPEL does not publish python3 by default
+# Older RHEL does not include python3 by default
 %if 0%{?fedora} || 0%{?rhel} > 7
 %global with_python3 1
 %else
@@ -36,27 +36,87 @@ License:        {{ license }}
 Group:          Development/Languages/Python
 Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-BuildRequires:  python-devel {%- if requires_python %} = {{ requires_python }} {% endif %}
+%if 0%{?with_python2}
+BuildRequires:  python2-devel {%- if requires_python %} = {{ requires_python }} {% endif %}
 {%- for req in requires %}
-BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
-Requires:       python-{{ req|replace('(','')|replace(')','') }}
+BuildRequires:  python2-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
 {%- for req in install_requires %}
-BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
-Requires:       python-{{ req|replace('(','')|replace(')','') }}
+BuildRequires:  python2-{{ req|replace('(','')|replace(')','') }}
+{%- endfor %}
+%endif # with_python2
+%if 0%{?with_python3}
+BuildRequires:  python3-devel {%- if requires_python %} = {{ requires_python }} {% endif %}
+{%- for req in requires %}
+BuildRequires:  python3-{{ req|replace('(','')|replace(')','') }}
+{%- endfor %}
+{%- for req in install_requires %}
+BuildRequires:  python3-{{ req|replace('(','')|replace(')','') }}
+{%- endfor %}
+%endif # with_python3
+
+%if 0%{?with_python2}
+%package -n python2-{{ name }}
+Version:        {{ version }}
+Release:        0
+Url:            {{ home_page }}
+Summary:        {{ summary }}
+License:        {{ license }}
+{%- for req in requires %}
+Requires:       python20{{ req|replace('(','')|replace(')','') }}
+{%- endfor %}
+{%- for req in install_requires %}
+Requires:       python20{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
 %if 0%{with_dnf}
 {%- if extras_require %}
 {%- for reqlist in extras_require.values() %}
 {%- for req in reqlist %}
-Suggests:       python-{{ req|replace('(','')|replace(')','') }}
+Suggests:       python2-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
 {%- endfor %}
 {%- endif %}
 %endif # with_dnf
+%{?python_provide:%python_provide python2-%{srcname}}
+%endif # with_python2
+
+%if 0%{?with_python3}
+%package -n python3-{{ name }}
+Version:        {{ version }}
+Release:        0
+Url:            {{ home_page }}
+Summary:        {{ summary }}
+License:        {{ license }}
+{%- for req in requires %}
+Requires:       python3-{{ req|replace('(','')|replace(')','') }}
+{%- endfor %}
+{%- for req in install_requires %}
+Requires:       python3-{{ req|replace('(','')|replace(')','') }}
+{%- endfor %}
+%if 0%{with_dnf}
+{%- if extras_require %}
+{%- for reqlist in extras_require.values() %}
+{%- for req in reqlist %}
+Suggests:       python3-{{ req|replace('(','')|replace(')','') }}
+{%- endfor %}
+{%- endfor %}
+{%- endif %}
+%endif # with_dnf
+%{?python_provide:%python_provide python2-%{srcname}}
+%endif # with_python3
 
 %description
 {{ description }}
+
+%if 0%{?with_python2}
+%description -n python2-{{ name }}
+{{ description }}
+%endif # with_python2
+
+%if 0%{?with_python3}
+%description -n python3-{{ name }}
+{{ description }}
+%endif # with_python3
 
 %prep
 %setup -q -n {{ name }}-%{version}
@@ -65,15 +125,32 @@ Suggests:       python-{{ req|replace('(','')|replace(')','') }}
 {%- if is_extension %}
 export CFLAGS="%{optflags}"
 {%- endif %}
-python setup.py build
+%if 0%{?with_python2}
+%py2_build
+%endif # with_python2
+%if 0%{?with_python3}
+%py2_build
+%endif # with_python3
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%if 0%{?with_python2}
+%py2_install
+{%- for script in scripts %}
+%{__mv} $RPM_BUILD_ROOT%{_bindir}/${script} $RPM_BUILD_ROOT%{_bindir}/${script}2
+{%- endfor %}
+%endif # with_python2
+%if 0%{?with_python3}
+%py3_install
+{%- for script in scripts %}
+%{__mv} $RPM_BUILD_ROOT%{_bindir}/${script} $RPM_BUILD_ROOT%{_bindir}/${script}3
+{%- endfor %}
+%endif # with_python3
 
 %clean
 rm -rf %{buildroot}
 
-%files
+%if 0%{with_python2}
+%files -n python2-{{ name }}
 %defattr(-,root,root,-)
 {%- if doc_files %}
 %doc {{ doc_files|join(" ") }}
@@ -81,7 +158,20 @@ rm -rf %{buildroot}
 {%- for script in scripts %}
 %{_bindir}/{{ script }}
 {%- endfor %}
-%{python_sitelib}/*
+%{python2_sitelib}/*
+%endif # with_python2
+
+%if 0%{with_python3}
+%files -n python3-{{ name }}
+%defattr(-,root,root,-)
+{%- if doc_files %}
+%doc {{ doc_files|join(" ") }}
+{%- endif %}
+{%- for script in scripts %}
+%{_bindir}/{{ script }}
+{%- endfor %}
+%{python3_sitelib}/*
+%endif # with_python3
 
 %changelog
 
