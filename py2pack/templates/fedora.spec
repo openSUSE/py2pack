@@ -19,6 +19,13 @@
 %global with_python2 1
 %endif
 
+# Older RHEL does not use dnf, does not support "Suggests"
+%if 0%{?fedora} || 0%{?rhel} > 7
+%global with_dnf 1
+%else
+%global with_dnf 0
+%endif
+
 # Common SRPM package
 Name:           python-{{ name }}
 Version:        {{ version }}
@@ -38,6 +45,7 @@ Requires:       python-{{ req|replace('(','')|replace(')','') }}
 BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
 Requires:       python-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
+%if 0%{with_dnf}
 {%- if extras_require %}
 {%- for reqlist in extras_require.values() %}
 {%- for req in reqlist %}
@@ -45,6 +53,7 @@ Suggests:       python-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
 {%- endfor %}
 {%- endif %}
+%endif # with_dnf
 
 %description
 {{ description }}
