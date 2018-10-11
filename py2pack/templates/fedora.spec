@@ -4,6 +4,22 @@
 # Copyright (c) {{ year }} {{ user_name }}.
 #
 
+# Fedora and RHEL split python2 and python3
+# EPEL does not publish python3 by default
+%if 0%{?fedora} || 0%{?rhel} > 7
+%global with_python3 1
+%else
+%global with_python3 0
+%endif
+
+# Fedora > 28 no longer publishes python2 by default
+%if 0%{?fedora} > 28
+%global with_python2 0
+%else
+%global with_python2 1
+%endif
+
+# Common SRPM package
 Name:           python-{{ name }}
 Version:        {{ version }}
 Release:        0
