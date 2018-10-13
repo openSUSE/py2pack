@@ -29,12 +29,15 @@
 # Common SRPM package
 Name:           python-{{ name }}
 Version:        {{ version }}
-Release:        0
+Release:        0.1
 Url:            {{ home_page }}
 Summary:        {{ summary }}
 License:        {{ license }}
 Group:          Development/Languages/Python
 Source:         {{ source_url|replace(version, '%{version}') }}
+{%- if not has_ext_modules %}
+BuildArch:      noarch
+{%- endif %}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 %if 0%{?with_python2}
 BuildRequires:  python2-devel {%- if requires_python %} = {{ requires_python }} {% endif %}
@@ -63,16 +66,16 @@ Url:            {{ home_page }}
 Summary:        {{ summary }}
 License:        {{ license }}
 {%- for req in requires %}
-Requires:       python20{{ req|replace('(','')|replace(')','') }}
+Requires:       python2-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
 {%- for req in install_requires %}
-Requires:       python20{{ req|replace('(','')|replace(')','') }}
+Requires:       python2-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
 %if 0%{with_dnf}
 {%- if extras_require %}
 {%- for reqlist in extras_require.values() %}
 {%- for req in reqlist %}
-Suggests:       python2-{{ req|replace('(','')|replace(')','') }}
+Suggests:       python20{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
 {%- endfor %}
 {%- endif %}
@@ -158,7 +161,12 @@ rm -rf %{buildroot}
 {%- for script in scripts %}
 %{_bindir}/{{ script }}
 {%- endfor %}
+{%- if is_extension %}
+%{python2_archlib}/*
+{%- endif %}
+{%- if not is_extension %}
 %{python2_sitelib}/*
+{%- endif %}
 %endif # with_python2
 
 %if 0%{with_python3}
@@ -170,8 +178,12 @@ rm -rf %{buildroot}
 {%- for script in scripts %}
 %{_bindir}/{{ script }}
 {%- endfor %}
+{%- if is_extension %}
+%{python3_archlib}/*
+{%- endif %}
+{%- if not is_extension %}
 %{python3_sitelib}/*
+{%- endif %}
 %endif # with_python3
 
 %changelog
-
