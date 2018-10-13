@@ -140,12 +140,14 @@ export CFLAGS="%{optflags}"
 %py2_install
 {%- for script in scripts %}
 %{__mv} $RPM_BUILD_ROOT%{_bindir}/${script} $RPM_BUILD_ROOT%{_bindir}/${script}2
+%{__ln_s} ${script}2 $RPM_BUILD_ROOT%{_bindir}/${script}
 {%- endfor %}
 %endif # with_python2
 %if 0%{?with_python3}
 %py3_install
 {%- for script in scripts %}
 %{__mv} $RPM_BUILD_ROOT%{_bindir}/${script} $RPM_BUILD_ROOT%{_bindir}/${script}3
+%{__ln_s} ${script}3 $RPM_BUILD_ROOT%{_bindir}/${script}
 {%- endfor %}
 %endif # with_python3
 
@@ -159,9 +161,15 @@ rm -rf %{buildroot}
 %doc {{ doc_files|join(" ") }}
 {%- endif %}
 {%- for script in scripts %}
-%{_bindir}/{{ script }}
+%{_bindir}/{{ script }}2
 {%- endfor %}
 {%- if is_extension %}
+%if ! 0%{with_python3}
+# Symlinks for binaries renamed to ${script}2, only if with_python3 is not enabled
+{%- for script in scripts %}
+%{_bindir}/{{ script }}
+{%- endfor %}
+%endif # with_python3
 %{python2_archlib}/*
 {%- endif %}
 {%- if not is_extension %}
@@ -175,6 +183,9 @@ rm -rf %{buildroot}
 {%- if doc_files %}
 %doc {{ doc_files|join(" ") }}
 {%- endif %}
+{%- for script in scripts %}
+%{_bindir}/{{ script }}3
+{%- endfor %}
 {%- for script in scripts %}
 %{_bindir}/{{ script }}
 {%- endfor %}
