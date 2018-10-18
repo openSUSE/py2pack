@@ -37,14 +37,14 @@ Group:          Development/Languages/Python
 Source:         https://files.pythonhosted.org/packages/source/p/py2pack/py2pack-%{version}.tar.gz
 BuildArch:      noarch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-%if 0%{?with_python2}
+%if 0%{with_python2}
 BuildRequires:  python2-devel
 %endif # with_python2
-%if 0%{?with_python3}
+%if 0%{with_python3}
 BuildRequires:  python3-devel
 %endif # with_python3
 
-%if 0%{?with_python2}
+%if 0%{with_python2}
 %package -n python2-py2pack
 Version:        0.8.0
 Release:        0
@@ -56,7 +56,7 @@ License:        Apache-2.0
 %{?python_provide:%python_provide python2-%{srcname}}
 %endif # with_python2
 
-%if 0%{?with_python3}
+%if 0%{with_python3}
 %package -n python3-py2pack
 Version:        0.8.0
 Release:        0
@@ -204,7 +204,7 @@ on your system.
 .. _`nose`: https://nose.readthedocs.org
 .. _`tox`: http://testrun.org/tox
 
-%if 0%{?with_python2}
+%if 0%{with_python2}
 %description -n python2-py2pack
 Py2pack: Generate distribution packages from PyPI
 =================================================
@@ -342,7 +342,7 @@ on your system.
 .. _`tox`: http://testrun.org/tox
 %endif # with_python2
 
-%if 0%{?with_python3}
+%if 0%{with_python3}
 %description -n python3-py2pack
 Py2pack: Generate distribution packages from PyPI
 =================================================
@@ -484,20 +484,20 @@ on your system.
 %setup -q -n py2pack-%{version}
 
 %build
-%if 0%{?with_python2}
+%if 0%{with_python2}
 %py2_build
 %endif # with_python2
-%if 0%{?with_python3}
+%if 0%{with_python3}
 %py3_build
 %endif # with_python3
 
 %install
-%if 0%{?with_python2}
+%if 0%{with_python2}
 %py2_install
 %if ! 0%{with_python3}
 %endif # ! with_python3
 %endif # with_python2
-%if 0%{?with_python3}
+%if 0%{with_python3}
 
 %py3_install
 %endif # with_python3

@@ -39,7 +39,7 @@ Source:         {{ source_url|replace(version, '%{version}') }}
 BuildArch:      noarch
 {%- endif %}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-%if 0%{?with_python2}
+%if 0%{with_python2}
 BuildRequires:  python2-devel {%- if requires_python %} = {{ requires_python }} {% endif %}
 {%- for req in requires %}
 BuildRequires:  python2-{{ req|replace('(','')|replace(')','') }}
@@ -48,7 +48,7 @@ BuildRequires:  python2-{{ req|replace('(','')|replace(')','') }}
 BuildRequires:  python2-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
 %endif # with_python2
-%if 0%{?with_python3}
+%if 0%{with_python3}
 BuildRequires:  python3-devel {%- if requires_python %} = {{ requires_python }} {% endif %}
 {%- for req in requires %}
 BuildRequires:  python3-{{ req|replace('(','')|replace(')','') }}
@@ -58,7 +58,7 @@ BuildRequires:  python3-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
 %endif # with_python3
 
-%if 0%{?with_python2}
+%if 0%{with_python2}
 %package -n python2-{{ name }}
 Version:        {{ version }}
 Release:        0
@@ -83,7 +83,7 @@ Suggests:       python20{{ req|replace('(','')|replace(')','') }}
 %{?python_provide:%python_provide python2-%{srcname}}
 %endif # with_python2
 
-%if 0%{?with_python3}
+%if 0%{with_python3}
 %package -n python3-{{ name }}
 Version:        {{ version }}
 Release:        0
@@ -111,12 +111,12 @@ Suggests:       python3-{{ req|replace('(','')|replace(')','') }}
 %description
 {{ description }}
 
-%if 0%{?with_python2}
+%if 0%{with_python2}
 %description -n python2-{{ name }}
 {{ description }}
 %endif # with_python2
 
-%if 0%{?with_python3}
+%if 0%{with_python3}
 %description -n python3-{{ name }}
 {{ description }}
 %endif # with_python3
@@ -128,15 +128,15 @@ Suggests:       python3-{{ req|replace('(','')|replace(')','') }}
 {%- if is_extension %}
 export CFLAGS="%{optflags}"
 {%- endif %}
-%if 0%{?with_python2}
+%if 0%{with_python2}
 %py2_build
 %endif # with_python2
-%if 0%{?with_python3}
+%if 0%{with_python3}
 %py3_build
 %endif # with_python3
 
 %install
-%if 0%{?with_python2}
+%if 0%{with_python2}
 %py2_install
 {%- for script in scripts %}
 %{__mv} $RPM_BUILD_ROOT%{_bindir}/${script} $RPM_BUILD_ROOT%{_bindir}/${script}2
@@ -147,7 +147,7 @@ export CFLAGS="%{optflags}"
 {%- endfor %}
 %endif # ! with_python3
 %endif # with_python2
-%if 0%{?with_python3}
+%if 0%{with_python3}
 
 %py3_install
 {%- for script in scripts %}
