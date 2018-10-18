@@ -494,8 +494,11 @@ on your system.
 %install
 %if 0%{?with_python2}
 %py2_install
+%if ! 0%{with_python3}
+%endif # ! with_python3
 %endif # with_python2
 %if 0%{?with_python3}
+
 %py3_install
 %endif # with_python3
 
