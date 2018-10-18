@@ -140,10 +140,15 @@ export CFLAGS="%{optflags}"
 %py2_install
 {%- for script in scripts %}
 %{__mv} $RPM_BUILD_ROOT%{_bindir}/${script} $RPM_BUILD_ROOT%{_bindir}/${script}2
+{%- endfor %}
+%if ! 0%{with_python3}
+{%- for script in scripts %}
 %{__ln_s} ${script}2 $RPM_BUILD_ROOT%{_bindir}/${script}
 {%- endfor %}
+%endif # ! with_python3
 %endif # with_python2
 %if 0%{?with_python3}
+
 %py3_install
 {%- for script in scripts %}
 %{__mv} $RPM_BUILD_ROOT%{_bindir}/${script} $RPM_BUILD_ROOT%{_bindir}/${script}3
