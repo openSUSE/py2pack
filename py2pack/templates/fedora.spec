@@ -132,7 +132,7 @@ export CFLAGS="%{optflags}"
 %py2_build
 %endif # with_python2
 %if 0%{?with_python3}
-%py2_build
+%py3_build
 %endif # with_python3
 
 %install
