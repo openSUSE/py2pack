@@ -29,7 +29,7 @@
 # Common SRPM package
 Name:           python-{{ name }}
 Version:        {{ version }}
-Release:        0.1
+Release:        0
 Url:            {{ home_page }}
 Summary:        {{ summary }}
 License:        {{ license }}
