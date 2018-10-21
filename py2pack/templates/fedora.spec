@@ -105,7 +105,7 @@ Suggests:       python3-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
 {%- endif %}
 %endif # with_dnf
-%{?python_provide:%python_provide python2-%{srcname}}
+%{?python_provide:%python_provide python3-%{srcname}}
 %endif # with_python3
 
 %description
