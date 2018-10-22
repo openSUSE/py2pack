@@ -29,7 +29,7 @@
 # Common SRPM package
 Name:           python-{{ name }}
 Version:        {{ version }}
-Release:        0
+Release:        0%{?dist}
 Url:            {{ home_page }}
 Summary:        {{ summary }}
 License:        {{ license }}
@@ -71,7 +71,7 @@ BuildRequires:  python3-{{ req|replace('(','')|replace(')','') }}
 %if 0%{with_python2}
 %package -n python2-{{ name }}
 Version:        {{ version }}
-Release:        0
+Release:        0%{?dist}
 Url:            {{ home_page }}
 Summary:        {{ summary }}
 License:        {{ license }}
@@ -96,7 +96,7 @@ Suggests:       python20{{ req|replace('(','')|replace(')','') }}
 %if 0%{with_python3}
 %package -n python3-{{ name }}
 Version:        {{ version }}
-Release:        0
+Release:        0%{?dist}
 Url:            {{ home_page }}
 Summary:        {{ summary }}
 License:        {{ license }}
