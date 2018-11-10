@@ -40,12 +40,14 @@ BuildArch:      noarch
 {%- endif %}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 %if 0%{with_python2}
+%if 0%{?rhel}
+# Use non-specific names for RHEL
+BuildRequires:  python-devel
+BuildRequires:  python-setuptools
+%else
 BuildRequires:  python2-devel
-{%- if requires_python %}
-# Skip version specific python nandling until py2pack supports multiple version dependendies
-#BuildRequires: python3-devel {{ requires_python }}
-{% endif %}
 BuildRequires:  python2-setuptools
+%endif # rhel
 {%- for req in requires %}
 BuildRequires:  python2-{{ req|replace('(','')|replace(')','') }}
 {%- endfor %}
@@ -55,10 +57,6 @@ BuildRequires:  python2-{{ req|replace('(','')|replace(')','') }}
 %endif # with_python2
 %if 0%{with_python3}
 BuildRequires:  python3-devel
-{%- if requires_python %}
-# Skip version specific python nandling until py2pack supports multiple version dependendies
-#BuildRequires: python3-devel {{ requires_python }}
-{% endif %}
 BuildRequires:  python3-setuptools
 {%- for req in requires %}
 BuildRequires:  python3-{{ req|replace('(','')|replace(')','') }}
