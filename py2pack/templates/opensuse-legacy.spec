@@ -78,6 +78,9 @@ python setup.py test
 {%- if doc_files and doc_files is not none %}
 %doc {{ doc_files|join(" ") }}
 {%- endif %}
+{%- if license_files and license_files is not none %}
+%license {{ license_files|join(" ") }}
+{%- endif %}
 {%- if scripts and scripts is not none %}
 {%- for script in scripts %}
 %{_bindir}/{{ script|basename }}
