@@ -34,22 +34,22 @@ def _requirement_filter_by_marker(req):
 
 
 def _requirement_find_lowest_possible(req):
-        """ find lowest required version"""
-        version_dep = None
-        version_comp = None
-        for dep in req.specs:
-            version = pkg_resources.parse_version(dep[1])
-            # we don't want to have a not supported version as minimal version
-            if dep[0] == '!=':
-                continue
-            # try to use the lowest version available
-            # i.e. for ">=0.8.4,>=0.9.7", select "0.8.4"
-            if (not version_dep or
-                    version < pkg_resources.parse_version(version_dep)):
-                version_dep = dep[1]
-                version_comp = dep[0]
-        return filter(lambda x: x is not None,
-                      [req.unsafe_name, version_comp, version_dep])
+    """ find lowest required version"""
+    version_dep = None
+    version_comp = None
+    for dep in req.specs:
+        version = pkg_resources.parse_version(dep[1])
+        # we don't want to have a not supported version as minimal version
+        if dep[0] == '!=':
+            continue
+        # try to use the lowest version available
+        # i.e. for ">=0.8.4,>=0.9.7", select "0.8.4"
+        if (not version_dep or
+                version < pkg_resources.parse_version(version_dep)):
+            version_dep = dep[1]
+            version_comp = dep[0]
+    return filter(lambda x: x is not None,
+                  [req.unsafe_name, version_comp, version_dep])
 
 
 def _requirements_sanitize(req_list):
