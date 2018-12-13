@@ -20,7 +20,6 @@ from __future__ import print_function
 import sys
 
 import pkg_resources
-from six.moves import filter
 from six.moves import map
 
 
@@ -48,15 +47,19 @@ def _requirement_find_lowest_possible(req):
                 version < pkg_resources.parse_version(version_dep)):
             version_dep = dep[1]
             version_comp = dep[0]
-    return filter(lambda x: x is not None,
-                  [req.unsafe_name, version_comp, version_dep])
+
+    assert (version_dep is None and version_comp is None) or \
+        (version_dep is not None and version_comp is not None)
+
+    return [
+        x for x in (req.unsafe_name, version_comp, version_dep)
+        if x is not None]
 
 
 def _requirements_sanitize(req_list):
-    filtered_req_list = map(
-        _requirement_find_lowest_possible, filter(
-            _requirement_filter_by_marker,
-            map(lambda x: pkg_resources.Requirement.parse(x), req_list)
-        )
+    filtered_req_list = (
+        _requirement_find_lowest_possible(req) for req in
+        (pkg_resources.Requirement.parse(s) for s in req_list)
+        if _requirement_filter_by_marker(req)
     )
     return [" ".join(req) for req in filtered_req_list]
