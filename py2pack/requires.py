@@ -43,7 +43,10 @@ def _requirement_filter_by_marker(req):
     system platform are checked.
     """
     if hasattr(req, 'marker') and req.marker:
-        marker_env = {'python_version': '.'.join(map(str, sys.version_info[:2])), 'sys_platform': sys.platform}
+        marker_env = {
+            'python_version': '.'.join(map(str, sys.version_info[:2])),
+            'sys_platform': sys.platform
+        }
         if not req.marker.evaluate(environment=marker_env):
             return False
     return True
