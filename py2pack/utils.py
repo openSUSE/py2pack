@@ -31,8 +31,8 @@ def _get_archive_filelist(filename):
         with zipfile.ZipFile(filename) as zip_file:
             names = sorted(zip_file.namelist())
     else:
-        raise Exception("Can not get filenames from '%s'. "
-                        "Not a tar or zip file" % filename)
+        raise ValueError("Can not get filenames from '{!s}'. "
+                         "Not a tar or zip file".format(filename))
     if "./" in names:
         names.remove("./")
     return names
