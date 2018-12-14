@@ -15,18 +15,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import List  # noqa: F401, pylint: disable=unused-import
+
 import tarfile
 import zipfile
 
 
 def _get_archive_filelist(filename):
-    names = []
+    # type: (str) -> List[str]
+    names = []  # type: List[str]
     if tarfile.is_tarfile(filename):
-        with tarfile.open(filename) as f:
-            names = sorted(f.getnames())
+        with tarfile.open(filename) as tar_file:
+            names = sorted(tar_file.getnames())
     elif zipfile.is_zipfile(filename):
-        with zipfile.ZipFile(filename) as f:
-            names = sorted(f.namelist())
+        with zipfile.ZipFile(filename) as zip_file:
+            names = sorted(zip_file.namelist())
     else:
         raise Exception("Can not get filenames from '%s'. "
                         "Not a tar or zip file" % filename)
