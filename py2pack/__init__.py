@@ -142,15 +142,15 @@ def _canonicalize_setup_data(data):
 
 
 def _quote_shell_metacharacters(string):
-    shell_metachars_re = re.compile("[|&;()<>\s]")
+    shell_metachars_re = re.compile(r"[|&;()<>\s]")
     if re.search(shell_metachars_re, string):
         return "'" + string + "'"
     return string
 
 
 def _augment_data_from_tarball(args, filename, data):
-    docs_re = re.compile("{0}-{1}\/((?:AUTHOR|ChangeLog|CHANGES|NEWS|README).*)".format(args.name, args.version), re.IGNORECASE)
-    license_re = re.compile("{0}-{1}\/((?:COPYING|LICENSE).*)".format(args.name, args.version), re.IGNORECASE)
+    docs_re = re.compile(r"{0}-{1}\/((?:AUTHOR|ChangeLog|CHANGES|NEWS|README).*)".format(args.name, args.version), re.IGNORECASE)
+    license_re = re.compile(r"{0}-{1}\/((?:COPYING|LICENSE).*)".format(args.name, args.version), re.IGNORECASE)
 
     data_archive = meta_utils.from_archive(filename)
     data.update(data_archive['data'])
@@ -241,7 +241,7 @@ def generate(args):
         data['source_url'] = args.name + '-' + args.version + '.zip'
     data['year'] = datetime.datetime.now().year                             # set current year
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
-    data['summary_no_ending_dot'] = re.sub('(.*)\.', '\g<1>', data.get('summary', ""))
+    data['summary_no_ending_dot'] = re.sub(r'(.*)\.', r'\g<1>', data.get('summary', ""))
 
     tarball_file = glob.glob("{0}-{1}.*".format(args.name, args.version))
     # also check tarball files with underscore. Some packages have a name with
