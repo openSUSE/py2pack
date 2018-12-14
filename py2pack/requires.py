@@ -27,7 +27,7 @@ For further information concerning requirements (and markers), see `PEP 508
 
 from __future__ import absolute_import
 from __future__ import print_function
-from typing import List, Optional  # pylint: disable=unused-import
+from typing import List, Optional  # noqa: F401, pylint: disable=unused-import
 import sys
 
 import pkg_resources
