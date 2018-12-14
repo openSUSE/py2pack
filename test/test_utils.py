@@ -64,3 +64,32 @@ class Py2packUtilsTestCase(unittest.TestCase):
         expected_files = sorted(["file1", "file2", "file3"])
         files = py2pack.utils._get_archive_filelist(file_name)
         self.assertEqual(expected_files, files)
+
+    def test__get_archive_filelist_invalid_archive(self):
+        file_name = os.path.join(self.tmpdir, "file.txt")
+        # poor man's touch
+        with open(file_name, "w") as txt_file:
+            txt_file.write('')
+
+        with self.assertRaises(ValueError) as val_err:
+            py2pack.utils._get_archive_filelist(file_name)
+
+        self.assertIn(file_name, str(val_err.exception))
+        self.assertIn("Not a tar or zip file", str(val_err.exception))
+
+    def test__get_archive_filelist_nonexistent_file(self):
+        file_name = os.path.join(
+            self.tmpdir, "this_does_not_exist.asdfqweruiae")
+
+        # tarfile.is_tarfile() throws an IOError in Python2.7 and
+        # FileNotFoundError  in Python3.6
+        try:
+            FileNotFoundError
+        except NameError:
+            FileNotFoundError = IOError
+
+        with self.assertRaises(FileNotFoundError) as f_not_found_err:
+            py2pack.utils._get_archive_filelist(file_name)
+
+        self.assertNotIn(
+            "Not a tar or zip file", str(f_not_found_err.exception))
