@@ -23,7 +23,6 @@ Summary:        Generate distribution packages from PyPI
 Url:            http://github.com/openSUSE/py2pack
 Group:          Development/Languages/Python
 Source:         https://files.pythonhosted.org/packages/source/p/py2pack/py2pack-%{version}.tar.gz
-BuildRequires:  python-devel
 BuildRequires:  python-setuptools
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch

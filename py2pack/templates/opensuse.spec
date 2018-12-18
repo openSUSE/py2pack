@@ -25,7 +25,6 @@ Url:            {{ home_page }}
 Group:          Development/Languages/Python
 Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRequires:  python-rpm-macros
-BuildRequires:  %{python_module devel}
 BuildRequires:  %{python_module setuptools}
 {%- if setup_requires and setup_requires is not none %}
 {%- for req in setup_requires|sort %}
