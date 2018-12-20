@@ -23,7 +23,6 @@ Summary:        {{ summary_no_ending_dot|default(summary, true) }}
 Url:            {{ home_page }}
 Group:          Development/Languages/Python
 Source:         {{ source_url|replace(version, '%{version}') }}
-BuildRequires:  python-devel {%- if requires_python %} = {{ requires_python }} {% endif %}
 BuildRequires:  python-setuptools
 {%- if install_requires and install_requires is not none %}
 {%- for req in install_requires|sort %}
