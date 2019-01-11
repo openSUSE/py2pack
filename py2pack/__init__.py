@@ -239,7 +239,10 @@ def generate(args):
         data['source_url'] = _get_source_url(args.name, url['filename'])
     else:
         data['source_url'] = args.name + '-' + args.version + '.zip'
-    data['year'] = datetime.datetime.now().year                             # set current year
+
+    now = datetime.datetime.now()
+    data['year'] = now.year                                                 # set current year
+    data['changelog_date'] = now.strftime("%a %b %d %Y")                    # set date for RPM changelog
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
     data['summary_no_ending_dot'] = re.sub(r'(.*)\.', r'\g<1>', data.get('summary', ""))
 
