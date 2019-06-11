@@ -12,17 +12,17 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
-# Please submit bugfixes or comments via http://bugs.opensuse.org/
+# Please submit bugfixes or comments via https://bugs.opensuse.org/
 
 
 %{?!python_module:%define python_module() python-%{**} python3-%{**}}
 Name:           python-{{ name }}
 Version:        {{ version }}
 Release:        0
-License:        {{ license }}
 Summary:        {{ summary_no_ending_dot|default(summary, true) }}
-Url:            {{ home_page }}
+License:        {{ license }}
 Group:          Development/Languages/Python
+URL:            {{ home_page }}
 Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRequires:  python-rpm-macros
 BuildRequires:  %{python_module setuptools}
@@ -64,7 +64,6 @@ Suggests:       python-{{ req }}
 {%- if not has_ext_modules %}
 BuildArch:      noarch
 {%- endif %}
-
 %python_subpackages
 
 %description
