@@ -1,16 +1,16 @@
 #
 # spec file for package python-py2pack
 #
-# Copyright (c) 2018 __USER__.
+# Copyright (c) 2019 __USER__.
 #
 
 Name:           python-py2pack
 Version:        0.8.0
 Release:        0
-Url:            http://github.com/openSUSE/py2pack
 Summary:        Generate distribution packages from PyPI
 License:        Apache-2.0
 Group:          Development/Languages/Python
+URL:            http://github.com/openSUSE/py2pack
 Source:         https://files.pythonhosted.org/packages/source/p/py2pack/py2pack-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  python-devel
