@@ -12,16 +12,16 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
-# Please submit bugfixes or comments via http://bugs.opensuse.org/
+# Please submit bugfixes or comments via https://bugs.opensuse.org/
 
 
 Name:           python-{{ name }}
 Version:        {{ version }}
 Release:        0
-License:        {{ license }}
 Summary:        {{ summary_no_ending_dot|default(summary, true) }}
-Url:            {{ home_page }}
+License:        {{ license }}
 Group:          Development/Languages/Python
+URL:            {{ home_page }}
 Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRequires:  python-setuptools
 {%- if install_requires and install_requires is not none %}
