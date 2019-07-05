@@ -141,9 +141,16 @@ def _canonicalize_setup_data(data):
             data["console_scripts"] = data["entry_points"]["console_scripts"].keys()
 
 
+def _quote_shell_metacharacters(string):
+    shell_metachars_re = re.compile(r"[|&;()<>\s]")
+    if re.search(shell_metachars_re, string):
+        return "'" + string + "'"
+    return string
+
+
 def _augment_data_from_tarball(args, filename, data):
-    docs_re = re.compile("{0}-{1}\/((?:AUTHOR|ChangeLog|CHANGES|COPYING|LICENSE|NEWS|README).*)".format(args.name, args.version), re.IGNORECASE)
-    shell_metachars_re = re.compile("[|&;()<>\s]")
+    docs_re = re.compile(r"{0}-{1}\/((?:AUTHOR|ChangeLog|CHANGES|NEWS|README).*)".format(args.name, args.version), re.IGNORECASE)
+    license_re = re.compile(r"{0}-{1}\/((?:COPYING|LICENSE).*)".format(args.name, args.version), re.IGNORECASE)
 
     data_archive = meta_utils.from_archive(filename)
     data.update(data_archive['data'])
@@ -152,14 +159,16 @@ def _augment_data_from_tarball(args, filename, data):
     _canonicalize_setup_data(data)
 
     for name in names:
-        match = re.match(docs_re, name)
-        if match:
+        match_docs = re.match(docs_re, name)
+        match_license = re.match(license_re, name)
+        if match_docs:
             if "doc_files" not in data:
                 data["doc_files"] = []
-            if re.search(shell_metachars_re, match.group(1)):               # quote filename if it contains shell metacharacters
-                data["doc_files"].append("'" + match.group(1) + "'")
-            else:
-                data["doc_files"].append(match.group(1))
+            data["doc_files"].append(_quote_shell_metacharacters(match_docs.group(1)))
+        if match_license:
+            if "license_files" not in data:
+                data["license_files"] = []
+            data["license_files"].append(_quote_shell_metacharacters(match_license.group(1)))
         # Very broad check for testsuites
         if "test" in name.lower():
             data["testsuite"] = True
@@ -232,7 +241,7 @@ def generate(args):
         data['source_url'] = args.name + '-' + args.version + '.zip'
     data['year'] = datetime.datetime.now().year                             # set current year
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
-    data['summary_no_ending_dot'] = re.sub('(.*)\.', '\g<1>', data.get('summary', ""))
+    data['summary_no_ending_dot'] = re.sub(r'(.*)\.', r'\g<1>', data.get('summary', ""))
 
     tarball_file = glob.glob("{0}-{1}.*".format(args.name, args.version))
     # also check tarball files with underscore. Some packages have a name with

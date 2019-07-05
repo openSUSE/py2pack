@@ -45,7 +45,7 @@ class Py2packRequiresTestCase(unittest.TestCase):
         ("pywin32>=1.0;sys_platform=='win32'  # PSF", False),
         ("foobar", True),
         ("foobar;python_version=='2.7'", sys.version_info[:2] == (2, 7)),
-        ("foobar;python_version=='3.5'", sys.version_info[:2] == (3, 5)),
+        ("foobar;python_version=='3.6'", sys.version_info[:2] == (3, 6)),
     )
     @unpack
     def test__requirement_filter_by_marker(self, req, expected):

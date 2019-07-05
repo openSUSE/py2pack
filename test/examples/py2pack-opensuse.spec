@@ -25,7 +25,6 @@ Url:            http://github.com/openSUSE/py2pack
 Group:          Development/Languages/Python
 Source:         https://files.pythonhosted.org/packages/source/p/py2pack/py2pack-%{version}.tar.gz
 BuildRequires:  python-rpm-macros
-BuildRequires:  %{python_module devel}
 BuildRequires:  %{python_module setuptools}
 BuildRequires:  fdupes
 BuildArch:      noarch
