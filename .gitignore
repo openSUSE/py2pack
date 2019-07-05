@@ -11,3 +11,5 @@ nosetests.xml
 .venv*
 .tox
 .eggs
+*.orig
+
