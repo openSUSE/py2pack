@@ -15,3 +15,4 @@ nosetests.xml
 .coverage
 venv/
 tags
+*.orig
