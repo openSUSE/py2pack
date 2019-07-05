@@ -88,6 +88,10 @@ class Py2packTestCase(unittest.TestCase):
         d = {'classifiers': value}
         self.assertEqual(py2pack._license_from_classifiers(d), expected)
 
+    def test__quote_shell_metacharacters(self):
+        self.assertEqual(py2pack._quote_shell_metacharacters("abc"), "abc")
+        self.assertEqual(py2pack._quote_shell_metacharacters("abc&"), "'abc&'")
+
     def test__prepare_template_env(self):
         template_dir = os.path.join(os.path.dirname(
             os.path.abspath(__file__)), '..', 'py2pack', 'templates')
