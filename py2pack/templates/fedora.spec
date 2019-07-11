@@ -7,10 +7,10 @@
 Name:           python-{{ name }}
 Version:        {{ version }}
 Release:        0
-Url:            {{ home_page }}
 Summary:        {{ summary }}
 License:        {{ license }}
 Group:          Development/Languages/Python
+URL:            {{ home_page }}
 Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  python-devel {%- if requires_python %} = {{ requires_python }} {% endif %}
