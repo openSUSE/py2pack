@@ -16,6 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import datetime
 import os
 import os.path
 import pwd
@@ -48,6 +49,7 @@ def generate_template_function(template):
         with open(os.path.join(self.compare_dir, 'py2pack-%s' % template)) as filehandle:
             required = filehandle.read()
         required = required.replace('__USER__', self.username, 1)
+        required = required.replace('__YEAR__', str(datetime.date.today().year), 1)
         self.assertEqual(written_spec, required)
     return test_template
 
