@@ -347,6 +347,8 @@ def main():
         transport.set_proxy(args.proxy)
         pypi._ServerProxy__transport = transport  # Evil, but should do the trick
 
+    if 'func' not in args:
+        sys.exit(parser.print_help())
     args.func(args)
 
 
