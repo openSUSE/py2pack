@@ -20,7 +20,6 @@ Version:        {{ version }}
 Release:        0
 Summary:        {{ summary_no_ending_dot|default(summary, true) }}
 License:        {{ license }}
-Group:          Development/Languages/Python
 URL:            {{ home_page }}
 Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRequires:  python-setuptools

@@ -9,7 +9,6 @@ Version:        {{ version }}
 Release:        0
 Summary:        {{ summary }}
 License:        {{ license }}
-Group:          Development/Languages/Python
 URL:            {{ home_page }}
 Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
