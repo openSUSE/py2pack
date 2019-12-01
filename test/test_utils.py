@@ -84,7 +84,7 @@ class Py2packUtilsTestCase(unittest.TestCase):
         # tarfile.is_tarfile() throws an IOError in Python2.7 and
         # FileNotFoundError  in Python3.6
         try:
-            FileNotFoundError
+            eval ('FileNotFoundError')
         except NameError:
             FileNotFoundError = IOError
 
