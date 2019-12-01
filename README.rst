@@ -128,7 +128,7 @@ on your system.
 .. _RPM: http://en.wikipedia.org/wiki/RPM_Package_Manager
 .. _DEB: http://en.wikipedia.org/wiki/Deb_(file_format)
 .. _`Python Package Index`: https://pypi.python.org/pypi/rapport
-.. _`Open Build Service`: https://build.opensuse.org/package/show?package=rapport&project=devel:languages:python
+.. _`Open Build Service`: https://build.opensuse.org/package/show?package=python-py2pack&project=devel:languages:python
 .. _`the repository`: https://github.com/openSUSE/py2pack
 .. _`nose`: https://nose.readthedocs.org
 .. _`tox`: http://testrun.org/tox
