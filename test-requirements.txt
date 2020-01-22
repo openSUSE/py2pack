@@ -1,6 +1,6 @@
 coverage
 flake8
-nose
+pytest
 ddt
 Sphinx>=1.2.1
 sphinxcontrib.programoutput
