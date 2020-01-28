@@ -13,6 +13,7 @@
 # published by the Open Source Initiative.
 
 # Please submit bugfixes or comments via https://bugs.opensuse.org/
+#
 
 
 %{?!python_module:%define python_module() python-%{**} python3-%{**}}
@@ -21,7 +22,6 @@ Version:        {{ version }}
 Release:        0
 Summary:        {{ summary_no_ending_dot|default(summary, true) }}
 License:        {{ license }}
-Group:          Development/Languages/Python
 URL:            {{ home_page }}
 Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRequires:  python-rpm-macros

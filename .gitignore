@@ -11,3 +11,4 @@ nosetests.xml
 .venv*
 .tox
 .eggs
+.coverage

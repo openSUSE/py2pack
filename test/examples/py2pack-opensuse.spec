@@ -13,6 +13,7 @@
 # published by the Open Source Initiative.
 
 # Please submit bugfixes or comments via https://bugs.opensuse.org/
+#
 
 
 %{?!python_module:%define python_module() python-%{**} python3-%{**}}
@@ -21,7 +22,6 @@ Version:        0.8.0
 Release:        0
 Summary:        Generate distribution packages from PyPI
 License:        Apache-2.0
-Group:          Development/Languages/Python
 URL:            http://github.com/openSUSE/py2pack
 Source:         https://files.pythonhosted.org/packages/source/p/py2pack/py2pack-%{version}.tar.gz
 BuildRequires:  python-rpm-macros
