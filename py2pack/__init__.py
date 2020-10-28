@@ -57,6 +57,7 @@ def pypi_json(project, release=None):
     r = requests.get('https://pypi.org/pypi/{}{}/json'.format(project, version))
     return r.json()
 
+
 def _get_template_dirs():
     """existing directories where to search for jinja2 templates. The order
     is important. The first found template from the first found dir wins!"""
@@ -246,7 +247,7 @@ def generate(args):
     tarball_file = glob.glob("{0}-{1}.*".format(args.name, args.version))
     # also check tarball files with underscore. Some packages have a name with
     # a '-' or '.' but the tarball name has a '_' . Eg the package os-faults
-    tr = str.maketrans('-.','__')
+    tr = str.maketrans('-.', '__')
     tarball_file += glob.glob("{0}-{1}.*".format(args.name.translate(tr),
                                                  args.version))
     if tarball_file:                                                        # get some more info from that
