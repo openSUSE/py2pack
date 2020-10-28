@@ -16,8 +16,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import
-
 import argparse
 import datetime
 import glob
@@ -29,12 +27,9 @@ import pwd
 import re
 import sys
 import urllib
-from six.moves.urllib.request import urlretrieve
-from six.moves import filter
-from six.moves import xmlrpc_client
 import jinja2
 import warnings
-warnings.simplefilter('always', DeprecationWarning)
+import xmlrpc
 
 from metaextract import utils as meta_utils
 
@@ -43,8 +38,10 @@ import py2pack.requires
 import py2pack.utils
 from py2pack import version as py2pack_version
 
+# https://warehouse.pypa.io/api-reference/xml-rpc.html
+pypi = xmlrpc.client.ServerProxy('https://pypi.org/pypi')
 
-pypi = xmlrpc_client.ServerProxy('https://pypi.python.org/pypi')
+warnings.simplefilter('always', DeprecationWarning)
 
 SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spdx_license_map.p')
 SDPX_LICENSES = pickle.load(open(SPDX_LICENSES_FILE, 'rb'))
@@ -63,7 +60,7 @@ def _get_template_dirs():
     ])
 
 
-def list(args=None):
+def list_package(args=None):
     print('listing all PyPI packages...')
     for package in pypi.list_packages():
         print(package)
@@ -90,7 +87,7 @@ def fetch(args):
         sys.exit(1)
     print('downloading package {0}-{1}...'.format(args.name, args.version))
     print('from {0}'.format(url['url']))
-    urlretrieve(url['url'], url['filename'])
+    urllib.request.urlretrieve(url['url'], url['filename'])
 
 
 def _canonicalize_setup_data(data):
@@ -138,7 +135,7 @@ def _canonicalize_setup_data(data):
         # convert to a dict and parse it
         data["entry_points"] = pkg_resources.EntryPoint.parse_map(data["entry_points"])
         if "console_scripts" in data["entry_points"]:
-            data["console_scripts"] = data["entry_points"]["console_scripts"].keys()
+            data["console_scripts"] = list(data["entry_points"]["console_scripts"].keys())
 
 
 def _quote_shell_metacharacters(string):
@@ -302,7 +299,7 @@ def main():
     subparsers = parser.add_subparsers(title='commands')
 
     parser_list = subparsers.add_parser('list', help='list all packages on PyPI')
-    parser_list.set_defaults(func=list)
+    parser_list.set_defaults(func=list_package)
 
     parser_search = subparsers.add_parser('search', help='search for packages on PyPI')
     parser_search.add_argument('name', help='package name (with optional version)')
