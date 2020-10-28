@@ -18,7 +18,7 @@
 
 %{?!python_module:%define python_module() python-%{**} python3-%{**}}
 Name:           python-py2pack
-Version:        0.8.0
+Version:        0.8.5
 Release:        0
 Summary:        Generate distribution packages from PyPI
 License:        Apache-2.0
@@ -141,11 +141,11 @@ To run a single test class via `tox`_, use i.e.:
     $ tox -epy27 test.test_py2pack:Py2packTestCase
 
 
-You can also run `nose`_ directly:
+You can also run `pytest`_ directly:
 
 .. code-block:: bash
 
-    $ nosetests
+    $ pytest
 
 It assumes you have the test dependencies installed (available on PYTHONPATH)
 on your system.
@@ -160,10 +160,10 @@ on your system.
 .. _openSUSE: http://www.opensuse.org/en/
 .. _RPM: http://en.wikipedia.org/wiki/RPM_Package_Manager
 .. _DEB: http://en.wikipedia.org/wiki/Deb_(file_format)
-.. _`Python Package Index`: https://pypi.python.org/pypi/rapport
-.. _`Open Build Service`: https://build.opensuse.org/package/show?package=rapport&project=devel:languages:python
+.. _`Python Package Index`: https://pypi.org/
+.. _`Open Build Service`: https://build.opensuse.org/package/show/devel:languages:python/python-py2pack
 .. _`the repository`: https://github.com/openSUSE/py2pack
-.. _`nose`: https://nose.readthedocs.org
+.. _`pytest`: https://github.com/pytest-dev/pytest
 .. _`tox`: http://testrun.org/tox
 
 %prep

@@ -20,8 +20,8 @@ import datetime
 import os
 import os.path
 import pwd
-import tempfile
-import unittest
+
+import pytest
 
 import py2pack
 
@@ -31,36 +31,42 @@ class Args(object):
     template = ''
     filename = ''
     name = 'py2pack'
-    version = '0.8.0'
+    version = '0.8.5'
     source_url = None
 
 
-def generate_template_function(template):
-    def test_template(self):
-        """ Test if generated specfile for %s equals to stored one. """ % template
-        args = Args()
-        args.template = template
-        with tempfile.NamedTemporaryFile(mode='w+t') as filehandle:
-            filename = filehandle.name
-            args.filename = filename
+compare_dir = os.path.join(os.path.dirname(__file__), 'examples')
+maxDiff = None
+username = pwd.getpwuid(os.getuid())[4]
+
+
+@pytest.mark.parametrize('template, fetch_tarball',
+                         [('fedora.spec', False),
+                          ('mageia.spec', False),
+                          ('opensuse-legacy.spec', False),
+                          ('opensuse.dsc', False),
+                          ('opensuse.spec', False),
+                          ('opensuse.spec', True)])
+def test_template(tmpdir, template, fetch_tarball):
+    """ Test if generated specfile equals to stored one. """
+    args = Args()
+    args.template = template
+    base, ext = template.split(".")
+    suffix = '-augmented' if fetch_tarball else ''
+    filename = "{}{}.{}".format(base, suffix, ext)
+    args.filename = filename
+    with tmpdir.as_cwd():
+        if fetch_tarball:
+            py2pack.fetch(args)
             py2pack.generate(args)
-            filehandle.seek(0)
+        else:
+            with pytest.warns(UserWarning, match="No tarball"):
+                py2pack.generate(args)
+        with open(filename) as filehandle:
             written_spec = filehandle.read()
-        with open(os.path.join(self.compare_dir, 'py2pack-%s' % template)) as filehandle:
-            required = filehandle.read()
-        required = required.replace('__USER__', self.username, 1)
-        required = required.replace('__YEAR__', str(datetime.date.today().year), 1)
-        self.assertEqual(written_spec, required)
-    return test_template
-
-
-class TemplateTestCase(unittest.TestCase):
-    compare_dir = os.path.join(os.path.dirname(__file__), 'examples')
-    maxDiff = None
-    username = pwd.getpwuid(os.getuid())[4]
-
-
-for template in ('fedora.spec', 'mageia.spec', 'opensuse-legacy.spec', 'opensuse.dsc', 'opensuse.spec'):
-    setattr(TemplateTestCase,
-            'test_template_%s' % template,
-            generate_template_function(template))
+    reference = os.path.join(compare_dir, 'py2pack-{}'.format(filename))
+    with open(reference) as filehandle:
+        required = filehandle.read()
+    required = required.replace('__USER__', username, 1)
+    required = required.replace('__YEAR__', str(datetime.date.today().year), 1)
+    assert written_spec == required
