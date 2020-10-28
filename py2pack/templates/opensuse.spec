@@ -95,7 +95,11 @@ export CFLAGS="%{optflags}"
 {%- if testsuite or test_suite %}
 
 %check
-%python_exec setup.py test
+{%- if has_ext_modules %}
+CHOOSE: %pytest_arch OR %pyunittest_arch -v OR CUSTOM
+{%- else %}
+CHOOSE: %pytest OR %pyunittest -v OR CUSTOM
+{%- endif %}
 {%- endif %}
 
 {%- if scripts_or_console_scripts %}
