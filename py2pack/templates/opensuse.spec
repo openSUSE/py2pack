@@ -81,10 +81,10 @@ export CFLAGS="%{optflags}"
 %install
 %python_install
 {%- set scripts_or_console_scripts = (
-            (scripts if scripts and scripts is not none else []) +
+            (scripts|map('basename') if scripts and scripts is not none else []) +
             (console_scripts if console_scripts and console_scripts is not none else [])) %}
 {%- for script in scripts_or_console_scripts %}
-%python_clone -a %{buildroot}%{_bindir}/{{ script|basename }}
+%python_clone -a %{buildroot}%{_bindir}/{{ script }}
 {%- endfor %}
 {%- if has_ext_modules %}
 %python_expand %fdupes %{buildroot}%{$python_sitearch}
