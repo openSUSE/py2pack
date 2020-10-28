@@ -1,7 +1,7 @@
 #
 # spec file for package python-py2pack
 #
-# Copyright (c) __YEAR__ SUSE LINUX GmbH, Nuernberg, Germany.
+# Copyright (c) __YEAR__ SUSE LLC
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
