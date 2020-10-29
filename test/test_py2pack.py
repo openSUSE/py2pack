@@ -47,7 +47,7 @@ class Py2packTestCase(unittest.TestCase):
                          expected_url)
 
     def test_list(self):
-        py2pack.list(self.args)
+        py2pack.list_packages(self.args)
 
     def test_search(self):
         py2pack.search(self.args)
@@ -56,6 +56,7 @@ class Py2packTestCase(unittest.TestCase):
         py2pack.show(self.args)
 
     def test_newest_download_url(self):
+        py2pack.fetch_data(self.args)
         url = py2pack.newest_download_url(self.args)
         self.assertTrue("url" in url)
         self.assertTrue("filename" in url)

@@ -16,8 +16,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import
-
 import argparse
 import datetime
 import glob
@@ -27,14 +25,12 @@ import pkg_resources
 import pprint
 import pwd
 import re
+import requests
 import sys
 import urllib
-from six.moves.urllib.request import urlretrieve
-from six.moves import filter
-from six.moves import xmlrpc_client
 import jinja2
 import warnings
-warnings.simplefilter('always', DeprecationWarning)
+import xmlrpc
 
 from metaextract import utils as meta_utils
 
@@ -43,11 +39,23 @@ import py2pack.requires
 import py2pack.utils
 from py2pack import version as py2pack_version
 
+# https://warehouse.pypa.io/api-reference/xml-rpc.html
+pypi_xml = xmlrpc.client.ServerProxy('https://pypi.org/pypi')
 
-pypi = xmlrpc_client.ServerProxy('https://pypi.python.org/pypi')
+warnings.simplefilter('always', DeprecationWarning)
 
 SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spdx_license_map.p')
 SDPX_LICENSES = pickle.load(open(SPDX_LICENSES_FILE, 'rb'))
+
+
+def pypi_json(project, release=None):
+    """Access the PyPI JSON API
+
+    https://warehouse.pypa.io/api-reference/json.html
+    """
+    version = ('/' + release) if release else ''
+    r = requests.get('https://pypi.org/pypi/{}{}/json'.format(project, version))
+    return r.json()
 
 
 def _get_template_dirs():
@@ -63,34 +71,33 @@ def _get_template_dirs():
     ])
 
 
-def list(args=None):
+def list_packages(args=None):
     print('listing all PyPI packages...')
-    for package in pypi.list_packages():
+    for package in pypi_xml.list_packages():
         print(package)
 
 
 def search(args):
     print('searching for package {0}...'.format(args.name))
-    for hit in pypi.search({'name': args.name}):
+    for hit in pypi_xml.search({'name': args.name}):
         print('found {0}-{1}'.format(hit['name'], hit['version']))
 
 
 def show(args):
-    check_or_set_version(args)
-    print('showing package {0}...'.format(args.name))
-    data = pypi.release_data(args.name, args.version)
-    pprint.pprint(data)
+    fetch_data(args)
+    print('showing package {0}...'.format(args.fetched_data['info']['name']))
+    pprint.pprint(args.fetched_data)
 
 
 def fetch(args):
-    check_or_set_version(args)
+    fetch_data(args)
     url = newest_download_url(args)
     if not url:
         print("unable to find a source release for {0}!".format(args.name))
         sys.exit(1)
     print('downloading package {0}-{1}...'.format(args.name, args.version))
     print('from {0}'.format(url['url']))
-    urlretrieve(url['url'], url['filename'])
+    urllib.request.urlretrieve(url['url'], url['filename'])
 
 
 def _canonicalize_setup_data(data):
@@ -138,7 +145,7 @@ def _canonicalize_setup_data(data):
         # convert to a dict and parse it
         data["entry_points"] = pkg_resources.EntryPoint.parse_map(data["entry_points"])
         if "console_scripts" in data["entry_points"]:
-            data["console_scripts"] = data["entry_points"]["console_scripts"].keys()
+            data["console_scripts"] = list(data["entry_points"]["console_scripts"].keys())
 
 
 def _quote_shell_metacharacters(string):
@@ -222,34 +229,33 @@ def generate(args):
         warnings.warn("the '--run' switch is deprecated and a noop",
                       DeprecationWarning)
 
-    check_or_set_version(args)
+    fetch_data(args)
     if not args.template:
         args.template = file_template_list()[0]
     if not args.filename:
         args.filename = args.name + '.' + args.template.rsplit('.', 1)[1]   # take template file ending
     print('generating spec file for {0}...'.format(args.name))
-    data = pypi.release_data(args.name, args.version)                       # fetch all meta data
-    url = newest_download_url(args)
-    if args.source_url:
-        data['source_url'] = args.source_url
-    elif url:
-        # do not use the url delivered by pypi. that url contains a hash and
-        # needs to be adjusted with every package update. Instead use
-        # the pypi.io url
-        data['source_url'] = _get_source_url(args.name, url['filename'])
-    else:
-        data['source_url'] = args.name + '-' + args.version + '.zip'
+    data = args.fetched_data['info']
+    durl = newest_download_url(args)
+    data['source_url'] = (args.source_url or
+                          (durl and durl['url']) or
+                          args.name + '-' + args.version + '.zip')
     data['year'] = datetime.datetime.now().year                             # set current year
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
     data['summary_no_ending_dot'] = re.sub(r'(.*)\.', r'\g<1>', data.get('summary', ""))
 
     tarball_file = glob.glob("{0}-{1}.*".format(args.name, args.version))
     # also check tarball files with underscore. Some packages have a name with
-    # a - but the tarball name has a _ . Eg the package os-faults
-    tarball_file += glob.glob("{0}-{1}.*".format(args.name.replace('-', '_'),
+    # a '-' or '.' but the tarball name has a '_' . Eg the package os-faults
+    tr = str.maketrans('-.', '__')
+    tarball_file += glob.glob("{0}-{1}.*".format(args.name.translate(tr),
                                                  args.version))
     if tarball_file:                                                        # get some more info from that
         _augment_data_from_tarball(args, tarball_file[0], data)
+    else:
+        warnings.warn("No tarball for {} in version {} found. Valuable "
+                      "information for the generation might be missing."
+                      "".format(args.name, args.version))
 
     _normalize_license(data)
 
@@ -263,28 +269,35 @@ def generate(args):
         outfile.close()
 
 
-def check_or_set_version(args):
-    if not args.version:                                                    # take first version found
-        releases = pypi.package_releases(args.name)
-        if len(releases) == 0:
-            print("unable to find a suitable release for {0}!".format(args.name))
-            sys.exit(1)
-        else:
-            args.version = pypi.package_releases(args.name)[0]              # return first (current) release number
+def fetch_data(args):
+    args.fetched_data = pypi_json(args.name, args.version)
+    releases = args.fetched_data['releases']
+    if len(releases) == 0:
+        print("unable to find a suitable release for {0}!".format(args.name))
+        sys.exit(1)
+    else:
+        args.version = args.fetched_data['info']['version']                 # return current release number
 
 
 def newest_download_url(args):
-    if args.source_url:
-        return {'url': args.source_url,
-                'filename': args.source_url[args.source_url.rfind("/") + 1:]}
-    for url in pypi.release_urls(args.name, args.version):                  # Fetch all download URLs
-        if url['packagetype'] == 'sdist':                                   # Found the source URL we care for
-            return url
+    """check but do not use the url delivered by pypi. that url contains a hash and
+    needs to be adjusted with every package update. Instead use
+    the pypi.io url
+    """
+    if not hasattr(args, "fetched_data"):
+        return {}
+    for version, release_data in args.fetched_data['releases'].items():     # Check download URLs in releases
+        if (version == args.version):
+            for release in release_data:
+                if release['packagetype'] == 'sdist':                      # Found the source URL we care for
+                    release['url'] = _get_source_url(args.name, release['filename'])
+                    return release
     # No PyPI tarball release, let's see if an upstream download URL is provided:
-    data = pypi.release_data(args.name, args.version)                       # Fetch all meta data
+    data = args.fetched_data['info']
     if 'download_url' in data and data['download_url']:
-        filename = os.path.basename(data['download_url'])
-        return {'url': data['download_url'], 'filename': filename}
+        url = data['download_url']
+        return {'url': url,
+                'filename': os.path.basename(url)}
     return {}                                                               # We're all out of bubblegum
 
 
@@ -302,7 +315,7 @@ def main():
     subparsers = parser.add_subparsers(title='commands')
 
     parser_list = subparsers.add_parser('list', help='list all packages on PyPI')
-    parser_list.set_defaults(func=list)
+    parser_list.set_defaults(func=list_packages)
 
     parser_search = subparsers.add_parser('search', help='search for packages on PyPI')
     parser_search.add_argument('name', help='package name (with optional version)')
@@ -345,7 +358,7 @@ def main():
             sys.exit(1)
         transport = py2pack.proxy.ProxiedTransport()
         transport.set_proxy(args.proxy)
-        pypi._ServerProxy__transport = transport  # Evil, but should do the trick
+        pypi_xml._ServerProxy__transport = transport  # Evil, but should do the trick
 
     if 'func' not in args:
         sys.exit(parser.print_help())

@@ -1,5 +1,5 @@
 Jinja2
 setuptools
-six
 metaextract
+requests
 typing;python_version<'3.5'
