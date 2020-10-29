@@ -1,7 +1,7 @@
 %define mod_name py2pack
 
 Name:           python-%{mod_name}
-Version:        0.8.0
+Version:        0.8.5
 Release:        %mkrel 1
 Url:            http://github.com/openSUSE/py2pack
 Summary:        Generate distribution packages from PyPI

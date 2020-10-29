@@ -1,7 +1,7 @@
 #
 # spec file for package python-{{ name }}
 #
-# Copyright (c) {{ year }} SUSE LINUX GmbH, Nuernberg, Germany.
+# Copyright (c) {{ year }} SUSE LLC
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -73,11 +73,19 @@ BuildArch:      noarch
 %setup -q -n {{ name }}-%{version}
 
 %build
-{% if has_ext_modules %}export CFLAGS="%{optflags}"
-{% endif %}%python_build
+{%- if has_ext_modules %}
+export CFLAGS="%{optflags}"
+{%- endif %}
+%python_build
 
 %install
 %python_install
+{%- set scripts_or_console_scripts = (
+            (scripts|map('basename') if scripts and scripts is not none else []) +
+            (console_scripts if console_scripts and console_scripts is not none else [])) %}
+{%- for script in scripts_or_console_scripts %}
+%python_clone -a %{buildroot}%{_bindir}/{{ script }}
+{%- endfor %}
 {%- if has_ext_modules %}
 %python_expand %fdupes %{buildroot}%{$python_sitearch}
 {%- else %}
@@ -85,8 +93,22 @@ BuildArch:      noarch
 {%- endif %}
 
 {%- if testsuite or test_suite %}
+
 %check
-%python_exec setup.py test
+{%- if has_ext_modules %}
+CHOOSE: %pytest_arch OR %pyunittest_arch -v OR CUSTOM
+{%- else %}
+CHOOSE: %pytest OR %pyunittest -v OR CUSTOM
+{%- endif %}
+{%- endif %}
+
+{%- if scripts_or_console_scripts %}
+
+%post
+%python_install_alternative {{ scripts_or_console_scripts|join(" ") }}
+
+%postun
+%python_uninstall_alternative {{ scripts_or_console_scripts|first }}
 {%- endif %}
 
 %files %{python_files}
@@ -96,16 +118,9 @@ BuildArch:      noarch
 {%- if license_files and license_files is not none %}
 %license {{ license_files|join(" ") }}
 {%- endif %}
-{%- if scripts and scripts is not none %}
-{%- for script in scripts %}
-%python3_only %{_bindir}/{{ script|basename }}
+{%- for script in scripts_or_console_scripts %}
+%python_alternative %{_bindir}/{{ script }}
 {%- endfor %}
-{%- endif %}
-{%- if console_scripts and console_scripts is not none %}
-{%- for script in console_scripts %}
-%python3_only %{_bindir}/{{ script }}
-{%- endfor %}
-{%- endif %}
 {%- if has_ext_modules %}
 %{python_sitearch}/*
 {%- else %}
