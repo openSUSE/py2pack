@@ -20,7 +20,7 @@ To install py2pack from the `Python Package Index`_, simply:
 
     $ pip install py2pack
 
-Lastly, you can check your distro of choice if they provide packages.
+You can also check your distro of choice if they provide packages.
 For openSUSE Tumbleweed and Leap 15.X, you can
 
 .. code-block:: bash
@@ -124,4 +124,3 @@ on your system.
 .. _`the repository`: https://github.com/openSUSE/py2pack
 .. _`pytest`: https://github.com/pytest-dev/pytest
 .. _`tox`: http://testrun.org/tox
-
