@@ -18,7 +18,7 @@ To install py2pack from the `Python Package Index`_, simply:
 
 .. code-block:: bash
 
-    $ pip install py2pack
+    $ python3 -mpip install py2pack
 
 Or, if you absolutely must:
 
@@ -33,7 +33,7 @@ rolling release / development version), simply:
 
 .. code-block:: bash
 
-    $ sudo zypper install python-py2pack
+    $ sudo zypper install python3-py2pack
 
 
 Usage
@@ -90,7 +90,7 @@ You can test py2pack from your git checkout by executing the py2pack module:
 
 .. code-block:: bash
 
-    $ python -m py2pack
+    $ python3 -m py2pack
 
 Fork `the repository`_ on Github to start making your changes to the **master**
 branch (or branch off of it). Don't forget to write a test for fixed issues or
@@ -105,7 +105,7 @@ To run a single test class via `tox`_, use i.e.:
 
 .. code-block:: bash
 
-    $ tox -epy27 test.test_py2pack:Py2packTestCase
+    $ tox -epy38 test.test_py2pack:Py2packTestCase
 
 
 You can also run `pytest`_ directly:
@@ -132,4 +132,3 @@ on your system.
 .. _`the repository`: https://github.com/openSUSE/py2pack
 .. _`pytest`: https://github.com/pytest-dev/pytest
 .. _`tox`: http://testrun.org/tox
-
