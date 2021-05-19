@@ -20,16 +20,8 @@ To install py2pack from the `Python Package Index`_, simply:
 
     $ python3 -mpip install py2pack
 
-Or, if you absolutely must:
-
-.. code-block:: bash
-
-    $ easy_install py2pack
-
-But, you really shouldn't do that. Lastly, you can check your distro of choice
-if they provide packages. For openSUSE, you can find packages in the `Open
-Build Service`_ for all releases. If you happen to use openSUSE:Factory (the
-rolling release / development version), simply:
+You can also check your distro of choice if they provide packages.
+For openSUSE Tumbleweed and Leap 15.X, you can
 
 .. code-block:: bash
 
