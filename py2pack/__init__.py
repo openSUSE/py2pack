@@ -31,6 +31,7 @@ import urllib
 import jinja2
 import warnings
 import xmlrpc
+import pypi_search.search
 
 from metaextract import utils as meta_utils
 
@@ -79,7 +80,7 @@ def list_packages(args=None):
 
 def search(args):
     print('searching for package {0}...'.format(args.name))
-    for hit in pypi_xml.search({'name': args.name}):
+    for hit in pypi_search.search.find_packages(args.name):
         print('found {0}-{1}'.format(hit['name'], hit['version']))
 
 
