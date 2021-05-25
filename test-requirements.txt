@@ -2,5 +2,7 @@ coverage
 flake8
 pytest
 ddt
+metaextract
+pytest-cov
 Sphinx>=1.2.1
 sphinxcontrib.programoutput

@@ -1,4 +1,5 @@
 .*.swp
+env/
 AUTHORS
 ChangeLog
 MANIFEST
