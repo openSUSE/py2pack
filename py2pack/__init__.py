@@ -203,7 +203,7 @@ def _normalize_license(data):
         else:
             data['license'] = "%s (FIXME:No SPDX)" % (license)
     else:
-        data['license'] = ""
+        data['license'] = "FIXME-UNKNOWN"
 
 
 def _prepare_template_env(template_dir):

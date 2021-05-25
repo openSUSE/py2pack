@@ -65,9 +65,9 @@ class Py2packTestCase(unittest.TestCase):
         self.assertEqual(url["packagetype"], "sdist")
 
     @data(
-        (None, [], ""),
+        (None, [], "FIXME-UNKNOWN"),
         ("Apache-2.0", [], "Apache-2.0"),
-        ("", [], ""),
+        ("", [], "FIXME-UNKNOWN"),
         ("Apache 2.0", [], "Apache-2.0"),
         ("", ["License :: OSI Approved :: Apache Software License"], "Apache-2.0"),
         ("BSD", [], "BSD (FIXME:No SPDX)"),
