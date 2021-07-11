@@ -256,7 +256,12 @@ def generate(args):
         tarball_file += glob.glob("{0}-{1}.*".format(name.translate(tr),
                                                      args.version))
     if tarball_file:                                                        # get some more info from that
-        _augment_data_from_tarball(args, tarball_file[0], data)
+        try:
+            _augment_data_from_tarball(args, tarball_file[0], data)
+        except Exception as exc:
+            warnings.warn("Could not get information from tarball {}: {}. Valuable "
+                          "information for the generation might be missing."
+                          .format(tarball_file[0], exc))
     else:
         warnings.warn("No tarball for {} in version {} found. Valuable "
                       "information for the generation might be missing."
