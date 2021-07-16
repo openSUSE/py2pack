@@ -245,14 +245,23 @@ def generate(args):
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
     data['summary_no_ending_dot'] = re.sub(r'(.*)\.', r'\g<1>', data.get('summary', ""))
 
-    tarball_file = glob.glob("{0}-{1}.*".format(args.name, args.version))
-    # also check tarball files with underscore. Some packages have a name with
-    # a '-' or '.' but the tarball name has a '_' . Eg the package os-faults
-    tr = str.maketrans('-.', '__')
-    tarball_file += glob.glob("{0}-{1}.*".format(args.name.translate(tr),
-                                                 args.version))
+    # If package name supplied on command line differs in case from PyPI's one
+    # then package archive will be fetched but the name will be the one from PyPI.
+    # Eg. send2trash vs Send2Trash. Check that.
+    for name in (args.name, data['name']):
+        tarball_file = glob.glob("{0}-{1}.*".format(name, args.version))
+        # also check tarball files with underscore. Some packages have a name with
+        # a '-' or '.' but the tarball name has a '_' . Eg the package os-faults
+        tr = str.maketrans('-.', '__')
+        tarball_file += glob.glob("{0}-{1}.*".format(name.translate(tr),
+                                                     args.version))
     if tarball_file:                                                        # get some more info from that
-        _augment_data_from_tarball(args, tarball_file[0], data)
+        try:
+            _augment_data_from_tarball(args, tarball_file[0], data)
+        except Exception as exc:
+            warnings.warn("Could not get information from tarball {}: {}. Valuable "
+                          "information for the generation might be missing."
+                          .format(tarball_file[0], exc))
     else:
         warnings.warn("No tarball for {} in version {} found. Valuable "
                       "information for the generation might be missing."
