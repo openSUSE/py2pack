@@ -177,6 +177,7 @@ on your system.
 %python_expand %fdupes %{buildroot}%{$python_sitelib}
 
 %files %{python_files}
-%{python_sitelib}/*
+%{python_sitelib}/py2pack
+%{python_sitelib}/py2pack-%{version}*-info
 
 %changelog
