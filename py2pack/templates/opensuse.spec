@@ -122,9 +122,11 @@ CHOOSE: %pytest OR %pyunittest -v OR CUSTOM
 %python_alternative %{_bindir}/{{ script }}
 {%- endfor %}
 {%- if has_ext_modules %}
-%{python_sitearch}/*
+%{python_sitearch}/{{name}}
+%{python_sitearch}/{{name}}-%{version}*-info
 {%- else %}
-%{python_sitelib}/*
+%{python_sitelib}/{{name}}
+%{python_sitelib}/{{name}}-%{version}*-info
 {%- endif %}
 {%- if data_files and data_files is not none %}
 {%- for dir, files in data_files %}

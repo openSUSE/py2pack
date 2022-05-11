@@ -75,6 +75,7 @@ CHOOSE: %pytest OR %pyunittest -v OR CUSTOM
 %doc AUTHORS ChangeLog README.rst
 %license LICENSE
 %python_alternative %{_bindir}/py2pack
-%{python_sitelib}/*
+%{python_sitelib}/py2pack
+%{python_sitelib}/py2pack-%{version}*-info
 
 %changelog
