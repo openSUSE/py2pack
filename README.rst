@@ -1,9 +1,9 @@
 Py2pack: Generate distribution packages from PyPI
 =================================================
 
-.. image:: https://travis-ci.org/openSUSE/py2pack.png?branch=master
-        :target: https://travis-ci.org/openSUSE/py2pack
-
+.. image:: https://github.com/openSUSE/py2pack/actions/workflows/tox.yml/badge.svg
+        :target: https://github.com/openSUSE/py2pack/actions/workflows/tox.yml
+        :alt: Unit tests
 
 This script allows to generate RPM spec or DEB dsc files from Python modules.
 It allows to list Python modules or search for them on the Python Package Index
