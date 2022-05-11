@@ -21,7 +21,7 @@ Name:           python-py2pack
 Version:        0.8.5
 Release:        0
 Summary:        Generate distribution packages from PyPI
-License:        UNKNOWN (FIXME:No SPDX)
+License:        Apache-2.0
 URL:            http://github.com/openSUSE/py2pack
 Source:         https://files.pythonhosted.org/packages/source/p/py2pack/py2pack-%{version}.tar.gz
 BuildRequires:  python-rpm-macros
