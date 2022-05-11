@@ -3,4 +3,3 @@ setuptools
 metaextract
 requests
 pypi-search
-typing;python_version<'3.5'
