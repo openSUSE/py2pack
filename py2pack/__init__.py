@@ -281,8 +281,8 @@ def generate(args):
 
 def fetch_data(args):
     args.fetched_data = pypi_json(args.name, args.version)
-    releases = args.fetched_data['releases']
-    if len(releases) == 0:
+    urls = args.fetched_data['urls']
+    if len(urls) == 0:
         print("unable to find a suitable release for {0}!".format(args.name))
         sys.exit(1)
     else:
@@ -296,12 +296,10 @@ def newest_download_url(args):
     """
     if not hasattr(args, "fetched_data"):
         return {}
-    for version, release_data in args.fetched_data['releases'].items():     # Check download URLs in releases
-        if (version == args.version):
-            for release in release_data:
-                if release['packagetype'] == 'sdist':                      # Found the source URL we care for
-                    release['url'] = _get_source_url(args.name, release['filename'])
-                    return release
+    for release in args.fetched_data['urls']:     # Check download URLs in releases
+        if release['packagetype'] == 'sdist':                      # Found the source URL we care for
+            release['url'] = _get_source_url(args.name, release['filename'])
+            return release
     # No PyPI tarball release, let's see if an upstream download URL is provided:
     data = args.fetched_data['info']
     if 'download_url' in data and data['download_url']:
