@@ -52,7 +52,7 @@ BuildArch:      noarch
 Generate distribution packages from PyPI
 
 %prep
-%setup -q -n py2pack-%{version}
+%autosetup -p1 -n py2pack-%{version}
 
 %build
 %python_build

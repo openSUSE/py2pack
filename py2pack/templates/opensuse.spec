@@ -70,7 +70,7 @@ BuildArch:      noarch
 {{ description }}
 
 %prep
-%setup -q -n {{ name }}-%{version}
+%autosetup -p1 -n {{ name }}-%{version}
 
 %build
 {%- if has_ext_modules %}
