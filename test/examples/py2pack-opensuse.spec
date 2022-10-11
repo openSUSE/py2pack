@@ -167,7 +167,7 @@ on your system.
 .. _`tox`: http://testrun.org/tox
 
 %prep
-%setup -q -n py2pack-%{version}
+%autosetup -p1 -n py2pack-%{version}
 
 %build
 %python_build
