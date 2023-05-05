@@ -21,24 +21,26 @@ import datetime
 import glob
 import os
 import pickle
-import pkg_resources
 import pprint
 import pwd
 import re
-import requests
+import subprocess
 import sys
 import urllib
-import jinja2
 import warnings
 import xmlrpc
-import pypi_search.search
 
+import jinja2
+import pkg_resources
+import pypi_search.search
+import requests
 from metaextract import utils as meta_utils
 
 import py2pack.proxy
 import py2pack.requires
-import py2pack.utils
 from py2pack import version as py2pack_version
+from py2pack.utils import (_get_archive_filelist, get_pyproject_table,
+                           parse_pyproject)
 
 # https://warehouse.pypa.io/api-reference/xml-rpc.html
 pypi_xml = xmlrpc.client.ServerProxy('https://pypi.org/pypi')
@@ -102,34 +104,75 @@ def fetch(args):
 
 
 def _canonicalize_setup_data(data):
-    if data.get('setup_requires', None):
+
+    if data.get('build-system', None):
+        # PEP 518: 'requires' field is mandatory
+        data['build_requires'] = py2pack.requires._requirements_sanitize(
+            data['build-system']['requires'])
+    elif data.get('setup_requires', None):
+        # Setuptools, deprecated.
+        setup_requires = data.pop('setup_requires')
         # setup_requires may be a string, convert to list of strings:
-        if isinstance(data["setup_requires"], str):
-            data["setup_requires"] = data["setup_requires"].splitlines()
-        data["setup_requires"] = \
-            py2pack.requires._requirements_sanitize(data["setup_requires"])
+        if isinstance(setup_requires, str):
+            setup_requires = setup_requires.splitlines()
+        # canonicalize to build_requires
+        data["build_requires"] = ['setuptools', 'wheel'] + \
+            py2pack.requires._requirements_sanitize(setup_requires)
+    else:
+        # no build_requires means most probably legacy setuptools
+        data["build_requires"] = ['setuptools']
+    if 'setuptools' in data['build_requires'] and 'wheel' not in data['build_requires']:
+        data['build_requires'] += ['wheel']
 
-    if data.get('install_requires', None):
-        # install_requires may be a string, convert to list of strings:
-        if isinstance(data["install_requires"], str):
-            data["install_requires"] = data["install_requires"].splitlines()
+    install_requires = (
+        get_pyproject_table(data, "project.dependencies") or
+        get_pyproject_table(data, "tool.flit.metadata.requires") or
+        data.get("install_requires", None))
+    if install_requires:
+        # Setuptools or PEP 621
+        # Setuptools: install_requires may be a string, convert to list of strings:
+        if isinstance(install_requires, str):
+            install_requires = install_requires.splitlines()
         data["install_requires"] = \
-            py2pack.requires._requirements_sanitize(data["install_requires"])
+            py2pack.requires._requirements_sanitize(install_requires)
+    else:
+        # Poetry
+        try:
+            if 'dependencies' in data['tool']['poetry']:
+                warnings.warn("The package defines its dependencies in the "
+                              "[tool.poetry.dependencies] table of pyproject.toml. "
+                              "Automatic parsing of the poetry format is not "
+                              "implemented yet. You must add the requirements "
+                              "manually.")
+        except KeyError:
+            pass
 
-    if data.get('tests_require', None):
-        # tests_require may be a string, convert to list of strings:
-        if isinstance(data["tests_require"], str):
-            data["tests_require"] = data["tests_require"].splitlines()
+    tests_require = (
+        get_pyproject_table(data, "project.optional-dependencies.test") or
+        get_pyproject_table(data, "tool.flit.metadata.requires-extra.test") or
+        data.get("tests_require", None))
+    if tests_require:
+        # Setuptools: tests_require may be a string, convert to list of strings:
+        if isinstance(tests_require, str):
+            tests_require = tests_require.splitlines()
         data["tests_require"] = \
-            py2pack.requires._requirements_sanitize(data["tests_require"])
+            py2pack.requires._requirements_sanitize(tests_require)
 
-    if data.get('extras_require', None):
-        # extras_require value may be a string, convert to list of strings:
-        for (key, value) in data["extras_require"].items():
+    extras_require = (
+        get_pyproject_table(data, "project.optional-dependencies") or
+        get_pyproject_table(data, "tool.flit.metadata.requires-extra") or
+        data.get("extras_require", None))
+    if extras_require:
+        data["extras_require"] = dict()
+        for (key, value) in extras_require.items():
+            # do not add the test requirements to the regular suggestions
+            if key == "test":
+                continue
+            # Setuptools: extras_require value may be a string, convert to list of strings:
             if isinstance(value, str):
-                data["extras_require"][key] = value.splitlines()
+                extras_require[key] = value.splitlines()
             data["extras_require"][key] = \
-                py2pack.requires._requirements_sanitize(data["extras_require"][key])
+                py2pack.requires._requirements_sanitize(extras_require[key])
 
     if data.get('data_files', None):
         # data_files may be a sequence of files without a target directory:
@@ -141,13 +184,25 @@ def _canonicalize_setup_data(data):
             (dir if (len(dir) and dir[0] == '/') else os.path.join(prefix, dir), files)
             for (dir, files) in data["data_files"]]
 
+    console_scripts = []
     if data.get('entry_points', None):
+        # setuptools style entry_points only.
+        # PEP518 projects.entry-points does not have scripts subtables.
         # entry_points may be a string with .ini-style sections or a dict.
         # convert to a dict and parse it
         data["entry_points"] = pkg_resources.EntryPoint.parse_map(data["entry_points"])
-        if "console_scripts" in data["entry_points"]:
-            data["console_scripts"] = list(data["entry_points"]["console_scripts"].keys())
+        for s in ["console_scripts", "gui_scripts"]:
+            if s in data["entry_points"] and data["entry_points"][s]:
+                console_scripts += list(data["entry_points"][s].keys())
+    console_scripts += list(get_pyproject_table(data, "project.scripts", notfound={}).keys())
+    console_scripts += list(get_pyproject_table(data, "project.gui-scripts", notfound={}).keys())
+    console_scripts += list(get_pyproject_table(data, "tool.flit.scripts", notfound={}).keys())
+    if console_scripts:
+        data["console_scripts"] = console_scripts
 
+    homepage = get_pyproject_table(data, 'project.urls.homepage') or data.get('home_page', None)
+    if homepage:
+        data['home_page'] = homepage
 
 def _quote_shell_metacharacters(string):
     shell_metachars_re = re.compile(r"[|&;()<>\s]")
@@ -160,10 +215,24 @@ def _augment_data_from_tarball(args, filename, data):
     docs_re = re.compile(r"{0}-{1}\/((?:AUTHOR|ChangeLog|CHANGES|NEWS|README).*)".format(args.name, args.version), re.IGNORECASE)
     license_re = re.compile(r"{0}-{1}\/((?:COPYING|LICENSE).*)".format(args.name, args.version), re.IGNORECASE)
 
-    data_archive = meta_utils.from_archive(filename)
-    data.update(data_archive['data'])
+    data_pyproject = parse_pyproject(filename)
+    data.update(data_pyproject)
+    
+    try:
+        buildrequires = data['build-system']['requires']
+    except KeyError:
+        # No build system specified in pyproject.toml: legacy setuptools
+        buildrequires = ['setuptools']
+    if any(['setuptools' in br for br in buildrequires]):
+        try:
+            data_archive = meta_utils.from_archive(filename)
+            data.update(data_archive['data'])
+        except Exception as exc:
+            warnings.warn("Could not get setuptools information from tarball {}: {}. "
+                        "Valuable information for the generation might be missing."
+                        .format(filename, exc))
 
-    names = py2pack.utils._get_archive_filelist(filename)
+    names = _get_archive_filelist(filename)
     _canonicalize_setup_data(data)
 
     for name in names:
@@ -256,12 +325,7 @@ def generate(args):
         tarball_file += glob.glob("{0}-{1}.*".format(name.translate(tr),
                                                      args.version))
     if tarball_file:                                                        # get some more info from that
-        try:
-            _augment_data_from_tarball(args, tarball_file[0], data)
-        except Exception as exc:
-            warnings.warn("Could not get information from tarball {}: {}. Valuable "
-                          "information for the generation might be missing."
-                          .format(tarball_file[0], exc))
+        _augment_data_from_tarball(args, tarball_file[0], data)
     else:
         warnings.warn("No tarball for {} in version {} found. Valuable "
                       "information for the generation might be missing."

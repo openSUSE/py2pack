@@ -24,12 +24,13 @@ License:        Apache-2.0
 URL:            http://github.com/openSUSE/py2pack
 Source:         https://files.pythonhosted.org/packages/source/p/py2pack/py2pack-%{version}.tar.gz
 BuildRequires:  python-rpm-macros
-BuildRequires:  %{python_module setuptools}
 BuildRequires:  %{python_module pbr >= 1.8}
+BuildRequires:  %{python_module pip}
+BuildRequires:  %{python_module setuptools}
+BuildRequires:  %{python_module wheel}
 # SECTION test requirements
 BuildRequires:  %{python_module Jinja2}
 BuildRequires:  %{python_module metaextract}
-BuildRequires:  %{python_module setuptools}
 BuildRequires:  %{python_module six}
 BuildRequires:  %{python_module coverage}
 BuildRequires:  %{python_module ddt}
@@ -54,10 +55,10 @@ Generate distribution packages from PyPI
 %autosetup -p1 -n py2pack-%{version}
 
 %build
-%python_build
+%pyproject_wheel
 
 %install
-%python_install
+%pyproject_install
 %python_clone -a %{buildroot}%{_bindir}/py2pack
 %python_expand %fdupes %{buildroot}%{$python_sitelib}
 
@@ -75,6 +76,6 @@ CHOOSE: %pytest OR %pyunittest -v OR CUSTOM
 %license LICENSE
 %python_alternative %{_bindir}/py2pack
 %{python_sitelib}/py2pack
-%{python_sitelib}/py2pack-%{version}*-info
+%{python_sitelib}/py2pack-%{version}.dist-info
 
 %changelog

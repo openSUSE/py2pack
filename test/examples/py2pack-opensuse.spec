@@ -24,7 +24,7 @@ License:        Apache-2.0
 URL:            http://github.com/openSUSE/py2pack
 Source:         https://files.pythonhosted.org/packages/source/p/py2pack/py2pack-%{version}.tar.gz
 BuildRequires:  python-rpm-macros
-BuildRequires:  %{python_module setuptools}
+BuildRequires:  %{python_module pip}
 BuildRequires:  fdupes
 BuildArch:      noarch
 %python_subpackages
@@ -169,14 +169,14 @@ on your system.
 %autosetup -p1 -n py2pack-%{version}
 
 %build
-%python_build
+%pyproject_wheel
 
 %install
-%python_install
+%pyproject_install
 %python_expand %fdupes %{buildroot}%{$python_sitelib}
 
 %files %{python_files}
 %{python_sitelib}/py2pack
-%{python_sitelib}/py2pack-%{version}*-info
+%{python_sitelib}/py2pack-%{version}.dist-info
 
 %changelog

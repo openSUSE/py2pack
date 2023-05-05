@@ -3,3 +3,4 @@ setuptools
 metaextract
 requests
 pypi-search
+tomli ; python_version < '3.11'
