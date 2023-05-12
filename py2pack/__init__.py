@@ -30,7 +30,6 @@ import warnings
 import xmlrpc
 
 import jinja2
-import pkg_resources
 import pypi_search.search
 import requests
 from metaextract import utils as meta_utils
@@ -39,7 +38,7 @@ import py2pack.proxy
 import py2pack.requires
 from py2pack import version as py2pack_version
 from py2pack.utils import (_get_archive_filelist, get_pyproject_table,
-                           parse_pyproject)
+                           parse_pyproject, get_setuptools_scripts)
 
 # https://warehouse.pypa.io/api-reference/xml-rpc.html
 pypi_xml = xmlrpc.client.ServerProxy('https://pypi.org/pypi')
@@ -184,16 +183,7 @@ def _canonicalize_setup_data(data):
             (dir if (len(dir) and dir[0] == '/') else os.path.join(prefix, dir), files)
             for (dir, files) in data["data_files"]]
 
-    console_scripts = []
-    if data.get('entry_points', None):
-        # setuptools style entry_points only.
-        # PEP518 projects.entry-points does not have scripts subtables.
-        # entry_points may be a string with .ini-style sections or a dict.
-        # convert to a dict and parse it
-        data["entry_points"] = pkg_resources.EntryPoint.parse_map(data["entry_points"])
-        for s in ["console_scripts", "gui_scripts"]:
-            if s in data["entry_points"] and data["entry_points"][s]:
-                console_scripts += list(data["entry_points"][s].keys())
+    console_scripts = get_setuptools_scripts(data)
     console_scripts += list(get_pyproject_table(data, "project.scripts", notfound={}).keys())
     console_scripts += list(get_pyproject_table(data, "project.gui-scripts", notfound={}).keys())
     console_scripts += list(get_pyproject_table(data, "tool.flit.scripts", notfound={}).keys())

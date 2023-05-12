@@ -26,31 +26,22 @@ For further information concerning requirements (and markers), see `PEP 508
 """
 
 from typing import List, Optional  # noqa: F401, pylint: disable=unused-import
-import sys
 
-import pkg_resources
+from packaging.requirements import Requirement
 
 
 def _requirement_filter_by_marker(req):
-    # type: (pkg_resources.Requirement) -> bool
+    # type: (Requirement) -> bool
     """Check if the requirement is satisfied by the marker.
 
     This function checks for a given Requirement whether its environment marker
-    is satisfied on the current platform. Currently only the python version and
-    system platform are checked.
+    is satisfied on the current environment
     """
-    if hasattr(req, 'marker') and req.marker:
-        marker_env = {
-            'python_version': '.'.join(map(str, sys.version_info[:2])),
-            'sys_platform': sys.platform
-        }
-        if not req.marker.evaluate(environment=marker_env):
-            return False
-    return True
+    return req.marker.evaluate() if req.marker else True
 
 
 def _requirement_find_lowest_possible(req):
-    # type: (pkg_resources.Requirement) -> List[str]
+    # type: (Requirement) -> List[str]
     """Find lowest required version.
 
     Given a single Requirement, this function calculates the lowest required
@@ -60,33 +51,31 @@ def _requirement_find_lowest_possible(req):
     Examples
     --------
 
-    >>> req = pkg_resources.Requirement.parse("foobar>=1.0,>2")
+    >>> req = Requirement("foobar>=1.0,>2")
     >>> _requirement_find_lowest_possible(req)
     ['foobar', '>=', '1.0']
-    >>> req = pkg_resources.Requirement.parse("baz>=1.3,>3,!=1.5")
+    >>> req = Requirement("baz>=1.3,>3,!=1.5")
     >>> _requirement_find_lowest_possible(req)
     ['baz', '>=', '1.3']
 
     """
     version_dep = None  # type: Optional[str]
     version_comp = None  # type: Optional[str]
-    for dep in req.specs:
-        version = pkg_resources.parse_version(dep[1])
+    for dep in req.specifier:
         # we don't want to have a not supported version as minimal version
-        if dep[0] == '!=':
+        if dep.operator == '!=':
             continue
         # try to use the lowest version available
         # i.e. for ">=0.8.4,>=0.9.7", select "0.8.4"
-        if (not version_dep or
-                version < pkg_resources.parse_version(version_dep)):
-            version_dep = dep[1]
-            version_comp = dep[0]
+        if (not version_dep or dep.version < version_dep):
+            version_dep = dep.version
+            version_comp = dep.operator
 
     assert (version_dep is None and version_comp is None) or \
         (version_dep is not None and version_comp is not None)
 
     return [
-        x for x in (req.unsafe_name, version_comp, version_dep)
+        x for x in (req.name, version_comp, version_dep)
         if x is not None]
 
 
@@ -110,7 +99,7 @@ def _requirements_sanitize(req_list):
     """
     filtered_req_list = (
         _requirement_find_lowest_possible(req) for req in
-        (pkg_resources.Requirement.parse(s) for s in req_list)
+        (Requirement(s.split("#", maxsplit=1)[0]) for s in req_list)
         if _requirement_filter_by_marker(req)
     )
     return [" ".join(req) for req in filtered_req_list]

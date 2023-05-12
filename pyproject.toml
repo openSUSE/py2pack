@@ -25,10 +25,12 @@ classifiers = [
 ]
 dependencies = [
     "Jinja2",
+    "backports.entry_points_selectable",
     "setuptools",
     "metaextract",
-    "requests",
+    "packaging",
     "pypi-search",
+    "requests",
     "tomli; python_version < '3.11'",
 ]
 requires-python = ">=3.6"

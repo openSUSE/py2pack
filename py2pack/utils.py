@@ -26,6 +26,8 @@ except ModuleNotFoundError:
 import tarfile
 import zipfile
 
+from backports.entry_points_selectable import EntryPoint, EntryPoints
+
 
 def _get_archive_filelist(filename):
     # type: (str) -> List[str]
@@ -105,3 +107,32 @@ def get_pyproject_table(data, key, notfound=None):
         else:
             return notfound
     return table
+
+
+def get_setuptools_scripts(data):
+    """parse setuptools entry_points and return all script names.
+
+    Setuptools style entry_points as returned by metaextract may be
+    a string with .ini-style sections or a dict
+
+    (The PEP518 projects.entry-points table does not have scripts subtables.)
+
+    Args:
+        data: dict of metadata
+
+    Returns:
+        list of script names
+    """
+    if "entry_points" not in data:
+        return []
+    if isinstance(data["entry_points"], str):
+        eps = EntryPoints(EntryPoints._from_text(data["entry_points"]))
+    elif isinstance(data["entry_points"], dict):
+        eps = EntryPoints([EntryPoint(*map(str.strip, entry.split("=", 1)), groupname)
+                           for groupname, group in data["entry_points"].items()
+                           for entry in group
+                           if groupname in ["console_scripts", "gui_scripts"]])
+
+    scripts = (list(eps.select(group="console_scripts").names) +
+               list(eps.select(group="gui_scripts").names))
+    return scripts

@@ -16,12 +16,13 @@
 # limitations under the License.
 
 import os
-import pkg_resources
 import shutil
 import sys
 import tempfile
 import unittest
 from ddt import ddt, data, unpack
+
+from packaging.requirements import Requirement
 
 import py2pack
 import py2pack.utils
@@ -42,14 +43,14 @@ class Py2packRequiresTestCase(unittest.TestCase):
             f.write(content)
 
     @data(
-        ("pywin32>=1.0;sys_platform=='win32'  # PSF", False),
+        ("pywin32>=1.0;sys_platform=='win32'", False),
         ("foobar", True),
         ("foobar;python_version=='2.7'", sys.version_info[:2] == (2, 7)),
         ("foobar;python_version=='3.6'", sys.version_info[:2] == (3, 6)),
     )
     @unpack
     def test__requirement_filter_by_marker(self, req, expected):
-        pkg = pkg_resources.Requirement.parse(req)
+        pkg = Requirement(req)
         self.assertEqual(py2pack.requires._requirement_filter_by_marker(pkg), expected)
 
     @data(
@@ -61,12 +62,13 @@ class Py2packRequiresTestCase(unittest.TestCase):
     )
     @unpack
     def test__requirement_find_lowest_possible(self, req, expected):
-        pkg = pkg_resources.Requirement.parse(req)
+        pkg = Requirement(req)
         self.assertEqual(list(py2pack.requires._requirement_find_lowest_possible(pkg)), expected)
 
     @data(
-        (['six', 'monotonic>=0.1'], ['six', 'monotonic >= 0.1']),
-        (['monotonic>=1.0,>0.1'], ['monotonic > 0.1']),
+        (["six", "monotonic>=0.1"], ["six", "monotonic >= 0.1"]),
+        (["monotonic>=1.0,>0.1"], ["monotonic > 0.1"]),
+        (["pywin32>=1.0;sys_platform=='win32'  # PSF", "foobar>3"], ["foobar > 3"])
     )
     @unpack
     def test__requirements_sanitize(self, req_list, expected):

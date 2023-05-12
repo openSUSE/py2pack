@@ -187,8 +187,12 @@ class Py2packTestCase(unittest.TestCase):
             ['foo']
         ),
         (
-            {'entry_points': "[console_scripts]\nfoo = foo:main\n\nbar=abc:xyz"},
-            ['foo', 'bar']
+            {'entry_points': ("[console_scripts]\n"
+                              "foo = foo:main\n\n"
+                              "bar=abc:xyz\n\n"
+                              "[gui_scripts]\n"
+                              "baz=baz:main")},
+            ['foo', 'bar', 'baz']
         ),
         (
             {'entry_points': {'console_scripts': ['foo = foo:main',
