@@ -1,7 +1,4 @@
-coverage
 flake8
 pytest
 ddt
 pytest-cov
-tox
-tox-gh-actions

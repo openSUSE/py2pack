@@ -19,9 +19,30 @@ jobs:
               with:
                   python-version: ${{ matrix.python-version }}
             - name: Install tox
-              run: |
-                  python -m pip install --upgrade pip tox
-            - name: Running the test suite
-              run: |
-                  set -x
-                  python -mtox --parallel auto --parallel-live -- -vvvvv
+              run: python -m pip install --upgrade pip tox tox-gh-actions
+            - name: Run the test suite
+              run: python -mtox --parallel auto --parallel-live -- -vvvvv
+
+    lint:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+            - name: Set up Python ${{ matrix.python-version }}
+              uses: actions/setup-python@v2
+            - name: Install tox
+              run: python -m pip install --upgrade pip tox
+            - name: Lint
+              run: tox -e pep8
+
+    coverage:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+            - name: Set up Python ${{ matrix.python-version }}
+              uses: actions/setup-python@v2
+            - name: Install tox
+              run: python -m pip install --upgrade pip tox
+            - name: Check code coverage
+              run: tox -e cover
