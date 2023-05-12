@@ -18,6 +18,10 @@
 """Module containing utility functions that fit nowhere else."""
 
 from typing import List  # noqa: F401, pylint: disable=unused-import
+try:
+    import tomllib as toml
+except ModuleNotFoundError:
+    import tomli as toml
 
 import tarfile
 import zipfile
@@ -51,3 +55,52 @@ def _get_archive_filelist(filename):
     if "./" in names:
         names.remove("./")
     return names
+
+
+def parse_pyproject(archive):
+    """Parse the pyproject.toml in the archive and return the metadata as dict.
+
+    Args:
+        archive: the filename of the archive
+
+    Returns:
+        dict of metadata. Empty if no pyproject.toml was found in the toplevel directory
+    """
+    pyproject = {}
+    if tarfile.is_tarfile(archive):
+        with tarfile.open(archive) as tar_file:
+            for m in tar_file:
+                if m.name.endswith('pyproject.toml') and m.name.count("/") == 1:
+                    with tar_file.extractfile(m) as fh:
+                        pyproject = toml.load(fh)
+                    break
+    elif zipfile.is_zipfile(archive):
+        with zipfile.ZipFile(archive) as zip_file:
+            for name in zip_file.namelist():
+                if name.endswith('pyproject.toml') and name.count("/") == 1:
+                    with zip_file.open(name) as fh:
+                        pyproject = toml.load(fh)
+                    break
+    else:
+        raise ValueError("Can not extract pyproject.toml from '{!s}'. "
+                         "Not a tar or zip file".format(archive))
+    return pyproject
+
+def get_pyproject_table(data, key, notfound=None):
+    """Return the contents of a toml table.
+
+    Args:
+        data: dict of toml contents
+        key: period separated table name, e.g. "project.dependencies"
+        notfound: return this if the table is not in data, None by default
+
+    Returns:
+        content of table (list or dict) or notfound
+    """
+    table = data
+    for level in key.split("."):
+        if level in table:
+            table = table[level]
+        else:
+            return notfound
+    return table

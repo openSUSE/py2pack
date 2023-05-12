@@ -24,21 +24,20 @@ License:        {{ license }}
 URL:            {{ home_page }}
 Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRequires:  python-rpm-macros
-BuildRequires:  %{python_module setuptools}
-{%- if setup_requires and setup_requires is not none %}
-{%- for req in setup_requires|sort %}
+{%- set build_requires_plus_pip = ((build_requires if build_requires and build_requires is not none else []) +
+                                   ['pip']) %}
+{%- for req in build_requires_plus_pip |sort %}
 BuildRequires:  %{python_module {{ req }}}
 {%- endfor %}
-{%- endif %}
 {%- if (install_requires and install_requires is not none) or (tests_require and tests_require is not none) %}
 # SECTION test requirements
 {%- if install_requires and install_requires is not none %}
-{%- for req in install_requires|sort %}
+{%- for req in install_requires|reject("in",build_requires)|sort %}
 BuildRequires:  %{python_module {{ req }}}
 {%- endfor %}
 {%- endif %}
 {%- if tests_require and tests_require is not none %}
-{%- for req in tests_require|sort %}
+{%- for req in tests_require|sort|reject("in",build_requires|sort) %}
 BuildRequires:  %{python_module {{ req }}}
 {%- endfor %}
 {%- endif %}
@@ -75,10 +74,10 @@ BuildArch:      noarch
 {%- if has_ext_modules %}
 export CFLAGS="%{optflags}"
 {%- endif %}
-%python_build
+%pyproject_wheel
 
 %install
-%python_install
+%pyproject_install
 {%- set scripts_or_console_scripts = (
             (scripts|map('basename')|list if scripts and scripts is not none else []) +
             (console_scripts if console_scripts and console_scripts is not none else [])) %}
@@ -122,10 +121,10 @@ CHOOSE: %pytest OR %pyunittest -v OR CUSTOM
 {%- endfor %}
 {%- if has_ext_modules %}
 %{python_sitearch}/{{name}}
-%{python_sitearch}/{{name}}-%{version}*-info
+%{python_sitearch}/{{name}}-%{version}.dist-info
 {%- else %}
 %{python_sitelib}/{{name}}
-%{python_sitelib}/{{name}}-%{version}*-info
+%{python_sitelib}/{{name}}-%{version}.dist-info
 {%- endif %}
 {%- if data_files and data_files is not none %}
 {%- for dir, files in data_files %}
