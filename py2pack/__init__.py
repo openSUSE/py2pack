@@ -234,7 +234,7 @@ def generate(args):
     if not args.template:
         args.template = file_template_list()[0]
     if not args.filename:
-        args.filename = args.name + '.' + args.template.rsplit('.', 1)[1]   # take template file ending
+        args.filename = "python-" + args.name + '.' + args.template.rsplit('.', 1)[1]   # take template file ending
     print('generating spec file for {0}...'.format(args.name))
     data = args.fetched_data['info']
     durl = newest_download_url(args)
