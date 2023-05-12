@@ -6,6 +6,7 @@ build-backend = "hatchling.build"
 name = "py2pack"
 description = "Generate distribution packages from PyPI"
 readme = "README.rst"
+license = {file = "LICENSE"}
 authors = [
     {name = "Sascha Peilicke", email = "sascha@peilicke.de"},
     {name = "Thomas Bechtold", email = "thomasbechtold@jpberlin.de"},
@@ -62,3 +63,11 @@ dependencies = [
 clean = "rm -rf doc/build"
 build = "sphinx-build -b html -W doc/source doc/build"
 open = "python -m http.server --directory doc/build"
+
+[tool.hatch.envs.updatespdx]
+dependencies = [
+    "lxml[cssselect]",
+    "requests",
+]
+[tool.hatch.envs.updatespdx.scripts]
+update = "python tools/update-spdx.py"

@@ -19,8 +19,8 @@
 import argparse
 import datetime
 import glob
+import json
 import os
-import pickle
 import pprint
 import pwd
 import re
@@ -46,8 +46,9 @@ pypi_xml = xmlrpc.client.ServerProxy('https://pypi.org/pypi')
 
 warnings.simplefilter('always', DeprecationWarning)
 
-SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spdx_license_map.p')
-SDPX_LICENSES = pickle.load(open(SPDX_LICENSES_FILE, 'rb'))
+SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spdx_license_map.json')
+with open(SPDX_LICENSES_FILE, 'r') as fp:
+    SDPX_LICENSES = json.load(fp)
 
 
 def pypi_json(project, release=None):
