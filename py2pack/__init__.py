@@ -26,21 +26,17 @@ import pwd
 import re
 import sys
 import warnings
-import xmlrpc
 
 import jinja2
 import pypi_search.search
 import requests
 from metaextract import utils as meta_utils
 
-import py2pack.proxy
 import py2pack.requires
 from py2pack import version as py2pack_version
 from py2pack.utils import (_get_archive_filelist, get_pyproject_table,
                            parse_pyproject, get_setuptools_scripts)
 
-# https://warehouse.pypa.io/api-reference/xml-rpc.html
-pypi_xml = xmlrpc.client.ServerProxy('https://pypi.org/pypi')
 
 warnings.simplefilter('always', DeprecationWarning)
 
@@ -74,8 +70,12 @@ def _get_template_dirs():
 
 
 def list_packages(args=None):
+    """query the "Simple API" of PYPI for all packages and print them."""
     print('listing all PyPI packages...')
-    for package in pypi_xml.list_packages():
+    with requests.get('https://pypi.org/simple/') as r:
+        html = r.text
+    simplere = re.compile(r'<a href="/simple/.+">(.*)</a>')
+    for package in simplere.findall(html):
         print(package)
 
 
@@ -417,13 +417,12 @@ def main():
 
     # set HTTP proxy if one is provided
     if args.proxy:
-        with  requests.get(args.proxy) as r:
+        with requests.get(args.proxy) as r:
             if not r.ok:
                 print('the proxy \'{0}\' is not responding'.format(args.proxy))
                 sys.exit(1)
-        transport = py2pack.proxy.ProxiedTransport()
-        transport.set_proxy(args.proxy)
-        pypi_xml._ServerProxy__transport = transport  # Evil, but should do the trick
+        os.environ["HTTP_PROXY"] = args.proxy
+        os.environ["HTTPS_PROXY"] = args.proxy
 
     if 'func' not in args:
         sys.exit(parser.print_help())
