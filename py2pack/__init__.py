@@ -25,7 +25,6 @@ import pprint
 import pwd
 import re
 import sys
-import urllib
 import warnings
 import xmlrpc
 
@@ -56,8 +55,9 @@ def pypi_json(project, release=None):
     https://warehouse.pypa.io/api-reference/json.html
     """
     version = ('/' + release) if release else ''
-    r = requests.get('https://pypi.org/pypi/{}{}/json'.format(project, version))
-    return r.json()
+    with requests.get('https://pypi.org/pypi/{}{}/json'.format(project, version)) as r:
+        pypimeta = r.json()
+    return pypimeta
 
 
 def _get_template_dirs():
@@ -99,7 +99,10 @@ def fetch(args):
         sys.exit(1)
     print('downloading package {0}-{1}...'.format(args.name, args.version))
     print('from {0}'.format(url['url']))
-    urllib.request.urlretrieve(url['url'], url['filename'])
+
+    with requests.get(url['url']) as r:
+        with open(url['filename'], 'wb') as f:
+            f.write(r.content)
 
 
 def _canonicalize_setup_data(data):
@@ -414,11 +417,10 @@ def main():
 
     # set HTTP proxy if one is provided
     if args.proxy:
-        try:
-            urllib.urlopen(args.proxy)
-        except IOError:
-            print('the proxy \'{0}\' is not responding'.format(args.proxy))
-            sys.exit(1)
+        with  requests.get(args.proxy) as r:
+            if not r.ok:
+                print('the proxy \'{0}\' is not responding'.format(args.proxy))
+                sys.exit(1)
         transport = py2pack.proxy.ProxiedTransport()
         transport.set_proxy(args.proxy)
         pypi_xml._ServerProxy__transport = transport  # Evil, but should do the trick
