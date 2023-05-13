@@ -20,8 +20,6 @@ import datetime
 import os
 import os.path
 import pwd
-import sys
-import unittest
 
 import pytest
 
@@ -32,8 +30,8 @@ class Args(object):
     run = False
     template = ''
     filename = ''
-    name = 'py2pack'
-    version = '0.8.5'
+    name = ''
+    version = ''
     source_url = None
 
 
@@ -49,16 +47,22 @@ username = pwd.getpwuid(os.getuid())[4]
                           ('opensuse.dsc', False),
                           ('opensuse.spec', False),
                           ('opensuse.spec', True)])
-def test_template(tmpdir, template, fetch_tarball):
+@pytest.mark.parametrize('project, version',
+                         [('py2pack', '0.8.5'),  # legacy setup.py sdist without pyproject.toml
+                          ('sampleproject', '3.0.0')])  # PEP517 only sdist without setup.py
+def test_template(tmpdir, template, fetch_tarball, project, version):
     """ Test if generated specfile equals to stored one. """
-    if (template, fetch_tarball, sys.version_info[:2]) == ('opensuse.spec', True, (3, 6)):
-        raise unittest.SkipTest('This combination of tests fails ATM.')
     args = Args()
     args.template = template
     base, ext = template.split(".")
     suffix = '-augmented' if fetch_tarball else ''
-    filename = "{}{}.{}".format(base, suffix, ext)
+    filename = f"{base}{suffix}.{ext}"
     args.filename = filename
+    args.name = project
+    args.version = version
+    reference = os.path.join(compare_dir, f'{args.name}-{filename}')
+    if not os.path.exists(reference):
+        pytest.xfail("No reference template available")
     with tmpdir.as_cwd():
         if fetch_tarball:
             py2pack.fetch(args)
@@ -68,7 +72,6 @@ def test_template(tmpdir, template, fetch_tarball):
                 py2pack.generate(args)
         with open(filename) as filehandle:
             written_spec = filehandle.read()
-    reference = os.path.join(compare_dir, 'py2pack-{}'.format(filename))
     with open(reference) as filehandle:
         required = filehandle.read()
     required = required.replace('__USER__', username, 1)
