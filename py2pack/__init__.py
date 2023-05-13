@@ -191,9 +191,15 @@ def _canonicalize_setup_data(data):
     console_scripts += list(get_pyproject_table(data, "project.gui-scripts", notfound={}).keys())
     console_scripts += list(get_pyproject_table(data, "tool.flit.scripts", notfound={}).keys())
     if console_scripts:
-        data["console_scripts"] = console_scripts
+        # remove duplicates, preserver order
+        data["console_scripts"] = list(dict.fromkeys(console_scripts))
 
-    homepage = get_pyproject_table(data, 'project.urls.homepage') or data.get('home_page', None)
+    # Standards says, that keys must be lowercase but not even PyPA adheres to it
+    homepage = (get_pyproject_table(data, 'project.urls.homepage') or
+                get_pyproject_table(data, 'project.urls.Homepage') or
+                get_pyproject_table(data, 'project.urls.Source') or
+                get_pyproject_table(data, 'project.urls.GitHub') or
+                data.get('home_page', None))
     if homepage:
         data['home_page'] = homepage
 
@@ -210,6 +216,9 @@ def _augment_data_from_tarball(args, filename, data):
     license_re = re.compile(r"{0}-{1}\/((?:COPYING|LICENSE).*)".format(args.name, args.version), re.IGNORECASE)
 
     data_pyproject = parse_pyproject(filename)
+    if data_pyproject is not None and "license" in data and data["license"] in SDPX_LICENSES:
+        # Trust the PyPI Metadata and don't try to update with a possible non SPDX identifier
+        data_pyproject.pop("license", None)
     data.update(data_pyproject)
 
     try:
