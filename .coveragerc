@@ -1,0 +1,4 @@
+[run]
+omit = 
+    # avoid coverage attempts of temporary folder
+    **/py2pack-0.8.5/*
