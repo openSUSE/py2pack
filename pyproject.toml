@@ -11,6 +11,9 @@ authors = [
     {name = "Sascha Peilicke", email = "sascha@peilicke.de"},
     {name = "Thomas Bechtold", email = "thomasbechtold@jpberlin.de"},
 ]
+maintainers = [
+    {name = "Paolo Perego", email = "paolo@codiceinsicuro.it"},
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
