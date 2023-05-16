@@ -78,11 +78,22 @@ To get further help about py2pack usage, issue the following command:
 Hacking and contributing
 ------------------------
 
-You can test py2pack from your git checkout by executing the py2pack module:
+You can test py2pack from your git checkout by executing the py2pack module.
+
+Edit `setup.cfg` file changing the version number. Adding +1 to the revision
+number is enough. This step is mandatory to install locally the py2pack module.
+
+From the py2pack directory, install the py2pack module locally.
+
+.. code-block:: bash
+    $ pip install -e .
+
+Now you can run your hackish py2pack version. It is usually located in
+$HOME/.local/bin/py2pack
 
 .. code-block:: bash
 
-    $ python3 -m py2pack
+    $ py2pack
 
 Fork `the repository`_ on Github to start making your changes to the **master**
 branch (or branch off of it). Don't forget to write a test for fixed issues or
