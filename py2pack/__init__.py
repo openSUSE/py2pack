@@ -24,7 +24,6 @@ import pickle
 import pprint
 import pwd
 import re
-import subprocess
 import sys
 import urllib
 import warnings
@@ -204,6 +203,7 @@ def _canonicalize_setup_data(data):
     if homepage:
         data['home_page'] = homepage
 
+
 def _quote_shell_metacharacters(string):
     shell_metachars_re = re.compile(r"[|&;()<>\s]")
     if re.search(shell_metachars_re, string):
@@ -217,7 +217,7 @@ def _augment_data_from_tarball(args, filename, data):
 
     data_pyproject = parse_pyproject(filename)
     data.update(data_pyproject)
-    
+
     try:
         buildrequires = data['build-system']['requires']
     except KeyError:
@@ -229,8 +229,8 @@ def _augment_data_from_tarball(args, filename, data):
             data.update(data_archive['data'])
         except Exception as exc:
             warnings.warn("Could not get setuptools information from tarball {}: {}. "
-                        "Valuable information for the generation might be missing."
-                        .format(filename, exc))
+                          "Valuable information for the generation might be missing."
+                          .format(filename, exc))
 
     names = _get_archive_filelist(filename)
     _canonicalize_setup_data(data)

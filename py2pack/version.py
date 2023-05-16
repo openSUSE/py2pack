@@ -15,11 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-try:
-    from pbr import version as pbr_version
-except ImportError:
-    # no pbr available
-    version = 'unknown'
-    pass
-else:
-    version = pbr_version.VersionInfo('py2pack').release_string()
+# this one is read by hatch or hatchling during build
+__version__ = "0.8.7"
+
+version = __version__

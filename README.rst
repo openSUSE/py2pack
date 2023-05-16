@@ -80,8 +80,9 @@ Hacking and contributing
 
 You can test py2pack from your git checkout by executing the py2pack module.
 
-Edit `setup.cfg` file changing the version number. Adding +1 to the revision
-number is enough. This step is mandatory to install locally the py2pack module.
+Edit `py2pack/version.py` file changing the version number. Adding +1 to the revision
+number and optionally appending .dev1 is enough and makes sure that you can
+distinguish your hackish version from an installed one.
 
 From the py2pack directory, install the py2pack module locally.
 

@@ -2,10 +2,6 @@ coverage
 flake8
 pytest
 ddt
-metaextract
 pytest-cov
-Sphinx>=1.2.1
-sphinxcontrib.programoutput
 tox
 tox-gh-actions
-pypi_search

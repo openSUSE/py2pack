@@ -86,6 +86,7 @@ def parse_pyproject(archive):
                          "Not a tar or zip file".format(archive))
     return pyproject
 
+
 def get_pyproject_table(data, key, notfound=None):
     """Return the contents of a toml table.
 

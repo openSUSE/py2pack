@@ -153,12 +153,12 @@ class Py2packTestCase(unittest.TestCase):
         ),
         (
             {'build-system': {'requires': ['flit_core']},
-             'tool': { 'flit': {
-                'metadata': {
-                    'requires': ['foo', 'bar>=1','foobar>2,<3'],
-                    'requires-extra': {'extra': ['extra1', 'extra2>2'],
-                                       'test': ['pytest']}},
-                'scripts': {'cmd': 'foo:main'}}}},
+             'tool': {'flit': {
+                 'metadata': {
+                     'requires': ['foo', 'bar>=1', 'foobar>2,<3'],
+                     'requires-extra': {'extra': ['extra1', 'extra2>2'],
+                                        'test': ['pytest']}},
+                 'scripts': {'cmd': 'foo:main'}}}},
             {'build_requires': ['flit_core'],
              'install_requires': ['foo', 'bar >= 1', 'foobar > 2'],
              'extras_require': {'extra': ['extra1', 'extra2 > 2']},
@@ -177,7 +177,7 @@ class Py2packTestCase(unittest.TestCase):
         expected_data = data.copy()
         expected_data.update(updated_data)
         expected_data.pop("setup_requires", None)
-        py2pack._canonicalize_setup_data(data)    
+        py2pack._canonicalize_setup_data(data)
         self.maxDiff = None
         self.assertEqual(data, expected_data)
 
