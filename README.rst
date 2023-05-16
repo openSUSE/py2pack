@@ -86,6 +86,7 @@ number is enough. This step is mandatory to install locally the py2pack module.
 From the py2pack directory, install the py2pack module locally.
 
 .. code-block:: bash
+
     $ pip install -e .
 
 Now you can run your hackish py2pack version. It is usually located in
