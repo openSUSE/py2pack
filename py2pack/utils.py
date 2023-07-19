@@ -17,6 +17,12 @@
 
 """Module containing utility functions that fit nowhere else."""
 
+import os
+import tempfile
+import shutil
+from contextlib import contextmanager
+from build.util import project_wheel_metadata
+
 from typing import List  # noqa: F401, pylint: disable=unused-import
 try:
     import tomllib as toml
@@ -136,3 +142,56 @@ def get_setuptools_scripts(data):
     scripts = (list(eps.select(group="console_scripts").names) +
                list(eps.select(group="gui_scripts").names))
     return scripts
+
+
+@contextmanager
+def _extract_to_tempdir(archive_filename):
+    """extract the given tarball or zipfile to a tempdir and change
+    the cwd to the new tempdir. Delete the tempdir at the end"""
+    if not os.path.exists(archive_filename):
+        raise Exception("Archive '%s' does not exist" % (archive_filename))
+
+    tempdir = tempfile.mkdtemp(prefix="py2pack_")
+    current_cwd = os.getcwd()
+    try:
+        if tarfile.is_tarfile(archive_filename):
+            with tarfile.open(archive_filename) as f:
+                f.extractall(tempdir)
+        elif zipfile.is_zipfile(archive_filename):
+            with zipfile.ZipFile(archive_filename) as f:
+                f.extractall(tempdir)
+        else:
+            raise Exception("Can not extract '%s'. "
+                            "Not a tar or zip file" % archive_filename)
+        os.chdir(tempdir)
+        yield tempdir
+    finally:
+        os.chdir(current_cwd)
+        shutil.rmtree(tempdir)
+
+
+def get_metadata(filename):
+    """
+    Extracts metadata from the archive filename
+    """
+    data = {}
+
+    with _extract_to_tempdir(filename) as root_dir:
+        dir_list, *_ = os.listdir(root_dir)
+        path = os.path.join(root_dir, dir_list)
+        mdata = project_wheel_metadata(path, isolated=True)
+
+        data['home_page'] = mdata.get('Home-page')
+        data['name'] = mdata.get('Name')
+        data['version'] = mdata.get('Version')
+        data['description'] = mdata.get('Description')
+        data['summary'] = mdata.get('Summary')
+        data['license'] = mdata.get('License')
+        data['keywords'] = mdata.get('Keywords')
+        data['author'] = mdata.get('Author')
+        data['author_email'] = mdata.get('Author-email')
+        data['maintainer'] = mdata.get('Maintainer')
+        data['maintainer_email'] = mdata.get('Maintainer-email')
+        data['install_requires'] = mdata.get_all('Requires-Dist')
+
+    return data
