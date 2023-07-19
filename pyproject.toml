@@ -29,6 +29,7 @@ classifiers = [
 dependencies = [
     "Jinja2",
     "backports.entry_points_selectable",
+    "build",
     "setuptools",
     "metaextract",
     "packaging",
