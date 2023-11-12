@@ -26,7 +26,7 @@ LICENSE_FILE = 'py2pack/spdx_license_map.json'
 
 
 def update_spdx():
-    """Update SDPX license map."""
+    """Update SPDX license map."""
     response = requests.get('https://docs.google.com/spreadsheet/pub?key=0AqPp4y2wyQsbdGQ1V3pRRDg5NEpGVWpubzdRZ0tjUWc')
     html = lxml.html.fromstring(response.text)
     licenses = {}
