@@ -42,7 +42,7 @@ warnings.simplefilter('always', DeprecationWarning)
 
 SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spdx_license_map.json')
 with open(SPDX_LICENSES_FILE, 'r') as fp:
-    SDPX_LICENSES = json.load(fp)
+    SPDX_LICENSES = json.load(fp)
 
 
 def pypi_json(project, release=None):
@@ -216,7 +216,7 @@ def _augment_data_from_tarball(args, filename, data):
     license_re = re.compile(r"{0}-{1}\/((?:COPYING|LICENSE).*)".format(args.name, args.version), re.IGNORECASE)
 
     data_pyproject = parse_pyproject(filename)
-    if data_pyproject is not None and "license" in data and data["license"] in SDPX_LICENSES:
+    if data_pyproject is not None and "license" in data and data["license"] in SPDX_LICENSES:
         # Trust the PyPI Metadata and don't try to update with a possible non SPDX identifier
         data_pyproject.pop("license", None)
     data.update(data_pyproject)
@@ -265,14 +265,14 @@ def _license_from_classifiers(data):
 
 
 def _normalize_license(data):
-    """try to get SDPX license"""
+    """try to get SPDX license"""
     license = data.get('license', None)
     if not license:
         # try to get license from classifiers
         license = _license_from_classifiers(data)
     if license:
-        if license in SDPX_LICENSES.keys():
-            data['license'] = SDPX_LICENSES[license]
+        if license in SPDX_LICENSES.keys():
+            data['license'] = SPDX_LICENSES[license]
         else:
             data['license'] = "%s (FIXME:No SPDX)" % (license)
     else:
