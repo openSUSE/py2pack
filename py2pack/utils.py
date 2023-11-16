@@ -28,7 +28,6 @@ import zipfile
 
 from backports.entry_points_selectable import EntryPoint, EntryPoints
 
-
 def _get_archive_filelist(filename):
     # type: (str) -> List[str]
     """Extract the list of files from a tar or zip archive.
@@ -123,7 +122,7 @@ def get_setuptools_scripts(data):
     Returns:
         list of script names
     """
-    if "entry_points" not in data:
+    if "entry_points" not in data or not data['entry_points']:
         return []
     if isinstance(data["entry_points"], str):
         eps = EntryPoints(EntryPoints._from_text(data["entry_points"]))
