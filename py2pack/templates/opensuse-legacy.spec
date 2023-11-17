@@ -25,13 +25,13 @@ Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRequires:  python-setuptools
 {%- if install_requires and install_requires is not none %}
 {%- for req in install_requires|sort %}
-BuildRequires:  python-{{ req }}
+BuildRequires:  {{ req|rpm_format_requires}}
 {%- endfor %}
 {%- endif %}
 {%- if tests_require and tests_require is not none %}
 # test requirements
 {%- for req in tests_require|sort %}
-BuildRequires:  python-{{ req }}
+BuildRequires:  {{ req|rpm_format_requires}}
 {%- endfor %}
 {%- endif %}
 {%- if source_url.endswith('.zip') %}
@@ -39,13 +39,13 @@ BuildRequires:  unzip
 {%- endif %}
 {%- if install_requires and install_requires is not none %}
 {%- for req in install_requires|sort %}
-Requires:       python-{{ req }}
+Requires:       {{ req|rpm_format_requires}}
 {%- endfor %}
 {%- endif %}
 {%- if extras_require and extras_require is not none %}
 {%- for reqlist in extras_require.values() %}
 {%- for req in reqlist %}
-Suggests:       python-{{ req }}
+Suggests:       {{ req|rpm_format_requires}}
 {%- endfor %}
 {%- endfor %}
 {%- endif %}
