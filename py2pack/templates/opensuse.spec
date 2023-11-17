@@ -49,13 +49,13 @@ BuildRequires:  unzip
 BuildRequires:  fdupes
 {%- if install_requires and install_requires is not none %}
 {%- for req in install_requires|sort_requires %}
-Requires:       {{ req|rpm_format_requires }}
+Requires:       {{ req|rpm_format_requires("python-") }}
 {%- endfor %}
 {%- endif %}
 {%- if extras_require and extras_require is not none %}
 {%- for reqlist in extras_require.values() %}
 {%- for req in reqlist %}
-Suggests:       {{ req|rpm_format_requires }}
+Suggests:       {{ req|rpm_format_requires("python-") }}
 {%- endfor %}
 {%- endfor %}
 {%- endif %}

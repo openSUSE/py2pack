@@ -11,17 +11,17 @@ Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-buildroot
 BuildRequires:  python-devel
 {%- for req in requires %}
-BuildRequires:  {{ req|rpm_format_requires|lower }}
-Requires:       {{ req|rpm_format_requires|lower }}
+BuildRequires:  {{ req|rpm_format_requires("python-")|lower }}
+Requires:       {{ req|rpm_format_requires("python-")|lower }}
 {%- endfor %}
 {%- for req in install_requires %}
-BuildRequires:  {{ req|rpm_format_requires|lower }}
-Requires:       {{ req|rpm_format_requires|lower }}
+BuildRequires:  {{ req|rpm_format_requires("python-")|lower }}
+Requires:       {{ req|rpm_format_requires("python-")|lower }}
 {%- endfor %}
 {%- if extras_require %}
 {%- for reqlist in extras_require.values() %}
 {%- for req in reqlist %}
-Suggests:       {{ req|rpm_format_requires|lower }}
+Suggests:       {{ req|rpm_format_requires("python-")|lower }}
 {%- endfor %}
 {%- endfor %}
 {%- endif %}
