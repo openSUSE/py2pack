@@ -1,7 +1,7 @@
 #
 # spec file for package python-sampleproject
 #
-# Copyright (c) 2023 Frank Schreiner.
+# Copyright (c) __YEAR__ __USER__.
 #
 
 Name:           python-sampleproject
