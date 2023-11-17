@@ -342,12 +342,12 @@ def _prepare_template_env(template_dir):
     # setup jinja2 environment with custom filters
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
 
-    def _rpm_format_requires(req):
-        req[0] = "python-" + req[0]
+    def _rpm_format_requires(req, pfx):
+        req[0] = pfx + req[0]
         part1 = " ".join(req[0:3])
         part2 = ""
         if len(req) > 3:
-            req[3] = "python-" + req[3]
+            req[3] = pfx + req[3]
             part2 = ", " + " ".join(req[3:])
         return part1 + part2
 
@@ -381,7 +381,7 @@ def _prepare_template_env(template_dir):
     env.filters['rpm_format_buildrequires'] = \
         lambda s: " ".join(s[0:3])
     env.filters['rpm_format_requires'] = \
-        lambda s: _rpm_format_requires(s)
+        lambda s, p: _rpm_format_requires(s, p)
     env.filters['sort_requires'] = \
         lambda s: sorted(s, key=lambda k: k[0].lower())
     env.filters['reject_pkg'] = \

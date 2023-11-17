@@ -13,12 +13,12 @@ Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  python-devel {%- if requires_python %} {{ requires_python }} {% endif %}
 {%- for req in requires %}
-BuildRequires:  {{ req|rpm_format_requires }}
+BuildRequires:  {{ req|rpm_format_requires("python-") }}
 Requires:       {{ req|rpm_format_requires }}
 {%- endfor %}
 {%- for req in install_requires %}
-BuildRequires:  {{ req|rpm_format_requires }}
-Requires:       {{ req|rpm_format_requires }} }}
+BuildRequires:  {{ req|rpm_format_requires("python-") }}
+Requires:       {{ req|rpm_format_requires("python-") }}
 {%- endfor %}
 {%- endif %}
 {%- if tests_require and tests_require is not none %}
@@ -41,7 +41,7 @@ Requires:       %{python_module {{ req }}}
 {%- if extras_require and extras_require is not none %}
 {%- for reqlist in extras_require.values() %}
 {%- for req in reqlist %}
-Suggests:       {{ req|rpm_format_requires }}
+Suggests:       {{ req|rpm_format_requires("python-") }}
 {%- endfor %}
 {%- endfor %}
 {%- endif %}
