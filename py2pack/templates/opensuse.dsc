@@ -5,7 +5,7 @@ Binary: python-{{ name|lower }}
 Maintainer: {{ user_name }}
 Architecture: any
 Standards-Version: 3.7.1
-Build-Depends: debhelper (>= 4.0.0), python-dev{% for req in requires %}, python-{{ req|parenthesize_version }}{% endfor %}{% for req in install_requires %}, python-{{ req|parenthesize_version }}{% endfor %}
+Build-Depends: debhelper (>= 4.0.0), python-dev{% for req in requires %}, python-{{ req|parenthesize_version }}{% endfor %}{% for req in install_requires|reject_pkg(build_requires) %}, python-{{ req|parenthesize_version }}{% endfor %}{% for req in build_requires %}, python-{{ req|parenthesize_version }}{% endfor %}{% for req in tests_require|reject_pkg(build_requires) %}, python-{{ req|parenthesize_version }}{% endfor %}
 {%- if requires or install_requires %}
 Depends: {% for req in requires %}python-{{ req|parenthesize_version }}{{ ', ' if not loop.last or install_requires }}{% endfor %}{% for req in install_requires %}python-{{ req|parenthesize_version }}{{ ', ' if not loop.last }}{% endfor %}
 {%- endif %}

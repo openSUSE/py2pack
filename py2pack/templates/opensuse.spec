@@ -32,12 +32,12 @@ BuildRequires:  %{python_module {{ req|rpm_format_buildrequires }}}
 {%- if (install_requires and install_requires is not none) or (tests_require and tests_require is not none) %}
 # SECTION test requirements
 {%- if install_requires and install_requires is not none %}
-{%- for req in install_requires|reject("in",build_requires)|sort_requires %}
+{%- for req in install_requires|reject_pkg(build_requires)|sort_requires %}
 BuildRequires:  %{python_module {{ req|rpm_format_buildrequires }}}
 {%- endfor %}
 {%- endif %}
 {%- if tests_require and tests_require is not none %}
-{%- for req in tests_require|sort_requires|reject_pkg(build_requires) %}
+{%- for req in tests_require|reject_pkg(build_requires)|sort_requires  %}
 BuildRequires:  %{python_module {{ req|rpm_format_buildrequires }}}
 {%- endfor %}
 {%- endif %}
