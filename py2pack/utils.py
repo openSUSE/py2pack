@@ -123,7 +123,7 @@ def get_setuptools_scripts(data):
     Returns:
         list of script names
     """
-    if "entry_points" not in data:
+    if "entry_points" not in data or not data['entry_points']:
         return []
     if isinstance(data["entry_points"], str):
         eps = EntryPoints(EntryPoints._from_text(data["entry_points"]))
