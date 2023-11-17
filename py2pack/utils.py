@@ -34,6 +34,7 @@ import zipfile
 
 from backports.entry_points_selectable import EntryPoint, EntryPoints
 
+
 def _get_archive_filelist(filename):
     # type: (str) -> List[str]
     """Extract the list of files from a tar or zip archive.

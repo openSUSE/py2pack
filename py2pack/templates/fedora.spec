@@ -10,24 +10,15 @@ Summary:        {{ summary }}
 License:        {{ license }}
 URL:            {{ home_page }}
 Source:         {{ source_url|replace(version, '%{version}') }}
-
-BuildRequires:  pyproject-rpm-macros
-BuildRequires:  python-devel
-%if %{undefined python_module}
-%define python_module() python3dist(%1)
-%endif
-
-{%- set build_requires_plus_pip = ((build_requires if build_requires and build_requires is not none else []) +
-                                   ['pip']) %}
-{%- for req in build_requires_plus_pip |sort %}
-BuildRequires:  %{python_module {{ req }}}
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+BuildRequires:  python-devel {%- if requires_python %} {{ requires_python }} {% endif %}
+{%- for req in requires %}
+BuildRequires:  {{ req|rpm_format_requires }}
+Requires:       {{ req|rpm_format_requires }}
 {%- endfor %}
-{%- if (install_requires and install_requires is not none) or (tests_require and tests_require is not none) %}
-# SECTION test requirements
-%if %{with test}
-{%- if install_requires and install_requires is not none %}
-{%- for req in install_requires|reject("in",build_requires)|sort %}
-BuildRequires:  %{python_module {{ req }}}
+{%- for req in install_requires %}
+BuildRequires:  {{ req|rpm_format_requires }}
+Requires:       {{ req|rpm_format_requires }} }}
 {%- endfor %}
 {%- endif %}
 {%- if tests_require and tests_require is not none %}
@@ -50,7 +41,7 @@ Requires:       %{python_module {{ req }}}
 {%- if extras_require and extras_require is not none %}
 {%- for reqlist in extras_require.values() %}
 {%- for req in reqlist %}
-Suggests:       %{python_module {{ req }}}
+Suggests:       {{ req|rpm_format_requires }}
 {%- endfor %}
 {%- endfor %}
 {%- endif %}
