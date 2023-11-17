@@ -12,19 +12,19 @@ License:        {{ license }}
 URL:            {{ home_page }}
 Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-BuildRequires:  python-devel {%- if requires_python %} = {{ requires_python }} {% endif %}
+BuildRequires:  python-devel {%- if requires_python %} {{ requires_python }} {% endif %}
 {%- for req in requires %}
-BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
-Requires:       python-{{ req|replace('(','')|replace(')','') }}
+BuildRequires:  {{ req|rpm_format_requires }}
+Requires:       {{ req|rpm_format_requires }}
 {%- endfor %}
 {%- for req in install_requires %}
-BuildRequires:  python-{{ req|replace('(','')|replace(')','') }}
-Requires:       python-{{ req|replace('(','')|replace(')','') }}
+BuildRequires:  {{ req|rpm_format_requires }}
+Requires:       {{ req|rpm_format_requires }} }}
 {%- endfor %}
 {%- if extras_require %}
 {%- for reqlist in extras_require.values() %}
 {%- for req in reqlist %}
-Suggests:       python-{{ req|replace('(','')|replace(')','') }}
+Suggests:       {{ req|rpm_format_requires }}
 {%- endfor %}
 {%- endfor %}
 {%- endif %}

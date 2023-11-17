@@ -25,20 +25,20 @@ URL:            {{ home_page }}
 Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRequires:  python-rpm-macros
 {%- set build_requires_plus_pip = ((build_requires if build_requires and build_requires is not none else []) +
-                                   ['pip']) %}
-{%- for req in build_requires_plus_pip |sort %}
-BuildRequires:  %{python_module {{ req }}}
+                                   [['pip']]) %}
+{%- for req in build_requires_plus_pip|sort_requires  %}
+BuildRequires:  %{python_module {{ req|rpm_format_buildrequires }}}
 {%- endfor %}
 {%- if (install_requires and install_requires is not none) or (tests_require and tests_require is not none) %}
 # SECTION test requirements
 {%- if install_requires and install_requires is not none %}
-{%- for req in install_requires|reject("in",build_requires)|sort %}
-BuildRequires:  %{python_module {{ req }}}
+{%- for req in install_requires|reject("in",build_requires)|sort_requires %}
+BuildRequires:  %{python_module {{ req|rpm_format_buildrequires }}}
 {%- endfor %}
 {%- endif %}
 {%- if tests_require and tests_require is not none %}
-{%- for req in tests_require|sort|reject("in",build_requires|sort) %}
-BuildRequires:  %{python_module {{ req }}}
+{%- for req in tests_require|sort_requires|reject_pkg(build_requires) %}
+BuildRequires:  %{python_module {{ req|rpm_format_buildrequires }}}
 {%- endfor %}
 {%- endif %}
 # /SECTION
@@ -48,14 +48,14 @@ BuildRequires:  unzip
 {%- endif %}
 BuildRequires:  fdupes
 {%- if install_requires and install_requires is not none %}
-{%- for req in install_requires|sort %}
-Requires:       python-{{ req }}
+{%- for req in install_requires|sort_requires %}
+Requires:       {{ req|rpm_format_requires }}
 {%- endfor %}
 {%- endif %}
 {%- if extras_require and extras_require is not none %}
 {%- for reqlist in extras_require.values() %}
 {%- for req in reqlist %}
-Suggests:       python-{{ req }}
+Suggests:       {{ req|rpm_format_requires }}
 {%- endfor %}
 {%- endfor %}
 {%- endif %}

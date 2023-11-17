@@ -11,17 +11,17 @@ Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-buildroot
 BuildRequires:  python-devel
 {%- for req in requires %}
-BuildRequires:  python-{{ req|lower }}
-Requires:       pyhton-{{ req|lower }}
+BuildRequires:  {{ req|rpm_format_requires|lower }}
+Requires:       {{ req|rpm_format_requires|lower }}
 {%- endfor %}
 {%- for req in install_requires %}
-BuildRequires:  python-{{ req|lower }}
-Requires:       python-{{ req|lower }}
+BuildRequires:  {{ req|rpm_format_requires|lower }}
+Requires:       {{ req|rpm_format_requires|lower }}
 {%- endfor %}
 {%- if extras_require %}
 {%- for reqlist in extras_require.values() %}
 {%- for req in reqlist %}
-Suggests:       python-{{ req|lower }}
+Suggests:       {{ req|rpm_format_requires|lower }}
 {%- endfor %}
 {%- endfor %}
 {%- endif %}
@@ -51,8 +51,10 @@ rm -rf %{buildroot}
 {%- if doc_files %}
 %doc {{ doc_files|join(" ") }}
 {%- endif %}
+{%- if scripts %}
 {%- for script in scripts %}
 %{_bindir}/{{ script }}
 {%- endfor %}
+{%- endif %}
 %{python_sitelib}/*
 
