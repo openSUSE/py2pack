@@ -352,11 +352,9 @@ def _prepare_template_env(template_dir):
         return part1 + part2
 
     def _parenthesize_version(req):
-        print(req)
         ret = req[0].lower()
         ver = []
         if len(req) > 1:
-            print(req[1:2])
             if req[1] == '<':
                 req[1] = '<<'
             if req[1] == '>':
@@ -370,8 +368,15 @@ def _prepare_template_env(template_dir):
             ver.append(req[3].lower() + " (" + " ".join(req[4:6]) + ")")
 
         if ver:
-            print(ver)
             ret += ", ".join(ver)
+        return ret
+
+    def reject_pkg(s, req):
+        nms = list(map(lambda n: n[0], req))
+        ret = []
+        for n in s:
+            if n[0] not in nms:
+                ret.append(n)
         return ret
 
     env.filters['parenthesize_version'] = \
@@ -384,8 +389,8 @@ def _prepare_template_env(template_dir):
         lambda s, p: _rpm_format_requires(s, p)
     env.filters['sort_requires'] = \
         lambda s: sorted(s, key=lambda k: k[0].lower())
-    env.filters['reject_pkg'] = \
-        lambda s, req: s if not any(s[0] in sl for sl in req) else None
+    env.filters['reject_pkg'] = reject_pkg
+
     return env
 
 
