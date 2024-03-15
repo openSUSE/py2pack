@@ -313,7 +313,7 @@ def generate(args):
     durl = newest_download_url(args)
     data['source_url'] = (args.source_url or
                           (durl and durl['url']) or
-                          args.name + '-' + args.version + '.zip')
+                          args.name + '-' + args.version + args.source_extension)
     data['year'] = datetime.datetime.now().year                             # set current year
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
     data['summary_no_ending_dot'] = re.sub(r'(.*)\.', r'\g<1>', data.get('summary', ""))
@@ -347,7 +347,55 @@ def generate(args):
         outfile.close()
 
 
+def pypi_text_file(pkg_info_path):
+    with open(pkg_info_path, 'r') as pkg_info_file:
+        pkg_info_lines = pkg_info_file.readlines()
+
+    pkg_info_dict = {}
+    current_key = None
+    for line in pkg_info_lines:
+        if line.startswith((' ', '\t')):
+            # Continuation line, append to the current value
+            val = pkg_info_dict[current_key]
+            line = line.strip()
+            if isinstance(val, list):
+                val[-1] += line
+            else:
+                val += line
+            pkg_info_dict[current_key] = val
+        else:
+            key, value = line.strip().split(':', 1)
+            key = key.lower().replace('-', '_')
+            value = value.strip()
+            if key in {'classifiers', 'requires_dist', 'provides_extra'}:
+                val = pkg_info_dict.get(key)
+                if val is None:
+                    val = []
+                    pkg_info_dict[key] = val
+                val.append(value)
+            else:
+                pkg_info_dict[key] = value
+            current_key = key
+    return {'info':pkg_info_dict, 'urls':[]}
+
+def pypi_json_file(file_path):
+    js = json.load(open(file_path))
+    if not 'info' in js:
+        js = {'info': js}
+    if not 'urls' in js:
+        js['urls'] = []
+    return js
+
 def fetch_data(args):
+    if args.local:
+        try:
+            data = pypi_json_file(args.local_file)
+        except json.decoder.JSONDecodeError:
+            data = pypi_text_file(args.local_file)
+        args.fetched_data = data
+        args.version = args.fetched_data['info']['version']
+        return
+
     args.fetched_data = pypi_json(args.name, args.version)
     urls = args.fetched_data['urls']
     if len(urls) == 0:
@@ -388,6 +436,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--version', action='version', version='%(prog)s {0}'.format(py2pack_version.version))
     parser.add_argument('--proxy', help='HTTP proxy to use')
+
+    parser.add_argument('--local', help='use PKG-INFO from local directory', action='store_true')
+    parser.add_argument('--local-file', help='use provided PKG-INFO file from path')
+
     subparsers = parser.add_subparsers(title='commands')
 
     parser_list = subparsers.add_parser('list', help='list all packages on PyPI')
@@ -413,6 +465,7 @@ def main():
     parser_generate.add_argument('version', nargs='?', help='package version (optional)')
     parser_generate.add_argument('--source-url', default=None, help='source url')
     parser_generate.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec', help='file template')
+    parser_generate.add_argument('--source-extension', default='.zip', help='default source extension'
     parser_generate.add_argument('-f', '--filename', help='spec filename (optional)')
     # TODO (toabctl): remove this is a later release
     parser_generate.add_argument(
@@ -424,6 +477,12 @@ def main():
     parser_help.set_defaults(func=lambda args: parser.print_help())
 
     args = parser.parse_args()
+
+    if args.local_file:
+        args.local = True
+    elif args.local:
+        name = str(args.name)
+        args.local_file = f'./{name}.egg-info/PKG-INFO'
 
     # set HTTP proxy if one is provided
     if args.proxy:
