@@ -386,12 +386,15 @@ def pypi_json_file(file_path):
     return js
 
 def fetch_data(args):
-    if args.local:
-        name = str(args.name)
-        localfile = f'./{name}.egg-info/PKG-INFO'
-    elif args.localfile:
-        localfile=args.localfile
-    else:
+    try:
+        if args.local:
+            name = str(args.name)
+            localfile = f'./{name}.egg-info/PKG-INFO'
+        elif args.localfile:
+            localfile=args.localfile
+        else:
+            localfile = False
+    except AttributeError:
         localfile = False
 
     if localfile:
