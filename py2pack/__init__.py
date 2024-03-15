@@ -387,11 +387,11 @@ def pypi_json_file(file_path):
     return js
 
 def fetch_data(args):
-    if isfile(args.local_file):
+    if isfile(args.localfile):
         try:
-            data = pypi_json_file(args.local_file)
+            data = pypi_json_file(args.localfile)
         except json.decoder.JSONDecodeError:
-            data = pypi_email_file(args.local_file)
+            data = pypi_email_file(args.localfile)
         args.fetched_data = data
         args.version = args.fetched_data['info']['version']
         return
@@ -438,7 +438,7 @@ def main():
     parser.add_argument('--proxy', help='HTTP proxy to use')
 
     parser.add_argument('--local', help='use PKG-INFO from local directory', action='store_true')
-    parser.add_argument('--local-file', help='use provided PKG-INFO file from path')
+    parser.add_argument('--localfile', help='use provided PKG-INFO file from path')
 
     subparsers = parser.add_subparsers(title='commands')
 
@@ -478,11 +478,11 @@ def main():
 
     args = parser.parse_args()
 
-    if args.local_file:
+    if args.localfile:
         args.local = True
     elif args.local:
         name = str(args.name)
-        args.local_file = f'./{name}.egg-info/PKG-INFO'
+        args.localfile = f'./{name}.egg-info/PKG-INFO'
 
     # set HTTP proxy if one is provided
     if args.proxy:
