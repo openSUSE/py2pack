@@ -37,6 +37,8 @@ from py2pack import version as py2pack_version
 from py2pack.utils import (_get_archive_filelist, get_pyproject_table,
                            parse_pyproject, get_setuptools_scripts)
 
+from email import parser
+parser = parser.Parser()
 
 warnings.simplefilter('always', DeprecationWarning)
 
@@ -346,27 +348,12 @@ def generate(args):
     finally:
         outfile.close()
 
-
-def pypi_text_file(pkg_info_path):
-    with open(pkg_info_path, 'r') as pkg_info_file:
-        pkg_info_lines = pkg_info_file.readlines()
-
+def pypi_email_file(pkg_info_path):
+    message = parser.parse(open(pkg_info_path, 'r'))
     pkg_info_dict = {}
     current_key = None
-    for line in pkg_info_lines:
-        if line.startswith((' ', '\t')):
-            # Continuation line, append to the current value
-            val = pkg_info_dict[current_key]
-            line = line.strip()
-            if isinstance(val, list):
-                val[-1] += line
-            else:
-                val += line
-            pkg_info_dict[current_key] = val
-        else:
-            key, value = line.strip().split(':', 1)
+    for key, value in zip(message.keys(), message.values()):
             key = key.lower().replace('-', '_')
-            value = value.strip()
             if key in {'classifiers', 'requires_dist', 'provides_extra'}:
                 val = pkg_info_dict.get(key)
                 if val is None:
@@ -391,7 +378,7 @@ def fetch_data(args):
         try:
             data = pypi_json_file(args.local_file)
         except json.decoder.JSONDecodeError:
-            data = pypi_text_file(args.local_file)
+            data = pypi_email_file(args.local_file)
         args.fetched_data = data
         args.version = args.fetched_data['info']['version']
         return
