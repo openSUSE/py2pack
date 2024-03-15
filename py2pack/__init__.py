@@ -465,7 +465,7 @@ def main():
     parser_generate.add_argument('version', nargs='?', help='package version (optional)')
     parser_generate.add_argument('--source-url', default=None, help='source url')
     parser_generate.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec', help='file template')
-    parser_generate.add_argument('--source-extension', default='.zip', help='default source extension'
+    parser_generate.add_argument('--source-extension', default='.zip', help='default source extension')
     parser_generate.add_argument('-f', '--filename', help='spec filename (optional)')
     # TODO (toabctl): remove this is a later release
     parser_generate.add_argument(
