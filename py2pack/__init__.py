@@ -33,6 +33,7 @@ import requests
 from metaextract import utils as meta_utils
 
 import py2pack.requires
+from os.path import isfile
 from py2pack import version as py2pack_version
 from py2pack.utils import (_get_archive_filelist, get_pyproject_table,
                            parse_pyproject, get_setuptools_scripts,
@@ -386,7 +387,7 @@ def pypi_json_file(file_path):
     return js
 
 def fetch_data(args):
-    if args.local:
+    if isfile(args.local_file):
         try:
             data = pypi_json_file(args.local_file)
         except json.decoder.JSONDecodeError:
