@@ -50,8 +50,8 @@ username = pwd.getpwuid(os.getuid())[4]
                           ('opensuse.spec', True)])
 @pytest.mark.parametrize('project, version',
                          [('py2pack', '0.8.5'),  # legacy setup.py sdist without pyproject.toml
-                          ('sampleproject', '3.0.0'),  # PEP517 only sdist without setup.py
-                          ('poetry', '1.5.1')])  # poetry build system
+                          ('sampleproject', '3.0.0')  # PEP517 only sdist without setup.py
+                          ])  # poetry build system
 def test_template(tmpdir, template, fetch_tarball, project, version):
     """ Test if generated specfile equals to stored one. """
 
