@@ -391,7 +391,7 @@ def fetch_data(args):
             name = str(args.name)
             localfile = f'./{name}.egg-info/PKG-INFO'
         elif args.localfile:
-            localfile=args.localfile
+            localfile = args.localfile
         else:
             localfile = False
     except AttributeError:
