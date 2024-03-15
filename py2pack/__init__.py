@@ -365,8 +365,8 @@ def pypi_email_file(pkg_info_path):
     message = parser.parse(open(pkg_info_path, 'r'))
     pkg_info_dict = {}
     current_key = None
-    for key, value in zip(message.keys(), message.values()):
-            key = key.lower().replace('-', '_')
+    for key_raw, value in zip(message.keys(), message.values()):
+            key = key_raw.lower().replace('-', '_')
             if key in {'classifiers', 'requires_dist', 'provides_extra'}:
                 val = pkg_info_dict.get(key)
                 if val is None:
@@ -375,26 +375,35 @@ def pypi_email_file(pkg_info_path):
                 val.append(value)
             else:
                 pkg_info_dict[key] = value
-            current_key = key
-    return {'info':pkg_info_dict, 'urls':[]}
+    return {'info': pkg_info_dict, 'urls': []}
 
 def pypi_json_file(file_path):
     js = json.load(open(file_path))
-    if not 'info' in js:
+    if 'info' not in js:
         js = {'info': js}
-    if not 'urls' in js:
+    if 'urls' not in js:
         js['urls'] = []
     return js
 
 def fetch_data(args):
-    if isfile(args.localfile):
-        try:
-            data = pypi_json_file(args.localfile)
-        except json.decoder.JSONDecodeError:
-            data = pypi_email_file(args.localfile)
-        args.fetched_data = data
-        args.version = args.fetched_data['info']['version']
-        return
+    if args.local:
+        name = str(args.name)
+        localfile = f'./{name}.egg-info/PKG-INFO'
+    elif args.localfile:
+        localfile=args.localfile
+    else:
+        localfile = False
+
+    if localfile:
+        if isfile(localfile):
+            localfile = False
+            try:
+                data = pypi_json_file(args.localfile)
+            except json.decoder.JSONDecodeError:
+                data = pypi_email_file(args.localfile)
+            args.fetched_data = data
+            args.version = args.fetched_data['info']['version']
+            return
 
     args.fetched_data = pypi_json(args.name, args.version)
     urls = args.fetched_data['urls']
@@ -437,9 +446,6 @@ def main():
     parser.add_argument('--version', action='version', version='%(prog)s {0}'.format(py2pack_version.version))
     parser.add_argument('--proxy', help='HTTP proxy to use')
 
-    parser.add_argument('--local', help='use PKG-INFO from local directory', action='store_true')
-    parser.add_argument('--localfile', help='use provided PKG-INFO file from path')
-
     subparsers = parser.add_subparsers(title='commands')
 
     parser_list = subparsers.add_parser('list', help='list all packages on PyPI')
@@ -466,6 +472,9 @@ def main():
     parser_generate.add_argument('--source-url', default=None, help='source url')
     parser_generate.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec', help='file template')
     parser_generate.add_argument('--source-extension', default='.zip', help='default source extension')
+    parser_generate.add_argument('--local', help='use PKG-INFO from local directory (optional)', action='store_true')
+    parser_generate.add_argument('--localfile', help='use provided PKG-INFO file from path (optional)')
+
     parser_generate.add_argument('-f', '--filename', help='spec filename (optional)')
     # TODO (toabctl): remove this is a later release
     parser_generate.add_argument(
@@ -477,12 +486,6 @@ def main():
     parser_help.set_defaults(func=lambda args: parser.print_help())
 
     args = parser.parse_args()
-
-    if args.localfile:
-        args.local = True
-    elif args.local:
-        name = str(args.name)
-        args.localfile = f'./{name}.egg-info/PKG-INFO'
 
     # set HTTP proxy if one is provided
     if args.proxy:
