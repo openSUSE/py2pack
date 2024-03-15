@@ -361,21 +361,22 @@ def generate(args):
     finally:
         outfile.close()
 
+
 def pypi_email_file(pkg_info_path):
     message = parser.parse(open(pkg_info_path, 'r'))
     pkg_info_dict = {}
-    current_key = None
     for key_raw, value in zip(message.keys(), message.values()):
-            key = key_raw.lower().replace('-', '_')
-            if key in {'classifiers', 'requires_dist', 'provides_extra'}:
-                val = pkg_info_dict.get(key)
-                if val is None:
-                    val = []
-                    pkg_info_dict[key] = val
-                val.append(value)
-            else:
-                pkg_info_dict[key] = value
+        key = key_raw.lower().replace('-', '_')
+        if key in {'classifiers', 'requires_dist', 'provides_extra'}:
+            val = pkg_info_dict.get(key)
+            if val is None:
+                val = []
+                pkg_info_dict[key] = val
+            val.append(value)
+        else:
+            pkg_info_dict[key] = value
     return {'info': pkg_info_dict, 'urls': []}
+
 
 def pypi_json_file(file_path):
     js = json.load(open(file_path))
@@ -384,6 +385,7 @@ def pypi_json_file(file_path):
     if 'urls' not in js:
         js['urls'] = []
     return js
+
 
 def fetch_data(args):
     try:
