@@ -37,6 +37,7 @@ from py2pack import version as py2pack_version
 from py2pack.utils import (_get_archive_filelist, get_pyproject_table,
                            parse_pyproject, get_setuptools_scripts)
 
+from email import parser
 
 warnings.simplefilter('always', DeprecationWarning)
 
@@ -54,6 +55,32 @@ def pypi_json(project, release=None):
     with requests.get('https://pypi.org/pypi/{}{}/json'.format(project, version)) as r:
         pypimeta = r.json()
     return pypimeta
+
+
+def pypi_text_file(pkg_info_path):
+    with open(pkg_info_path, 'r') as pkg_info_file:
+        pkg_info_lines = parser.Parser().parse(pkg_info_file)
+    pkg_info_dict = {}
+    for key, value in pkg_info_lines.items():
+        key = key.lower().replace('-', '_')
+        if key in {'classifiers', 'requires_dist', 'provides_extra'}:
+            val = pkg_info_dict.get(key)
+            if val is None:
+                val = []
+                pkg_info_dict[key] = val
+            val.append(value)
+        else:
+            pkg_info_dict[key] = value
+    return {'info': pkg_info_dict, 'urls': []}
+
+
+def pypi_json_file(file_path):
+    js = json.load(open(file_path))
+    if 'info' not in js:
+        js = {'info': js}
+    if 'urls' not in js:
+        js['urls'] = []
+    return js
 
 
 def _get_template_dirs():
@@ -313,7 +340,7 @@ def generate(args):
     durl = newest_download_url(args)
     data['source_url'] = (args.source_url or
                           (durl and durl['url']) or
-                          args.name + '-' + args.version + '.zip')
+                          args.name + '-' + args.version + args.source_extension)
     data['year'] = datetime.datetime.now().year                             # set current year
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
     data['summary_no_ending_dot'] = re.sub(r'(.*)\.', r'\g<1>', data.get('summary', ""))
@@ -348,6 +375,23 @@ def generate(args):
 
 
 def fetch_data(args):
+    try:
+        localfile = args.localfile
+        if not localfile:
+            if args.local:
+                localfile = f'{args.name}.egg-info/PKG-INFO'
+            else:
+                raise AttributeError()
+        if os.path.isfile(localfile):
+            try:
+                data = pypi_json_file(localfile)
+            except json.decoder.JSONDecodeError:
+                data = pypi_text_file(localfile)
+            args.fetched_data = data
+            args.version = args.fetched_data['info']['version']
+            return
+    except AttributeError:
+        pass
     args.fetched_data = pypi_json(args.name, args.version)
     urls = args.fetched_data['urls']
     if len(urls) == 0:
@@ -412,6 +456,9 @@ def main():
     parser_generate.add_argument('name', help='package name')
     parser_generate.add_argument('version', nargs='?', help='package version (optional)')
     parser_generate.add_argument('--source-url', default=None, help='source url')
+    parser_generate.add_argument('--local', action='store_true', help='build from local package')
+    parser_generate.add_argument('--localfile', default='', help='path to the local PKG-INFO or json metadata')
+    parser_generate.add_argument('--source-extension', default='.zip', help='source extension, used if no source url provided')
     parser_generate.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec', help='file template')
     parser_generate.add_argument('-f', '--filename', help='spec filename (optional)')
     # TODO (toabctl): remove this is a later release
