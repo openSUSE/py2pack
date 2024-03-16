@@ -205,7 +205,6 @@ def _canonicalize_setup_data(data):
                 get_pyproject_table(data, 'project.urls.Homepage') or
                 get_pyproject_table(data, 'project.urls.Source') or
                 get_pyproject_table(data, 'project.urls.GitHub') or
-                get_pyproject_table(data, 'project.urls.Repository') or
                 data.get('home_page', None))
     if homepage:
         data['home_page'] = homepage
