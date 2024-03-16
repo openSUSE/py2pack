@@ -456,7 +456,7 @@ def main():
     parser_generate.add_argument('name', help='package name')
     parser_generate.add_argument('version', nargs='?', help='package version (optional)')
     parser_generate.add_argument('--source-url', default=None, help='source url')
-    parser_generate.add_argument('--local', default=False, help='build from local package')
+    parser_generate.add_argument('--local', action='store_true', help='build from local package')
     parser_generate.add_argument('--localfile', default='', help='path to the local PKG-INFO or json metadata')
     parser_generate.add_argument('--source-extension', default='.zip', help='source extension, used if no source url provided')
     parser_generate.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec', help='file template')
