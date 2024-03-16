@@ -61,7 +61,7 @@ def pypi_text_file(pkg_info_path):
     with open(pkg_info_path, 'r') as pkg_info_file:
         pkg_info_lines = parser.Parser().parse(pkg_info_file)
     pkg_info_dict = {}
-    for key, value in pkg_info_lines:
+    for key, value in pkg_info_lines.items():
         key = key.lower().replace('-', '_')
         if key in {'classifiers', 'requires_dist', 'provides_extra'}:
             val = pkg_info_dict.get(key)
