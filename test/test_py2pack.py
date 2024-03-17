@@ -21,6 +21,7 @@ import unittest
 from ddt import ddt, data, unpack
 
 import py2pack
+from py2pack import replace_string
 
 
 @ddt
@@ -45,6 +46,12 @@ class Py2packTestCase(unittest.TestCase):
     def test__get_source_url(self, pypi_name, extension, expected_url):
         self.assertEqual(py2pack._get_source_url(pypi_name, extension),
                          expected_url)
+
+    def test_replace_text(self):
+        input_string = 'This is %{name} and %%{name} %{what}. Also, replace %% with %.'
+        output_string = replace_string(input_string, {'name': 'replacement', 'what': r'%placeholders%%'})
+        expected_output_string = r'This is replacement and %{name} %placeholders%%. Also, replace % with %.'
+        self.assertEqual(output_string, expected_output_string)
 
     def test_list(self):
         py2pack.list_packages(self.args)

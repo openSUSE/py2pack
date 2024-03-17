@@ -37,6 +37,15 @@ from py2pack import version as py2pack_version
 from py2pack.utils import (_get_archive_filelist, get_pyproject_table,
                            parse_pyproject, get_setuptools_scripts)
 
+from email import parser
+
+
+def replace_string(output_string, replaces):
+    for name, replacement in replaces.items():
+        pattern = r'(?<!%)%{' + name + '}'  # Negative lookbehind to exclude "%%{name}"
+        output_string = re.sub(pattern, replacement.replace(r'%', r'%%'), output_string)
+    return output_string.replace(r'%%', r'%')
+
 
 warnings.simplefilter('always', DeprecationWarning)
 
@@ -54,6 +63,33 @@ def pypi_json(project, release=None):
     with requests.get('https://pypi.org/pypi/{}{}/json'.format(project, version)) as r:
         pypimeta = r.json()
     return pypimeta
+
+
+def pypi_text_file(pkg_info_path):
+    with open(pkg_info_path, 'r') as pkg_info_file:
+        pkg_info_lines = parser.Parser().parse(pkg_info_file)
+    pkg_info_dict = {}
+    for key, value in pkg_info_lines.items():
+        key = key.lower().replace('-', '_')
+        if key in {'classifiers', 'requires_dist', 'provides_extra'}:
+            val = pkg_info_dict.get(key)
+            if val is None:
+                val = []
+                pkg_info_dict[key] = val
+            val.append(value)
+        else:
+            pkg_info_dict[key] = value
+    return {'info': pkg_info_dict, 'urls': []}
+
+
+def pypi_json_file(file_path):
+    with open(file_path, 'r') as json_file:
+        js = json.load(json_file)
+    if 'info' not in js:
+        js = {'info': js}
+    if 'urls' not in js:
+        js['urls'] = []
+    return js
 
 
 def _get_template_dirs():
@@ -311,9 +347,7 @@ def generate(args):
     print('generating spec file for {0}...'.format(args.name))
     data = args.fetched_data['info']
     durl = newest_download_url(args)
-    data['source_url'] = (args.source_url or
-                          (durl and durl['url']) or
-                          args.name + '-' + args.version + '.zip')
+    source_url = data['source_url'] = (args.source_url or (durl and durl['url']))
     data['year'] = datetime.datetime.now().year                             # set current year
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
     data['summary_no_ending_dot'] = re.sub(r'(.*)\.', r'\g<1>', data.get('summary', ""))
@@ -321,19 +355,33 @@ def generate(args):
     # If package name supplied on command line differs in case from PyPI's one
     # then package archive will be fetched but the name will be the one from PyPI.
     # Eg. send2trash vs Send2Trash. Check that.
-    for name in (args.name, data['name']):
-        tarball_file = glob.glob("{0}-{1}.*".format(name, args.version))
-        # also check tarball files with underscore. Some packages have a name with
-        # a '-' or '.' but the tarball name has a '_' . Eg the package os-faults
-        tr = str.maketrans('-.', '__')
-        tarball_file += glob.glob("{0}-{1}.*".format(name.translate(tr),
-                                                     args.version))
+    tr = str.maketrans('-.', '__')
+    version = args.version
+    name = args.name
+    try:
+        source_glob = args.source_glob
+    except AttributeError:
+        source_glob = '%{name}-%{version}.*'
+    data_name = data['name'] or name
+
+    tarball_file = []
+    for __name in (name, name.translate(tr), data_name, data_name.translate(tr)):
+        tarball_file.extend(glob.glob(replace_string(source_glob, {'name': __name, 'version': version})))
+        if tarball_file:
+            break
+
     if tarball_file:                                                        # get some more info from that
-        _augment_data_from_tarball(args, tarball_file[0], data)
+        tarball_file = tarball_file[0]
+        _augment_data_from_tarball(args, tarball_file, data)
+
     else:
         warnings.warn("No tarball for {} in version {} found. Valuable "
                       "information for the generation might be missing."
                       "".format(args.name, args.version))
+        tarball_file = args.name + '-' + args.version + '.zip'
+
+    if not source_url:
+        data['source_url'] = os.path.basename(tarball_file)
 
     _normalize_license(data)
 
@@ -348,6 +396,22 @@ def generate(args):
 
 
 def fetch_data(args):
+    try:
+        localfile = args.localfile
+        local = args.local
+    except AttributeError:
+        localfile = local = ''
+
+    if not localfile and local:
+        localfile = f'{args.name}.egg-info/PKG-INFO'
+    if os.path.isfile(localfile):
+        try:
+            data = pypi_json_file(localfile)
+        except json.decoder.JSONDecodeError:
+            data = pypi_text_file(localfile)
+        args.fetched_data = data
+        args.version = args.fetched_data['info']['version']
+        return
     args.fetched_data = pypi_json(args.name, args.version)
     urls = args.fetched_data['urls']
     if len(urls) == 0:
@@ -412,6 +476,9 @@ def main():
     parser_generate.add_argument('name', help='package name')
     parser_generate.add_argument('version', nargs='?', help='package version (optional)')
     parser_generate.add_argument('--source-url', default=None, help='source url')
+    parser_generate.add_argument('--source-glob', help='source glob template')
+    parser_generate.add_argument('--local', action='store_true', help='build from local package')
+    parser_generate.add_argument('--localfile', default='', help='path to the local PKG-INFO or json metadata')
     parser_generate.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec', help='file template')
     parser_generate.add_argument('-f', '--filename', help='spec filename (optional)')
     # TODO (toabctl): remove this is a later release
