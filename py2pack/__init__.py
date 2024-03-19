@@ -83,7 +83,8 @@ def pypi_text_file(pkg_info_path):
 
 
 def pypi_json_file(file_path):
-    js = json.load(open(file_path))
+    with open(file_path, 'r') as json_file:
+        js = json.load(json_file)
     if 'info' not in js:
         js = {'info': js}
     if 'urls' not in js:
