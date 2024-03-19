@@ -396,7 +396,7 @@ def generate(args):
 
 
 def fetch_data(args):
-    try: 
+    try:
         localfile = args.localfile
         local = args.local
     except AttributeError:
