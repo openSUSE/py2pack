@@ -396,23 +396,19 @@ def generate(args):
 
 
 def fetch_data(args):
-    try:
-        localfile = args.localfile
-        if not localfile:
-            if args.local:
-                localfile = f'{args.name}.egg-info/PKG-INFO'
-            else:
-                raise AttributeError()
-        if os.path.isfile(localfile):
-            try:
-                data = pypi_json_file(localfile)
-            except json.decoder.JSONDecodeError:
-                data = pypi_text_file(localfile)
-            args.fetched_data = data
-            args.version = args.fetched_data['info']['version']
-            return
-    except AttributeError:
-        pass
+    localfile = args.localfile
+    local = args.local
+
+    if not localfile and local:
+        localfile = f'{args.name}.egg-info/PKG-INFO'
+    if os.path.isfile(localfile):
+        try:
+            data = pypi_json_file(localfile)
+        except json.decoder.JSONDecodeError:
+            data = pypi_text_file(localfile)
+        args.fetched_data = data
+        args.version = args.fetched_data['info']['version']
+        return
     args.fetched_data = pypi_json(args.name, args.version)
     urls = args.fetched_data['urls']
     if len(urls) == 0:
