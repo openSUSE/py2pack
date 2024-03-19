@@ -396,8 +396,11 @@ def generate(args):
 
 
 def fetch_data(args):
-    localfile = args.localfile
-    local = args.local
+    try: 
+      localfile = args.localfile
+      local = args.local
+    except AttributeError:
+      localfile = local = ''
 
     if not localfile and local:
         localfile = f'{args.name}.egg-info/PKG-INFO'
