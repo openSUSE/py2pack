@@ -33,6 +33,9 @@ class Args(object):
     name = ''
     version = ''
     source_url = None
+    source_glob = None
+    local = False
+    localfile = ''
 
 
 compare_dir = os.path.join(os.path.dirname(__file__), 'examples')

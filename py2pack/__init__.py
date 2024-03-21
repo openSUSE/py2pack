@@ -358,10 +358,8 @@ def generate(args):
     tr = str.maketrans('-.', '__')
     version = args.version
     name = args.name
-    try:
-        source_glob = args.source_glob
-    except AttributeError:
-        source_glob = '%{name}-%{version}.*'
+    default_source = '%{name}-%{version}.*'
+    source_glob = args.source_glob or default_source
     data_name = data['name'] or name
 
     tarball_file = []
@@ -396,11 +394,8 @@ def generate(args):
 
 
 def fetch_data(args):
-    try:
-        localfile = args.localfile
-        local = args.local
-    except AttributeError:
-        localfile = local = ''
+    localfile = args.localfile
+    local = args.local
 
     if not localfile and local:
         localfile = f'{args.name}.egg-info/PKG-INFO'

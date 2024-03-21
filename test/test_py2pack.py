@@ -31,6 +31,9 @@ class Py2packTestCase(unittest.TestCase):
             name = "py2pack"
             version = "0.4.4"
             source_url = None
+            source_glob = None
+            local = False
+            localfile = ""
 
         self.args = Args()
 
