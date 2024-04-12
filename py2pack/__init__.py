@@ -394,8 +394,13 @@ def generate(args):
 
 
 def fetch_data(args):
-    localfile = args.localfile
-    local = args.local
+    #fix bug: AttributeError: 'Namespace' object has no attribute 'localfile' for fetch command 
+    try:
+        localfile = args.localfile
+        local = args.local
+    except AttributeError:
+        localfile = ''
+        local = False
 
     if not localfile and local:
         localfile = f'{args.name}.egg-info/PKG-INFO'
