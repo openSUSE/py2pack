@@ -394,12 +394,17 @@ def generate(args):
 
 
 def fetch_data(args):
-    localfile = args.localfile
-    local = args.local
-
+    try:
+        localfile = args.localfile
+        local = args.local
+    except AttributeError:
+        localfile = ""
+        local = False
     if not localfile and local:
         localfile = f'{args.name}.egg-info/PKG-INFO'
-    if os.path.isfile(localfile):
+    if localfile:
+        local = os.path.isfile(localfile)
+    if local:
         try:
             data = pypi_json_file(localfile)
         except json.decoder.JSONDecodeError:
