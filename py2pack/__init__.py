@@ -394,8 +394,14 @@ def generate(args):
 
 
 def fetch_data(args):
-    localfile = args.localfile
-    local = args.local
+    if hasattr(args, 'localfile'):
+        localfile = args.localfile
+    else:
+        localfile = ''
+    if hasattr(args, 'local'):
+        local = args.local
+    else:
+        local = False
 
     if not localfile and local:
         localfile = f'{args.name}.egg-info/PKG-INFO'
