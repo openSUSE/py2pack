@@ -97,9 +97,9 @@ def _get_template_dirs():
     is important. The first found template from the first found dir wins!"""
     return filter(lambda x: os.path.exists(x), [
         # user dir
-        os.path.join(os.path.expanduser('~'), '.py2pack', 'templates'),
+        os.path.join(os.path.expanduser('~'), '.py2pack/templates'),
         # system wide dir
-        os.path.join('/', 'usr', 'share', 'py2pack', 'templates'),
+        '/usr/share/py2pack/templates',
         # usually inside the site-packages dir
         os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates'),
     ])
@@ -339,7 +339,7 @@ def generate(args):
         warnings.warn("the '--run' switch is deprecated and a noop",
                       DeprecationWarning)
 
-    fetch_data(args)
+    fetch_local_data(args)
     if not args.template:
         args.template = file_template_list()[0]
     if not args.filename:
@@ -393,7 +393,7 @@ def generate(args):
         outfile.close()
 
 
-def fetch_data(args):
+def fetch_local_data(args):
     localfile = args.localfile
     local = args.local
 
@@ -407,6 +407,10 @@ def fetch_data(args):
         args.fetched_data = data
         args.version = args.fetched_data['info']['version']
         return
+    fetch_data(args)
+
+
+def fetch_data(args):
     args.fetched_data = pypi_json(args.name, args.version)
     urls = args.fetched_data['urls']
     if len(urls) == 0:
