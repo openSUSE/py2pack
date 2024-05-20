@@ -45,7 +45,7 @@ username = pwd.getpwuid(os.getuid())[4]
 
 
 @pytest.mark.parametrize('template, fetch_tarball',
-                         [('fedora.spec', False),
+                         [('fedora.spec', True),
                           ('mageia.spec', False),
                           ('opensuse-legacy.spec', False),
                           ('opensuse.dsc', False),

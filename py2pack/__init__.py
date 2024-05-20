@@ -351,7 +351,7 @@ def generate(args):
         warnings.warn("the '--run' switch is deprecated and a noop",
                       DeprecationWarning)
 
-    fetch_data(args)
+    fetch_local_data(args)
     if not args.template:
         args.template = file_template_list()[0]
     if not args.filename:
@@ -405,12 +405,12 @@ def generate(args):
         outfile.close()
 
 
-def fetch_data(args):
+def fetch_local_data(args):
     localfile = args.localfile
     local = args.local
 
     if not localfile and local:
-        localfile = f'{args.name}.egg-info/PKG-INFO'
+        localfile = os.path.join(f'{args.name}.egg-info', 'PKG-INFO')
     if os.path.isfile(localfile):
         try:
             data = pypi_json_file(localfile)
@@ -419,6 +419,10 @@ def fetch_data(args):
         args.fetched_data = data
         args.version = args.fetched_data['info']['version']
         return
+    fetch_data(args)
+
+
+def fetch_data(args):
     args.fetched_data = pypi_json(args.name, args.version)
     urls = args.fetched_data['urls']
     if len(urls) == 0:
