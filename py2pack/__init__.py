@@ -410,7 +410,7 @@ def fetch_local_data(args):
     local = args.local
 
     if not localfile and local:
-        localfile = f'{args.name}.egg-info/PKG-INFO'
+        localfile = os.path.join(f'{args.name}.egg-info', 'PKG-INFO')
     if os.path.isfile(localfile):
         try:
             data = pypi_json_file(localfile)
