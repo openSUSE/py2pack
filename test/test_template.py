@@ -20,6 +20,7 @@ import datetime
 import os
 import os.path
 import pwd
+import sys
 
 import pytest
 
@@ -52,9 +53,11 @@ username = pwd.getpwuid(os.getuid())[4]
                           ('opensuse.spec', True)])
 @pytest.mark.parametrize('project, version',
                          [('py2pack', '0.8.5'),  # legacy setup.py sdist without pyproject.toml
-                          ('sampleproject', '3.0.0')])  # PEP517 only sdist without setup.py
+                          ('sampleproject', '3.0.0'),  # PEP517 only sdist without setup.py
+                          ('poetry', '1.5.1')])  # poetry build system
 def test_template(tmpdir, template, fetch_tarball, project, version):
     """ Test if generated specfile equals to stored one. """
+
     args = Args()
     args.template = template
     base, ext = template.split(".")
@@ -64,6 +67,9 @@ def test_template(tmpdir, template, fetch_tarball, project, version):
     args.name = project
     args.version = version
     reference = os.path.join(compare_dir, f'{args.name}-{filename}')
+    if project == 'poetry' and sys.version_info < (3, 11):
+        pytest.xfail("Different requirements for python < 3.11")
+
     if not os.path.exists(reference):
         pytest.xfail("No reference template available")
     with tmpdir.as_cwd():

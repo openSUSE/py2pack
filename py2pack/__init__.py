@@ -35,7 +35,8 @@ from metaextract import utils as meta_utils
 import py2pack.requires
 from py2pack import version as py2pack_version
 from py2pack.utils import (_get_archive_filelist, get_pyproject_table,
-                           parse_pyproject, get_setuptools_scripts)
+                           parse_pyproject, get_setuptools_scripts,
+                           get_metadata)
 
 from email import parser
 
@@ -188,6 +189,7 @@ def _canonicalize_setup_data(data):
     tests_require = (
         get_pyproject_table(data, "project.optional-dependencies.test") or
         get_pyproject_table(data, "tool.flit.metadata.requires-extra.test") or
+        get_pyproject_table(data, "tool.poetry.group.test.dependencies") or
         data.get("tests_require", None))
     if tests_require:
         # Setuptools: tests_require may be a string, convert to list of strings:
@@ -226,6 +228,7 @@ def _canonicalize_setup_data(data):
     console_scripts += list(get_pyproject_table(data, "project.scripts", notfound={}).keys())
     console_scripts += list(get_pyproject_table(data, "project.gui-scripts", notfound={}).keys())
     console_scripts += list(get_pyproject_table(data, "tool.flit.scripts", notfound={}).keys())
+    console_scripts += list(get_pyproject_table(data, "tool.poetry.scripts", notfound={}).keys())
     if console_scripts:
         # remove duplicates, preserver order
         data["console_scripts"] = list(dict.fromkeys(console_scripts))
@@ -263,12 +266,21 @@ def _augment_data_from_tarball(args, filename, data):
     except KeyError:
         # No build system specified in pyproject.toml: legacy setuptools
         buildrequires = ['setuptools']
+
     if any(['setuptools' in br for br in buildrequires]):
         try:
             data_archive = meta_utils.from_archive(filename)
             data.update(data_archive['data'])
         except Exception as exc:
             warnings.warn("Could not get setuptools information from tarball {}: {}. "
+                          "Valuable information for the generation might be missing."
+                          .format(filename, exc))
+    else:
+        try:
+            mdata = get_metadata(filename)
+            data.update(mdata)
+        except Exception as exc:
+            warnings.warn("Could not get metadata information from tarball {}: {}. "
                           "Valuable information for the generation might be missing."
                           .format(filename, exc))
 
