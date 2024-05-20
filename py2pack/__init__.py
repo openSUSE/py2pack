@@ -28,6 +28,7 @@ import sys
 import warnings
 
 import jinja2
+import platformdirs
 import pypi_search.search
 import requests
 from metaextract import utils as meta_utils
@@ -98,7 +99,7 @@ def _get_template_dirs():
     is important. The first found template from the first found dir wins!"""
     return filter(lambda x: os.path.exists(x), [
         # user dir
-        os.path.join(os.path.expanduser('~'), '.py2pack', 'templates'),
+        os.path.join(platformdirs.user_config_dir(), '.py2pack', 'templates'),
         # system wide dir
         os.path.join('/', 'usr', 'share', 'py2pack', 'templates'),
         # usually inside the site-packages dir
@@ -405,12 +406,13 @@ def generate(args):
         outfile.close()
 
 
-def fetch_data(args):
+def fetch_local_data(args):
     localfile = args.localfile
     local = args.local
 
     if not localfile and local:
-        localfile = f'{args.name}.egg-info/PKG-INFO'
+            localfile = os.path.join(f'{args.name}.egg-info', 'PKG-INFO')
+          
     if os.path.isfile(localfile):
         try:
             data = pypi_json_file(localfile)
@@ -419,6 +421,10 @@ def fetch_data(args):
         args.fetched_data = data
         args.version = args.fetched_data['info']['version']
         return
+    fetch_data(args)
+
+
+def fetch_data(args):
     args.fetched_data = pypi_json(args.name, args.version)
     urls = args.fetched_data['urls']
     if len(urls) == 0:
