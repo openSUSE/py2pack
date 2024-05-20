@@ -16,6 +16,6 @@
 # limitations under the License.
 
 # this one is read by hatch or hatchling during build
-__version__ = "0.9.3"
+__version__ = "0.9.0"
 
 version = __version__
