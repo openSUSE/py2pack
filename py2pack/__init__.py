@@ -15,7 +15,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import platformdirs
 import argparse
 import datetime
 import glob
@@ -97,13 +97,16 @@ def _get_template_dirs():
     """existing directories where to search for jinja2 templates. The order
     is important. The first found template from the first found dir wins!"""
     return filter(lambda x: os.path.exists(x), [
+        os.path.join(i, "templates") for i in (
         # user dir
-        os.path.join(os.path.expanduser('~'), '.py2pack', 'templates'),
-        # system wide dir
-        os.path.join('/', 'usr', 'share', 'py2pack', 'templates'),
+        os.path.join(os.path.expanduser('~'), '.py2pack'),
+        platformdirs.user_data_dir(appname="py2pack"),
+        platformdirs.user_config_dir(appname="py2pack"),
         # usually inside the site-packages dir
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates'),
-    ])
+        os.path.dirname(os.path.abspath(__file__)),
+        # system wide dir
+        *platformdirs.site_data_dir(appname="py2pack", multipath=True).split(":"),
+    )])
 
 
 def list_packages(args=None):
