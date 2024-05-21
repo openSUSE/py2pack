@@ -33,6 +33,7 @@ dependencies = [
     "setuptools",
     "metaextract",
     "packaging",
+    "platformdirs",
     "pypi-search",
     "requests",
     "tomli; python_version < '3.11'",
