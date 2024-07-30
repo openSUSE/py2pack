@@ -32,12 +32,6 @@ BuildRequires:  %{python_module wheel}
 BuildRequires:  %{python_module Jinja2}
 BuildRequires:  %{python_module metaextract}
 BuildRequires:  %{python_module six}
-BuildRequires:  %{python_module coverage}
-BuildRequires:  %{python_module ddt}
-BuildRequires:  %{python_module flake8}
-BuildRequires:  %{python_module pytest}
-BuildRequires:  %{python_module Sphinx >= 1.2.1}
-BuildRequires:  %{python_module sphinxcontrib.programoutput}
 # /SECTION
 BuildRequires:  fdupes
 Requires:       python-Jinja2
