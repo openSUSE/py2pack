@@ -367,7 +367,7 @@ def generate(args):
     source_url = data['source_url'] = (args.source_url or (durl and durl['url']))
     data['year'] = datetime.datetime.now().year                             # set current year
     data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
-    data['summary_no_ending_dot'] = re.sub(r'(.*)\.', r'\g<1>', data.get('summary', ""))
+    data['summary_no_ending_dot'] = re.sub(r'(.*)\.', r'\g<1>', data.get('summary')) if data.get('summary') else ""
 
     # If package name supplied on command line differs in case from PyPI's one
     # then package archive will be fetched but the name will be the one from PyPI.
