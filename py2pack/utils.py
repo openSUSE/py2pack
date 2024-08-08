@@ -129,10 +129,11 @@ def get_setuptools_scripts(data):
     Returns:
         list of script names
     """
-    entry_points = data.get('entry_points', None)
-    if isinstance(entry_points, str):
-        eps = EntryPoints(EntryPoints._from_text(entry_points))
-    elif isinstance(entry_points, dict):
+    if "entry_points" not in data or not data['entry_points']:
+        return []
+    if isinstance(data["entry_points"], str):
+        eps = EntryPoints(EntryPoints._from_text(data["entry_points"]))
+    elif isinstance(data["entry_points"], dict):
         eps = EntryPoints([EntryPoint(*map(str.strip, entry.split("=", 1)), groupname)
                            for groupname, group in entry_points.items()
                            for entry in group
