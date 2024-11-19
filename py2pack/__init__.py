@@ -300,7 +300,7 @@ def _augment_data_from_tarball(args, filename, data):
                 data["doc_files"] = []
             data["doc_files"].append(_quote_shell_metacharacters(match_docs.group(1)))
         if match_license:
-            if "license_files" not in data:
+            if data.get("license_files", None) is None:
                 data["license_files"] = []
             data["license_files"].append(_quote_shell_metacharacters(match_license.group(1)))
         # Very broad check for testsuites
