@@ -429,9 +429,9 @@ def fetch_local_data(args):
 
 def fetch_data(args):
     args.fetched_data = pypi_json(args.name, args.version)
-    urls = args.fetched_data['urls']
+    urls = args.fetched_data.get('urls', [])
     if len(urls) == 0:
-        print("unable to find a suitable release for {0}!".format(args.name))
+        print(f"unable to find a suitable release for {args.name}!")
         sys.exit(1)
     else:
         args.version = args.fetched_data['info']['version']                 # return current release number
