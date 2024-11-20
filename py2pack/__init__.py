@@ -248,6 +248,14 @@ def _canonicalize_setup_data(data):
     if homepage:
         data['home_page'] = homepage
 
+    # remove doc_files: None
+    if data.get('doc_files', []) is None:
+        data.pop('doc_files')
+
+    # remove license_files: None
+    if data.get('license_files', []) is None:
+        data.pop('license_files')
+
 
 def _quote_shell_metacharacters(string):
     shell_metachars_re = re.compile(r"[|&;()<>\s]")
@@ -296,13 +304,12 @@ def _augment_data_from_tarball(args, filename, data):
         match_docs = re.match(docs_re, name)
         match_license = re.match(license_re, name)
         if match_docs:
-            if "doc_files" not in data:
-                data["doc_files"] = []
-            data["doc_files"].append(_quote_shell_metacharacters(match_docs.group(1)))
+            data.setdefault('doc_files', []).append(
+                _quote_shell_metacharacters(match_docs.group(1)))
         if match_license:
-            if "license_files" not in data:
-                data["license_files"] = []
-            data["license_files"].append(_quote_shell_metacharacters(match_license.group(1)))
+            data.setdefault('license_files', []).append(
+                _quote_shell_metacharacters(match_license.group(1))
+            )
         # Very broad check for testsuites
         if "test" in name.lower():
             data["testsuite"] = True
@@ -429,9 +436,9 @@ def fetch_local_data(args):
 
 def fetch_data(args):
     args.fetched_data = pypi_json(args.name, args.version)
-    urls = args.fetched_data['urls']
+    urls = args.fetched_data.get('urls', [])
     if len(urls) == 0:
-        print("unable to find a suitable release for {0}!".format(args.name))
+        print(f"unable to find a suitable release for {args.name}!")
         sys.exit(1)
     else:
         args.version = args.fetched_data['info']['version']                 # return current release number
