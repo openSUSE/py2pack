@@ -19,10 +19,10 @@
 Name:           python-{{ name }}
 Version:        {{ version }}
 Release:        0
-Summary:        {{ summary_no_ending_dot|default(summary, true) }}
-License:        {{ license }}
-URL:            {{ home_page }}
-Source:         {{ source_url|replace(version, '%{version}') }}
+Summary:        {{ summary_no_ending_dot|default(summary, true)|replace('\n','') }}
+License:        {{ license|replace('\n','') }}
+URL:            {{ home_page|replace('\n','') }}
+Source:         {{ source_url|replace(version, '%{version}')|replace('\n','') }}
 BuildRequires:  python-rpm-macros
 {%- set build_requires_plus_pip = ((build_requires if build_requires and build_requires is not none else []) +
                                    ['pip']) %}
