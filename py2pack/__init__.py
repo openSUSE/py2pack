@@ -37,6 +37,11 @@ from py2pack.utils import (_get_archive_filelist, get_pyproject_table,
                            get_metadata)
 
 from email import parser
+try:
+    import libarchive
+except ModuleNotFoundError:
+    libarchive = None
+import io
 
 
 def replace_string(output_string, replaces):
@@ -47,6 +52,7 @@ def replace_string(output_string, replaces):
 
 
 warnings.simplefilter('always', DeprecationWarning)
+
 
 SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spdx_license_map.json')
 with open(SPDX_LICENSES_FILE, 'r') as fp:
@@ -66,7 +72,11 @@ def pypi_json(project, release=None):
 
 def pypi_text_file(pkg_info_path):
     with open(pkg_info_path, 'r') as pkg_info_file:
-        pkg_info_lines = parser.Parser().parse(pkg_info_file)
+        return pypi_text_stream(pkg_info_file)
+
+
+def pypi_text_stream(pkg_info_stream):
+    pkg_info_lines = parser.Parser().parse(pkg_info_stream)
     pkg_info_dict = {}
     for key, value in pkg_info_lines.items():
         key = key.lower().replace('-', '_')
@@ -83,12 +93,31 @@ def pypi_text_file(pkg_info_path):
 
 def pypi_json_file(file_path):
     with open(file_path, 'r') as json_file:
-        js = json.load(json_file)
+        return pypi_json_stream(json_file)
+
+
+def pypi_json_stream(json_stream):
+    js = json.load(json_file)
     if 'info' not in js:
         js = {'info': js}
     if 'urls' not in js:
         js['urls'] = []
     return js
+
+
+def pypi_archive_file(file_path):
+    if None == libarchive:
+        return None
+    try:
+        with libarchive.file_reader(file_path) as archive:
+            for entry in archive:
+                # Check if the entry's pathname matches the target filename
+                if entry.pathname == 'PKG-INFO':
+                    return pypi_text_stream(io.StringIO(entry.read().decode()))
+            else:
+                return None
+    except Exception:
+        return None
 
 
 def _get_template_dirs():
@@ -424,7 +453,9 @@ def fetch_local_data(args):
         try:
             data = pypi_json_file(localfile)
         except json.decoder.JSONDecodeError:
-            data = pypi_text_file(localfile)
+            data = pypi_archive_file(localfile)
+            if None == data:
+                data = pypi_text_file(localfile)
         args.fetched_data = data
         args.version = args.fetched_data['info']['version']
         return
