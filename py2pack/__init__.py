@@ -46,9 +46,9 @@ DEFAULT_TEMPLATE = 'opensuse.spec'
 try:
     import distro
     DEFAULT_TEMPLATE = {
-        'fedora' : 'fedora.spec',
-        'debian' : 'opensuse.dsc',
-        'mageia' : 'mageia.spec'
+        'fedora': 'fedora.spec',
+        'debian': 'opensuse.dsc',
+        'mageia': 'mageia.spec'
     }.get(distro.id(), DEFAULT_TEMPLATE)
 except ModuleNotFoundError:
     pass
