@@ -464,7 +464,7 @@ def fix_data(data):
         for required_dist in requires_dist:
             req = Requirement(required_dist)
             if found := re.search(extra_from_req, str(req.marker)):
-                extras.add(found.group(1))
+                extras.append(found.group(1))
     provides_extra = list(sorted(set([*extras, *provides_extra])))
     data_info["requires_dist"] = requires_dist
     data_info["provides_extra"] = provides_extra
