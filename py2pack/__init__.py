@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
 # Copyright (c) 2013, Sascha Peilicke <sascha@peilicke.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,8 +35,24 @@ from py2pack import version as py2pack_version
 from py2pack.utils import (_get_archive_filelist, get_pyproject_table,
                            parse_pyproject, get_setuptools_scripts,
                            get_metadata)
-
+import io
 from email import parser
+from packaging.requirements import Requirement
+
+try:
+    import libarchive
+except ModuleNotFoundError:
+    libarchive = None
+
+try:
+    import distro
+    DEFAULT_TEMPLATE = {
+        'fedora': 'fedora.spec',
+        'debian': 'opensuse.dsc',
+        'mageia': 'mageia.spec'
+    }.get(distro.id(), 'opensuse.spec')
+except ModuleNotFoundError:
+    DEFAULT_TEMPLATE = 'opensuse.spec'
 
 
 def replace_string(output_string, replaces):
@@ -50,6 +63,7 @@ def replace_string(output_string, replaces):
 
 
 warnings.simplefilter('always', DeprecationWarning)
+
 
 SPDX_LICENSES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spdx_license_map.json')
 with open(SPDX_LICENSES_FILE, 'r') as fp:
@@ -69,7 +83,11 @@ def pypi_json(project, release=None):
 
 def pypi_text_file(pkg_info_path):
     with open(pkg_info_path, 'r') as pkg_info_file:
-        pkg_info_lines = parser.Parser().parse(pkg_info_file)
+        return pypi_text_stream(pkg_info_file)
+
+
+def pypi_text_stream(pkg_info_stream):
+    pkg_info_lines = parser.Parser().parse(pkg_info_stream)
     pkg_info_dict = {}
     for key, value in pkg_info_lines.items():
         key = key.lower().replace('-', '_')
@@ -86,12 +104,31 @@ def pypi_text_file(pkg_info_path):
 
 def pypi_json_file(file_path):
     with open(file_path, 'r') as json_file:
-        js = json.load(json_file)
+        return pypi_json_stream(json_file)
+
+
+def pypi_json_stream(json_stream):
+    js = json.load(json_stream)
     if 'info' not in js:
         js = {'info': js}
     if 'urls' not in js:
         js['urls'] = []
     return js
+
+
+def pypi_archive_file(file_path):
+    if libarchive is None:
+        return None
+    try:
+        with libarchive.file_reader(file_path) as archive:
+            for entry in archive:
+                # Check if the entry's pathname matches the target filename
+                if entry.pathname == 'PKG-INFO':
+                    return pypi_text_stream(io.StringIO(entry.read().decode()))
+            else:
+                return None
+    except Exception:
+        return None
 
 
 def _get_template_dirs():
@@ -417,6 +454,23 @@ def generate(args):
         outfile.close()
 
 
+def fix_data(data):
+    extra_from_req = re.compile(r'''\bextra\s+==\s+["']([^"']+)["']''')
+    extras = []
+    data_info = data["info"]
+    requires_dist = data_info["requires_dist"] or []
+    provides_extra = data_info["provides_extra"] or []
+    if requires_dist is not None:
+        for required_dist in requires_dist:
+            req = Requirement(required_dist)
+            if found := re.search(extra_from_req, str(req.marker)):
+                extras.append(found.group(1))
+    provides_extra = list(sorted(set([*extras, *provides_extra])))
+    data_info["requires_dist"] = requires_dist
+    data_info["provides_extra"] = provides_extra
+    data_info["classifiers"] = (data_info["classifiers"] or [])
+
+
 def fetch_local_data(args):
     localfile = args.localfile
     local = args.local
@@ -427,21 +481,25 @@ def fetch_local_data(args):
         try:
             data = pypi_json_file(localfile)
         except json.decoder.JSONDecodeError:
-            data = pypi_text_file(localfile)
+            data = pypi_archive_file(localfile)
+            if data is None:
+                data = pypi_text_file(localfile)
         args.fetched_data = data
         args.version = args.fetched_data['info']['version']
-        return
-    fetch_data(args)
+        fix_data(data)
+    else:
+        fetch_data(args)
 
 
 def fetch_data(args):
-    args.fetched_data = pypi_json(args.name, args.version)
-    urls = args.fetched_data.get('urls', [])
+    data = args.fetched_data = pypi_json(args.name, args.version)
+    urls = data.get('urls', [])
     if len(urls) == 0:
         print(f"unable to find a suitable release for {args.name}!")
         sys.exit(1)
     else:
-        args.version = args.fetched_data['info']['version']                 # return current release number
+        args.version = data['info']['version']                 # return current release number
+    fix_data(data)
 
 
 def newest_download_url(args):
@@ -502,7 +560,7 @@ def main():
     parser_generate.add_argument('--source-glob', help='source glob template')
     parser_generate.add_argument('--local', action='store_true', help='build from local package')
     parser_generate.add_argument('--localfile', default='', help='path to the local PKG-INFO or json metadata')
-    parser_generate.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec', help='file template')
+    parser_generate.add_argument('-t', '--template', choices=file_template_list(), default=DEFAULT_TEMPLATE, help='file template')
     parser_generate.add_argument('-f', '--filename', help='spec filename (optional)')
     # TODO (toabctl): remove this is a later release
     parser_generate.add_argument(

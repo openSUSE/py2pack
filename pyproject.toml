@@ -28,6 +28,8 @@ classifiers = [
 ]
 dependencies = [
     "Jinja2",
+    "distro",
+    "libarchive-c",
     "backports.entry_points_selectable",
     "build",
     "setuptools",
@@ -38,12 +40,19 @@ dependencies = [
     "requests",
     "tomli; python_version < '3.11'",
 ]
+
 requires-python = ">=3.6"
 dynamic = ['version']
 
 
 [project.urls]
 homepage = "http://github.com/openSUSE/py2pack"
+
+[project.optional-dependencies]
+service = [
+  "libarchive-c",
+  "distro",
+]
 
 [project.scripts]
 py2pack = "py2pack:main"
