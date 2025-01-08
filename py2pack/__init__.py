@@ -35,7 +35,7 @@ from py2pack import version as py2pack_version
 from py2pack.utils import (_get_archive_filelist, get_pyproject_table,
                            parse_pyproject, get_setuptools_scripts,
                            get_metadata)
-
+import io
 from email import parser
 try:
     import libarchive
@@ -52,8 +52,6 @@ try:
     }.get(distro.id(), DEFAULT_TEMPLATE)
 except ModuleNotFoundError:
     pass
-
-import io
 
 
 def replace_string(output_string, replaces):
@@ -455,6 +453,23 @@ def generate(args):
         outfile.close()
 
 
+def fix_data(data):
+    extra_from_req = re.compile(r'''\bextra\s+==\s+["']([^"']+)["']''')
+    extras = []
+    data_info = data["info"]
+    requires_dist = data_info["requires_dist"] or []
+    provides_extra = data_info["provides_extra"] or []
+    if requires_dist is not None:
+        for required_dist in requires_dist:
+            req = Requirement(required_dist)
+            if found := re.search(extra_from_req, str(req.marker)):
+                extras.add(found.group(1))
+    provides_extra = list(sorted(set([*extras, *provides_extra])))
+    data_info["requires_dist"] = requires_dist
+    data_info["provides_extra"] = provides_extra
+    data_info["classifiers"] = (data_info["classifiers"] or [])
+
+
 def fetch_local_data(args):
     localfile = args.localfile
     local = args.local
@@ -470,18 +485,20 @@ def fetch_local_data(args):
                 data = pypi_text_file(localfile)
         args.fetched_data = data
         args.version = args.fetched_data['info']['version']
-        return
-    fetch_data(args)
+        fix_data(data)
+    else:
+        fetch_data(args)
 
 
 def fetch_data(args):
-    args.fetched_data = pypi_json(args.name, args.version)
-    urls = args.fetched_data.get('urls', [])
+    data = args.fetched_data = pypi_json(args.name, args.version)
+    urls = data.get('urls', [])
     if len(urls) == 0:
         print(f"unable to find a suitable release for {args.name}!")
         sys.exit(1)
     else:
-        args.version = args.fetched_data['info']['version']                 # return current release number
+        args.version = data['info']['version']                 # return current release number
+    fix_data(data)
 
 
 def newest_download_url(args):
