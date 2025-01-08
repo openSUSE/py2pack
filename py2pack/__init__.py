@@ -37,21 +37,22 @@ from py2pack.utils import (_get_archive_filelist, get_pyproject_table,
                            get_metadata)
 import io
 from email import parser
+from packaging.requirements import Requirement
+
 try:
     import libarchive
 except ModuleNotFoundError:
     libarchive = None
 
-DEFAULT_TEMPLATE = 'opensuse.spec'
 try:
     import distro
     DEFAULT_TEMPLATE = {
         'fedora': 'fedora.spec',
         'debian': 'opensuse.dsc',
         'mageia': 'mageia.spec'
-    }.get(distro.id(), DEFAULT_TEMPLATE)
+    }.get(distro.id(), 'opensuse.spec')
 except ModuleNotFoundError:
-    pass
+    DEFAULT_TEMPLATE = 'opensuse.spec'
 
 
 def replace_string(output_string, replaces):
