@@ -3,13 +3,13 @@
 Name:           python-%{pypi_name}
 Version:        {{ version }}
 Release:        %autorelease
-Summary:        {{ summary }}
+Summary:        {{ summary|replace('\n','') }}
 
 # Check if the automatically generated License and its spelling is correct for Fedora
 # https://docs.fedoraproject.org/en-US/packaging-guidelines/LicensingGuidelines/
-License:        {{ license }}
-URL:            {{ home_page }}
-Source:         {{ source_url|replace(version, '%{version}') }}
+License:        {{ license|replace('\n','') }}
+URL:            {{ home_page|replace('\n','') }}
+Source:         {{ source_url|replace(version, '%{version}')|replace('\n','') }}
 
 BuildRequires:  pyproject-rpm-macros
 BuildRequires:  python-devel
