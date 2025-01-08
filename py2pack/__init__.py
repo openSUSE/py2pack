@@ -41,6 +41,18 @@ try:
     import libarchive
 except ModuleNotFoundError:
     libarchive = None
+
+DEFAULT_TEMPLATE = 'opensuse.spec'
+try:
+    import distro
+    DEFAULT_TEMPLATE = {
+        'fedora' : 'fedora.spec',
+        'debian' : 'opensuse.dsc',
+        'mageia' : 'mageia.spec'
+    }.get(distro.id(), DEFAULT_TEMPLATE)
+except ModuleNotFoundError:
+    pass
+
 import io
 
 
@@ -530,7 +542,7 @@ def main():
     parser_generate.add_argument('--source-glob', help='source glob template')
     parser_generate.add_argument('--local', action='store_true', help='build from local package')
     parser_generate.add_argument('--localfile', default='', help='path to the local PKG-INFO or json metadata')
-    parser_generate.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec', help='file template')
+    parser_generate.add_argument('-t', '--template', choices=file_template_list(), default=DEFAULT_TEMPLATE, help='file template')
     parser_generate.add_argument('-f', '--filename', help='spec filename (optional)')
     # TODO (toabctl): remove this is a later release
     parser_generate.add_argument(
