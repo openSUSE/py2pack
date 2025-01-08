@@ -97,7 +97,7 @@ def pypi_json_file(file_path):
 
 
 def pypi_json_stream(json_stream):
-    js = json.load(json_file)
+    js = json.load(json_stream)
     if 'info' not in js:
         js = {'info': js}
     if 'urls' not in js:
@@ -106,7 +106,7 @@ def pypi_json_stream(json_stream):
 
 
 def pypi_archive_file(file_path):
-    if None == libarchive:
+    if libarchive is None:
         return None
     try:
         with libarchive.file_reader(file_path) as archive:
@@ -454,7 +454,7 @@ def fetch_local_data(args):
             data = pypi_json_file(localfile)
         except json.decoder.JSONDecodeError:
             data = pypi_archive_file(localfile)
-            if None == data:
+            if data is None:
                 data = pypi_text_file(localfile)
         args.fetched_data = data
         args.version = args.fetched_data['info']['version']
