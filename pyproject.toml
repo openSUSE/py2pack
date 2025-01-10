@@ -28,8 +28,6 @@ classifiers = [
 ]
 dependencies = [
     "Jinja2",
-    "distro",
-    "libarchive-c",
     "backports.entry_points_selectable",
     "build",
     "setuptools",
