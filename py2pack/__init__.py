@@ -164,7 +164,7 @@ def fix_data(data):
     extras = []
     data_info = data["info"]
     requires_dist = data_info.get("requires_dist", []) or []
-    provides_extra = data_info.get("provides_extra" []) or []
+    provides_extra = data_info.get("provides_extra", []) or []
     for required_dist in requires_dist:
         req = Requirement(required_dist)
         if found := extra_from_req.search(str(req.marker)):
