@@ -40,6 +40,7 @@ from email import parser
 import tarfile
 import zipfile
 from packaging.requirements import Requirement
+from os.path import basename
 
 
 try:
@@ -119,17 +120,18 @@ def pypi_json_stream(json_stream):
 
 def pypi_archive_file_tar(file_path):
     with tarfile.open(file_path, 'r') as archive:
-        # Attempt to get the PKG-INFO file directly
-        member = archive.getmember('PKG-INFO')
-        if member:
-            # Return the stream directly without decoding
-            return pypi_text_stream(archive.extractfile(member))
+        for member in archive.getmembers():
+            if os.path.basename(member.name) == 'PKG-INFO':
+                return pypi_text_stream(archive.extractfile(member))
+    raise KeyError('PKG-INFO not found on archive '+file_path)
 
 
 def pypi_archive_file_zip(file_path):
     with zipfile.ZipFile(file_path, 'r') as archive:
-        # Directly read the PKG-INFO file as a stream
-        return pypi_text_stream(archive.open('PKG-INFO'))
+        for member in archive.namelist():
+            if os.path.basename(member) == 'PKG-INFO':
+                return pypi_text_stream(archive.open(member))
+    raise KeyError('PKG-INFO not found on archive '+file_path)
 
 
 def pypi_archive_file(file_path):
