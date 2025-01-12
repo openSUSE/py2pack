@@ -35,14 +35,10 @@ from py2pack import version as py2pack_version
 from py2pack.utils import (_get_archive_filelist, get_pyproject_table,
                            parse_pyproject, get_setuptools_scripts,
                            get_metadata)
-import io
 from email import parser
 from packaging.requirements import Requirement
-
-try:
-    import libarchive
-except ModuleNotFoundError:
-    libarchive = None
+import tarfile
+import zipfile
 
 try:
     import distro
@@ -117,18 +113,20 @@ def pypi_json_stream(json_stream):
 
 
 def pypi_archive_file(file_path):
-    if libarchive is None:
-        return None
+    is_tar = True
     try:
-        with libarchive.file_reader(file_path) as archive:
-            for entry in archive:
-                # Check if the entry's pathname matches the target filename
-                if entry.pathname == 'PKG-INFO':
-                    return pypi_text_stream(io.StringIO(entry.read().decode()))
-            else:
-                return None
+        archive = tarfile.open(file_path)
+        member = archive.getmember('PKG-INFO')
+        if member.isfile():
+            return pypi_text_stream(archive.extractfile(member))
+    except tarfile.ReadError:
+        archive = zipfile.ZipFile(file_path)
+        member = arcihve.getinfo('PKG-INFO')
+        if not member.is_dir():
+            return pypi_text_stream(archive.open(member))
     except Exception:
-        return None
+        pass
+    return None
 
 
 def _get_template_dirs():
@@ -443,6 +441,9 @@ def generate(args):
         data['source_url'] = os.path.basename(tarball_file)
 
     _normalize_license(data)
+
+    for i in ['license', 'source_url', 'home_page', 'summary_no_ending_dot', 'summary']:
+        data[i + '_singleline'] = str(data[i]).replace('\n', '')
 
     env = _prepare_template_env(_get_template_dirs())
     template = env.get_template(args.template)

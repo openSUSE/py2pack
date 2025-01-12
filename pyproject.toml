@@ -48,7 +48,6 @@ homepage = "http://github.com/openSUSE/py2pack"
 
 [project.optional-dependencies]
 service = [
-  "libarchive-c",
   "distro",
 ]
 

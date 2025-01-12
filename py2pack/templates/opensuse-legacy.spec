@@ -18,10 +18,10 @@
 Name:           python-{{ name }}
 Version:        {{ version }}
 Release:        0
-Summary:        {{ summary_no_ending_dot|default(summary, true)|replace('\n','') }}
-License:        {{ license|replace('\n','') }}
-URL:            {{ home_page|replace('\n','') }}
-Source:         {{ source_url|replace(version, '%{version}')|replace('\n','') }}
+Summary:        {{ summary_no_ending_dot_singleline|default(summary_singleline, true) }}
+License:        {{ license_singleline }}
+URL:            {{ home_page_singleline }}
+Source:         {{ source_url_singleline|replace(version, '%{version}') }}
 BuildRequires:  python-setuptools
 {%- if install_requires and install_requires is not none %}
 {%- for req in install_requires|sort %}

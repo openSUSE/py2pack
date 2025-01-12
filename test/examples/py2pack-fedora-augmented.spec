@@ -1,35 +1,23 @@
-#
-# spec file for package python-py2pack
-#
-# Copyright (c) 2025 SUSE LLC
-#
-# All modifications and additions to the file contributed by third parties
-# remain the property of their copyright owners, unless otherwise agreed
-# upon. The license for this file, and modifications and additions to the
-# file, is the same license as for the pristine package itself (unless the
-# license for the pristine package is not an Open Source License, in which
-# case the license is the MIT License). An "Open Source License" is a
-# license that conforms to the Open Source Definition (Version 1.9)
-# published by the Open Source Initiative.
-
-# Please submit bugfixes or comments via https://bugs.opensuse.org/
-#
-
-
-Name:           python-py2pack
+%define pypi_name py2pack
+%define python_name python3-%{pypi_name}
+Name:           python-%{pypi_name}
 Version:        0.8.5
-Release:        0
+Release:        %autorelease
 Summary:        Generate distribution packages from PyPI
+
+# Check if the automatically generated License and its spelling is correct for Fedora
+# https://docs.fedoraproject.org/en-US/packaging-guidelines/LicensingGuidelines/
 License:        Apache-2.0
 URL:            http://github.com/openSUSE/py2pack
-Source:         https://files.pythonhosted.org/packages/source/p/py2pack/py2pack-%{version}.tar.gz
-BuildRequires:  python-rpm-macros
-BuildRequires:  %{python_module pip}
+Source:         
+
+BuildRequires:  pyproject-rpm-macros
+BuildRequires:  python-devel
 BuildRequires:  fdupes
 BuildArch:      noarch
-%python_subpackages
 
-%description
+# Fill in the actual package description to submit package to Fedora
+%global _description %{expand:
 Py2pack: Generate distribution packages from PyPI
 =================================================
 
@@ -163,20 +151,43 @@ on your system.
 .. _`Open Build Service`: https://build.opensuse.org/package/show/devel:languages:python/python-py2pack
 .. _`the repository`: https://github.com/openSUSE/py2pack
 .. _`pytest`: https://github.com/pytest-dev/pytest
-.. _`tox`: http://testrun.org/tox
+.. _`tox`: http://testrun.org/tox}
+
+%description %_description
+
+%package -n %{python_name}
+Summary:        %{summary}
+
+
+%description -n %{python_name} %_description
 
 %prep
-%autosetup -p1 -n py2pack-%{version}
+%autosetup -p1 -n %{pypi_name}-%{version}
+
+
+%generate_buildrequires
+%pyproject_buildrequires 
+
 
 %build
 %pyproject_wheel
 
+
 %install
 %pyproject_install
-%python_expand %fdupes %{buildroot}%{$python_sitelib}
+# For official Fedora packages, including files with '*' +auto is not allowed
+# Replace it with a list of relevant Python modules/globs and list extra files in %%files
+%pyproject_save_files '*' +auto
+%if %{with test}
+%check
+%pyproject_check_import
+%pytest
+%endif
 
-%files %{python_files}
-%{python_sitelib}/py2pack
-%{python_sitelib}/py2pack-%{version}.dist-info
+
+%files -n %{python_name} -f %{pyproject_files}
+
 
 %changelog
+%autochangelog
+

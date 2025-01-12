@@ -69,7 +69,6 @@ def test_template(tmpdir, template, fetch_tarball, project, version):
     reference = os.path.join(compare_dir, f'{args.name}-{filename}')
     if project == 'poetry' and sys.version_info < (3, 11):
         pytest.xfail("Different requirements for python < 3.11")
-
     if not os.path.exists(reference):
         pytest.xfail("No reference template available")
     with tmpdir.as_cwd():

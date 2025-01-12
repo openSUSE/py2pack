@@ -1,7 +1,7 @@
 Format: 1.0
-Source: py2pack
-Version: 0.8.5
-Binary: python-py2pack
+Source: poetry
+Version: 1.5.1
+Binary: python-poetry
 Maintainer: 
 Architecture: any
 Standards-Version: 3.7.1
