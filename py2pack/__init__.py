@@ -41,6 +41,7 @@ import tarfile
 import zipfile
 from packaging.requirements import Requirement
 from os.path import basename
+from io import StringIO
 
 
 try:
@@ -122,7 +123,7 @@ def pypi_archive_file_tar(file_path):
     with tarfile.open(file_path, 'r') as archive:
         for member in archive.getmembers():
             if os.path.basename(member.name) == 'PKG-INFO':
-                return pypi_text_stream(archive.extractfile(member))
+                return pypi_text_stream(StringIO(archive.extractfile(member).read().decode()))
     raise KeyError('PKG-INFO not found on archive '+file_path)
 
 
@@ -130,7 +131,7 @@ def pypi_archive_file_zip(file_path):
     with zipfile.ZipFile(file_path, 'r') as archive:
         for member in archive.namelist():
             if os.path.basename(member) == 'PKG-INFO':
-                return pypi_text_stream(archive.open(member))
+                return pypi_text_stream(StringIO(archive.open(member).read().decode()))
     raise KeyError('PKG-INFO not found on archive '+file_path)
 
 
