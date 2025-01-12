@@ -163,8 +163,8 @@ def fix_data(data):
     extra_from_req = re.compile(r'''\bextra\s+==\s+["']([^"']+)["']''')
     extras = []
     data_info = data["info"]
-    requires_dist = data_info["requires_dist"] or []
-    provides_extra = data_info["provides_extra"] or []
+    requires_dist = data_info.get("requires_dist", []) or []
+    provides_extra = data_info.get("provides_extra" []) or []
     for required_dist in requires_dist:
         req = Requirement(required_dist)
         if found := extra_from_req.search(str(req.marker)):
@@ -172,7 +172,7 @@ def fix_data(data):
     provides_extra = list(sorted(set([*extras, *provides_extra])))
     data_info["requires_dist"] = requires_dist
     data_info["provides_extra"] = provides_extra
-    data_info["classifiers"] = (data_info["classifiers"] or [])
+    data_info["classifiers"] = (data_info.get("classifiers", []) or [])
 
 
 def list_packages(args=None):
