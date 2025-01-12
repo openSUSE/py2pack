@@ -3,11 +3,11 @@
 Name:           python-%{mod_name}
 Version:        {{ version }}
 Release:        %mkrel 1
-Url:            {{ home_page }}
-Summary:        {{ summary }}
-License:        {{ license }}
+Url:            {{ home_page_singleline }}
+Summary:        {{ summary_singleline }}
+License:        {{ license_singleline }}
 Group:          Development/Python
-Source:         {{ source_url|replace(version, '%{version}') }}
+Source:         {{ source_url_singleline|replace(version, '%{version}') }}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-buildroot
 BuildRequires:  python-devel
 {%- for req in requires %}
