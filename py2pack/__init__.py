@@ -113,7 +113,6 @@ def pypi_json_stream(json_stream):
 
 
 def pypi_archive_file(file_path):
-    is_tar = True
     try:
         archive = tarfile.open(file_path)
         member = archive.getmember('PKG-INFO')
@@ -121,7 +120,7 @@ def pypi_archive_file(file_path):
             return pypi_text_stream(archive.extractfile(member))
     except tarfile.ReadError:
         archive = zipfile.ZipFile(file_path)
-        member = arcihve.getinfo('PKG-INFO')
+        member = archive.getinfo('PKG-INFO')
         if not member.is_dir():
             return pypi_text_stream(archive.open(member))
     except Exception:

@@ -67,10 +67,11 @@ def test_template(tmpdir, template, fetch_tarball, project, version):
     args.name = project
     args.version = version
     reference = os.path.join(compare_dir, f'{args.name}-{filename}')
+    no_ref = False
     if project == 'poetry' and sys.version_info < (3, 11):
         pytest.xfail("Different requirements for python < 3.11")
     if not os.path.exists(reference):
-        pytest.xfail("No reference template available")
+        no_ref = True
     with tmpdir.as_cwd():
         if fetch_tarball:
             py2pack.fetch(args)
@@ -80,8 +81,15 @@ def test_template(tmpdir, template, fetch_tarball, project, version):
                 py2pack.generate(args)
         with open(filename) as filehandle:
             written_spec = filehandle.read()
-    with open(reference) as filehandle:
-        required = filehandle.read()
-    required = required.replace('__USER__', username, 1)
-    required = required.replace('__YEAR__', str(datetime.date.today().year), 1)
-    assert written_spec == required
+    if no_ref:
+        required = written_spec.replace(username, '__USER__', 1)
+        required = required.replace(str(datetime.date.today().year), '__YEAR__', 1)
+        with open(reference, 'w') as filehandle:
+            filehandle.write(written_spec)
+        pytest.xfail("No reference template available")
+    else:
+        with open(reference) as filehandle:
+            required = filehandle.read()
+        required = required.replace('__USER__', username, 1)
+        required = required.replace('__YEAR__', str(datetime.date.today().year), 1)
+        assert written_spec == required
