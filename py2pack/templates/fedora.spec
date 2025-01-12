@@ -3,59 +3,29 @@
 Name:           python-%{pypi_name}
 Version:        {{ version }}
 Release:        %autorelease
-Summary:        {{ summary }}
+# Fill in the actual package summary to submit package to Fedora
+Summary:        {{ summary_singleline }}
 
 # Check if the automatically generated License and its spelling is correct for Fedora
 # https://docs.fedoraproject.org/en-US/packaging-guidelines/LicensingGuidelines/
-License:        {{ license }}
-URL:            {{ home_page }}
-Source:         {{ source_url|replace(version, '%{version}') }}
+License:        {{ license_singleline }}
+URL:            {{ home_page_singleline }}
+Source:         {{ source_url_singleline|replace(version, '%{version}') }}
 
 BuildRequires:  pyproject-rpm-macros
-BuildRequires:  python-devel
-%if %{undefined python_module}
-%define python_module() python3dist(%1)
-%endif
+BuildRequires:  python3-devel
 
-{%- set build_requires_plus_pip = ((build_requires if build_requires and build_requires is not none else []) +
-                                   ['pip']) %}
-{%- for req in build_requires_plus_pip |sort %}
-BuildRequires:  %{python_module {{ req }}}
-{%- endfor %}
-{%- if (install_requires and install_requires is not none) or (tests_require and tests_require is not none) %}
-# SECTION test requirements
-%if %{with test}
-{%- if install_requires and install_requires is not none %}
-{%- for req in install_requires|reject("in",build_requires)|sort %}
-BuildRequires:  %{python_module {{ req }}}
-{%- endfor %}
-{%- endif %}
-{%- if tests_require and tests_require is not none %}
-{%- for req in tests_require|sort|reject("in",build_requires|sort) %}
-BuildRequires:  %{python_module {{ req }}}
-{%- endfor %}
-{%- endif %}
-%endif
-# /SECTION
-{%- endif %}
 {%- if source_url.endswith('.zip') %}
 BuildRequires:  unzip
 {%- endif %}
 BuildRequires:  fdupes
-{%- if install_requires and install_requires is not none %}
-{%- for req in install_requires|sort %}
-Requires:       %{python_module {{ req }}}
-{%- endfor %}
-{%- endif %}
-{%- if extras_require and extras_require is not none %}
-{%- for reqlist in extras_require.values() %}
-{%- for req in reqlist %}
-Suggests:       %{python_module {{ req }}}
-{%- endfor %}
-{%- endfor %}
-{%- endif %}
 {%- if not has_ext_modules %}
 BuildArch:      noarch
+{%- endif %}
+
+{%- if provides_extra and provides_extra is not none %}
+{%- set provides_extra_comma_separated_list = ','.join(provides_extra)  %}
+{%- set have_provides_extra = 1 %}
 {%- endif %}
 
 # Fill in the actual package description to submit package to Fedora
@@ -69,9 +39,20 @@ Summary:        %{summary}
 
 %description -n %{python_name} %_description
 
+{%- if have_provides_extra %}
+# For official Fedora packages, review which extras should be actually packaged
+# See: https://docs.fedoraproject.org/en-US/packaging-guidelines/Python/#Extras
+%pyproject_extras_subpkg -n %{python_name} {{ provides_extra_comma_separated_list }}
+{%- endif %}
 
 %prep
 %autosetup -p1 -n %{pypi_name}-%{version}
+
+
+%generate_buildrequires
+# Keep only those extras which you actually want to package or use during tests
+%pyproject_buildrequires {% if have_provides_extra %}-x {{ provides_extra_comma_separated_list }}{% endif %}
+
 
 %build
 %pyproject_wheel
@@ -79,12 +60,6 @@ Summary:        %{summary}
 
 %install
 %pyproject_install
-{%- set scripts_or_console_scripts = (
-            (scripts|map('basename')|list if scripts and scripts is not none else []) +
-            (console_scripts if console_scripts and console_scripts is not none else [])) %}
-#{%- for script in scripts_or_console_scripts %}
-#%python_clone -a %{buildroot}%{_bindir}/{{ script }}
-#{%- endfor %}
 # For official Fedora packages, including files with '*' +auto is not allowed
 # Replace it with a list of relevant Python modules/globs and list extra files in %%files
 %pyproject_save_files '*' +auto
@@ -93,6 +68,7 @@ Summary:        %{summary}
 {%- if testsuite or test_suite %}
 %if %{with test}
 %check
+%pyproject_check_import
 {%- if has_ext_modules %}
 %pytest_arch
 {%- else %}
