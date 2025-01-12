@@ -492,13 +492,11 @@ def fetch_local_data(args):
         localfile = os.path.join(f'{args.name}.egg-info', 'PKG-INFO')
     if os.path.isfile(localfile):
         try:
-            data = pypi_json_file(localfile)
-        except json.decoder.JSONDecodeError:
+            data = pypi_archive_file(localfile)
+        except Exception:
             try:
-                data = pypi_archive_file(localfile)
-            except Exception:
-                data = None
-            if data is None:
+                data = pypi_json_file(localfile)
+            except json.decoder.JSONDecodeError:
                 data = pypi_text_file(localfile)
         args.fetched_data = data
         args.version = args.fetched_data['info']['version']
