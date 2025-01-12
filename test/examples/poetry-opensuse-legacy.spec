@@ -1,7 +1,7 @@
 #
 # spec file for package python-poetry
 #
-# Copyright (c) __YEAR__ SUSE LLC
+# Copyright (c) __YEAR__ SUSE LINUX GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -13,7 +13,6 @@
 # published by the Open Source Initiative.
 
 # Please submit bugfixes or comments via https://bugs.opensuse.org/
-#
 
 
 Name:           python-poetry
@@ -21,75 +20,11 @@ Version:        1.5.1
 Release:        0
 Summary:        Python dependency management and packaging made easy
 License:        MIT
-URL:            None
+URL:            https://python-poetry.org/
 Source:         https://files.pythonhosted.org/packages/source/p/poetry/poetry-%{version}.tar.gz
-BuildRequires:  python-rpm-macros
-BuildRequires:  %{python_module pip}
-BuildRequires:  %{python_module poetry-core >= 1.5.0}
-# SECTION test requirements
-BuildRequires:  %{python_module build >= 0.10.0}
-BuildRequires:  %{python_module cachecontrol >= 0.12.9}
-BuildRequires:  %{python_module cleo >= 2.0.0}
-BuildRequires:  %{python_module crashtest >= 0.4.1}
-BuildRequires:  %{python_module dulwich >= 0.21.2}
-BuildRequires:  %{python_module filelock >= 3.8.0}
-BuildRequires:  %{python_module html5lib >= 1.0}
-BuildRequires:  %{python_module installer >= 0.7.0}
-BuildRequires:  %{python_module jsonschema >= 4.10.0}
-BuildRequires:  %{python_module keyring >= 23.9.0}
-BuildRequires:  %{python_module lockfile >= 0.12.2}
-BuildRequires:  %{python_module packaging >= 20.4}
-BuildRequires:  %{python_module pexpect >= 4.7.0}
-BuildRequires:  %{python_module pkginfo >= 1.9.4}
-BuildRequires:  %{python_module platformdirs >= 3.0.0}
-BuildRequires:  %{python_module poetry-core == 1.6.1}
-BuildRequires:  %{python_module poetry-plugin-export >= 1.4.0}
-BuildRequires:  %{python_module pyproject-hooks >= 1.0.0}
-BuildRequires:  %{python_module requests >= 2.18}
-BuildRequires:  %{python_module requests-toolbelt >= 0.9.1}
-BuildRequires:  %{python_module shellingham >= 1.5}
-BuildRequires:  %{python_module tomlkit >= 0.11.4}
-BuildRequires:  %{python_module trove-classifiers >= 2022.5.19}
-BuildRequires:  %{python_module urllib3 >= 1.26.0}
-BuildRequires:  %{python_module virtualenv >= 20.22.0}
-BuildRequires:  %{python_module cachy}
-BuildRequires:  %{python_module deepdiff}
-BuildRequires:  %{python_module httpretty}
-BuildRequires:  %{python_module pytest}
-BuildRequires:  %{python_module pytest-cov}
-BuildRequires:  %{python_module pytest-mock}
-BuildRequires:  %{python_module pytest-randomly}
-BuildRequires:  %{python_module pytest-xdist}
-BuildRequires:  %{python_module zipp}
-# /SECTION
-BuildRequires:  fdupes
-Requires:       python-build >= 0.10.0
-Requires:       python-cachecontrol >= 0.12.9
-Requires:       python-cleo >= 2.0.0
-Requires:       python-crashtest >= 0.4.1
-Requires:       python-dulwich >= 0.21.2
-Requires:       python-filelock >= 3.8.0
-Requires:       python-html5lib >= 1.0
-Requires:       python-installer >= 0.7.0
-Requires:       python-jsonschema >= 4.10.0
-Requires:       python-keyring >= 23.9.0
-Requires:       python-lockfile >= 0.12.2
-Requires:       python-packaging >= 20.4
-Requires:       python-pexpect >= 4.7.0
-Requires:       python-pkginfo >= 1.9.4
-Requires:       python-platformdirs >= 3.0.0
-Requires:       python-poetry-core == 1.6.1
-Requires:       python-poetry-plugin-export >= 1.4.0
-Requires:       python-pyproject-hooks >= 1.0.0
-Requires:       python-requests >= 2.18
-Requires:       python-requests-toolbelt >= 0.9.1
-Requires:       python-shellingham >= 1.5
-Requires:       python-tomlkit >= 0.11.4
-Requires:       python-trove-classifiers >= 2022.5.19
-Requires:       python-urllib3 >= 1.26.0
-Requires:       python-virtualenv >= 20.22.0
+BuildRequires:  python-setuptools
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
-%python_subpackages
 
 %description
 # Poetry: Python packaging and dependency management made easy
@@ -208,32 +143,17 @@ installation script
 * [website](https://github.com/python-poetry/website): The official Poetry website and blog
 
 
-
 %prep
 %autosetup -p1 -n poetry-%{version}
 
 %build
-%pyproject_wheel
+python setup.py build
 
 %install
-%pyproject_install
-%python_clone -a %{buildroot}%{_bindir}/poetry
-%python_expand %fdupes %{buildroot}%{$python_sitelib}
+python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
-%check
-CHOOSE: %pytest OR %pyunittest -v OR CUSTOM
-
-%post
-%python_install_alternative poetry
-
-%postun
-%python_uninstall_alternative poetry
-
-%files %{python_files}
-%doc README.md
-%license LICENSE
-%python_alternative %{_bindir}/poetry
-%{python_sitelib}/poetry
-%{python_sitelib}/poetry-%{version}.dist-info
+%files
+%defattr(-,root,root,-)
+%{python_sitelib}/*
 
 %changelog

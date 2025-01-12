@@ -1,97 +1,23 @@
-#
-# spec file for package python-poetry
-#
-# Copyright (c) __YEAR__ SUSE LLC
-#
-# All modifications and additions to the file contributed by third parties
-# remain the property of their copyright owners, unless otherwise agreed
-# upon. The license for this file, and modifications and additions to the
-# file, is the same license as for the pristine package itself (unless the
-# license for the pristine package is not an Open Source License, in which
-# case the license is the MIT License). An "Open Source License" is a
-# license that conforms to the Open Source Definition (Version 1.9)
-# published by the Open Source Initiative.
-
-# Please submit bugfixes or comments via https://bugs.opensuse.org/
-#
-
-
-Name:           python-poetry
+%define pypi_name poetry
+%define python_name python3-%{pypi_name}
+Name:           python-%{pypi_name}
 Version:        1.5.1
-Release:        0
-Summary:        Python dependency management and packaging made easy
+Release:        %autorelease
+Summary:        Python dependency management and packaging made easy.
+
+# Check if the automatically generated License and its spelling is correct for Fedora
+# https://docs.fedoraproject.org/en-US/packaging-guidelines/LicensingGuidelines/
 License:        MIT
 URL:            None
-Source:         https://files.pythonhosted.org/packages/source/p/poetry/poetry-%{version}.tar.gz
-BuildRequires:  python-rpm-macros
-BuildRequires:  %{python_module pip}
-BuildRequires:  %{python_module poetry-core >= 1.5.0}
-# SECTION test requirements
-BuildRequires:  %{python_module build >= 0.10.0}
-BuildRequires:  %{python_module cachecontrol >= 0.12.9}
-BuildRequires:  %{python_module cleo >= 2.0.0}
-BuildRequires:  %{python_module crashtest >= 0.4.1}
-BuildRequires:  %{python_module dulwich >= 0.21.2}
-BuildRequires:  %{python_module filelock >= 3.8.0}
-BuildRequires:  %{python_module html5lib >= 1.0}
-BuildRequires:  %{python_module installer >= 0.7.0}
-BuildRequires:  %{python_module jsonschema >= 4.10.0}
-BuildRequires:  %{python_module keyring >= 23.9.0}
-BuildRequires:  %{python_module lockfile >= 0.12.2}
-BuildRequires:  %{python_module packaging >= 20.4}
-BuildRequires:  %{python_module pexpect >= 4.7.0}
-BuildRequires:  %{python_module pkginfo >= 1.9.4}
-BuildRequires:  %{python_module platformdirs >= 3.0.0}
-BuildRequires:  %{python_module poetry-core == 1.6.1}
-BuildRequires:  %{python_module poetry-plugin-export >= 1.4.0}
-BuildRequires:  %{python_module pyproject-hooks >= 1.0.0}
-BuildRequires:  %{python_module requests >= 2.18}
-BuildRequires:  %{python_module requests-toolbelt >= 0.9.1}
-BuildRequires:  %{python_module shellingham >= 1.5}
-BuildRequires:  %{python_module tomlkit >= 0.11.4}
-BuildRequires:  %{python_module trove-classifiers >= 2022.5.19}
-BuildRequires:  %{python_module urllib3 >= 1.26.0}
-BuildRequires:  %{python_module virtualenv >= 20.22.0}
-BuildRequires:  %{python_module cachy}
-BuildRequires:  %{python_module deepdiff}
-BuildRequires:  %{python_module httpretty}
-BuildRequires:  %{python_module pytest}
-BuildRequires:  %{python_module pytest-cov}
-BuildRequires:  %{python_module pytest-mock}
-BuildRequires:  %{python_module pytest-randomly}
-BuildRequires:  %{python_module pytest-xdist}
-BuildRequires:  %{python_module zipp}
-# /SECTION
-BuildRequires:  fdupes
-Requires:       python-build >= 0.10.0
-Requires:       python-cachecontrol >= 0.12.9
-Requires:       python-cleo >= 2.0.0
-Requires:       python-crashtest >= 0.4.1
-Requires:       python-dulwich >= 0.21.2
-Requires:       python-filelock >= 3.8.0
-Requires:       python-html5lib >= 1.0
-Requires:       python-installer >= 0.7.0
-Requires:       python-jsonschema >= 4.10.0
-Requires:       python-keyring >= 23.9.0
-Requires:       python-lockfile >= 0.12.2
-Requires:       python-packaging >= 20.4
-Requires:       python-pexpect >= 4.7.0
-Requires:       python-pkginfo >= 1.9.4
-Requires:       python-platformdirs >= 3.0.0
-Requires:       python-poetry-core == 1.6.1
-Requires:       python-poetry-plugin-export >= 1.4.0
-Requires:       python-pyproject-hooks >= 1.0.0
-Requires:       python-requests >= 2.18
-Requires:       python-requests-toolbelt >= 0.9.1
-Requires:       python-shellingham >= 1.5
-Requires:       python-tomlkit >= 0.11.4
-Requires:       python-trove-classifiers >= 2022.5.19
-Requires:       python-urllib3 >= 1.26.0
-Requires:       python-virtualenv >= 20.22.0
-BuildArch:      noarch
-%python_subpackages
+Source:         
 
-%description
+BuildRequires:  pyproject-rpm-macros
+BuildRequires:  python-devel
+BuildRequires:  fdupes
+BuildArch:      noarch
+
+# Fill in the actual package description to submit package to Fedora
+%global _description %{expand:
 # Poetry: Python packaging and dependency management made easy
 
 [![Stable Version](https://img.shields.io/pypi/v/poetry?label=stable)][PyPI Releases]
@@ -207,33 +133,43 @@ external formats like virtual environments
 installation script
 * [website](https://github.com/python-poetry/website): The official Poetry website and blog
 
+}
 
+%description %_description
+
+%package -n %{python_name}
+Summary:        %{summary}
+
+
+%description -n %{python_name} %_description
 
 %prep
-%autosetup -p1 -n poetry-%{version}
+%autosetup -p1 -n %{pypi_name}-%{version}
+
+
+%generate_buildrequires
+%pyproject_buildrequires 
+
 
 %build
 %pyproject_wheel
 
+
 %install
 %pyproject_install
-%python_clone -a %{buildroot}%{_bindir}/poetry
-%python_expand %fdupes %{buildroot}%{$python_sitelib}
-
+# For official Fedora packages, including files with '*' +auto is not allowed
+# Replace it with a list of relevant Python modules/globs and list extra files in %%files
+%pyproject_save_files '*' +auto
+%if %{with test}
 %check
-CHOOSE: %pytest OR %pyunittest -v OR CUSTOM
+%pyproject_check_import
+%pytest
+%endif
 
-%post
-%python_install_alternative poetry
 
-%postun
-%python_uninstall_alternative poetry
+%files -n %{python_name} -f %{pyproject_files}
 
-%files %{python_files}
-%doc README.md
-%license LICENSE
-%python_alternative %{_bindir}/poetry
-%{python_sitelib}/poetry
-%{python_sitelib}/poetry-%{version}.dist-info
 
 %changelog
+%autochangelog
+

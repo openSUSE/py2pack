@@ -38,12 +38,18 @@ dependencies = [
     "requests",
     "tomli; python_version < '3.11'",
 ]
+
 requires-python = ">=3.6"
 dynamic = ['version']
 
 
 [project.urls]
 homepage = "http://github.com/openSUSE/py2pack"
+
+[project.optional-dependencies]
+service = [
+  "distro",
+]
 
 [project.scripts]
 py2pack = "py2pack:main"
