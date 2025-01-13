@@ -1,4 +1,4 @@
-__USER__%define mod_name poetry
+%define mod_name poetry
 
 Name:           python-%{mod_name}
 Version:        1.5.1

@@ -1,4 +1,4 @@
-__USER__%define mod_name sampleproject
+%define mod_name sampleproject
 
 Name:           python-%{mod_name}
 Version:        3.0.0

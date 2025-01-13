@@ -1,4 +1,4 @@
-__USER__%define pypi_name sampleproject
+%define pypi_name sampleproject
 %define python_name python3-%{pypi_name}
 Name:           python-%{pypi_name}
 Version:        3.0.0

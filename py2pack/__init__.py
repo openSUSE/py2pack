@@ -122,17 +122,17 @@ def pypi_json_stream(json_stream):
 def pypi_archive_file_tar(file_path):
     with tarfile.open(file_path, 'r') as archive:
         for member in archive.getmembers():
-            if os.path.basename(member.name) == 'PKG-INFO':
+            if basename(member.name) == 'PKG-INFO':
                 return pypi_text_stream(StringIO(archive.extractfile(member).read().decode()))
-    raise KeyError('PKG-INFO not found on archive '+file_path)
+    raise KeyError('PKG-INFO not found on archive ' + file_path)
 
 
 def pypi_archive_file_zip(file_path):
     with zipfile.ZipFile(file_path, 'r') as archive:
         for member in archive.namelist():
-            if os.path.basename(member) == 'PKG-INFO':
+            if basename(member) == 'PKG-INFO':
                 return pypi_text_stream(StringIO(archive.open(member).read().decode()))
-    raise KeyError('PKG-INFO not found on archive '+file_path)
+    raise KeyError('PKG-INFO not found on archive ' + file_path)
 
 
 def pypi_archive_file(file_path):
@@ -421,6 +421,16 @@ def _get_source_url(pypi_name, filename):
         pypi_name[0], pypi_name, filename)
 
 
+def get_user_name(args=None):
+    try:
+        maintainer = args.maintainer
+        if maintainer is not None:
+            return maintainer
+    except Exception:
+        pass
+    return pwd.getpwuid(os.getuid()).pw_name
+
+
 def generate(args):
     # TODO (toabctl): remove this is a later release
     if args.run:
@@ -437,7 +447,7 @@ def generate(args):
     durl = newest_download_url(args)
     source_url = data['source_url'] = (args.source_url or (durl and durl['url']))
     data['year'] = datetime.datetime.now().year                             # set current year
-    data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
+    data['user_name'] = get_user_name(args)                   # set system user (packager)
     data['summary_no_ending_dot'] = re.sub(r'(.*)\.', r'\g<1>', data.get('summary')) if data.get('summary') else ""
 
     # If package name supplied on command line differs in case from PyPI's one
@@ -574,6 +584,7 @@ def main():
     parser_generate.add_argument('name', help='package name')
     parser_generate.add_argument('version', nargs='?', help='package version (optional)')
     parser_generate.add_argument('--source-url', default=None, help='source url')
+    parser_generate.add_argument('--maintainer', default=None, help='maintainer name')
     parser_generate.add_argument('--source-glob', help='source glob template')
     parser_generate.add_argument('--local', action='store_true', help='build from local package')
     parser_generate.add_argument('--localfile', default='', help='path to the local PKG-INFO or json metadata')

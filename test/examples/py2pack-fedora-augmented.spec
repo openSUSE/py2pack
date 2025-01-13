@@ -1,4 +1,4 @@
-__USER__%define pypi_name py2pack
+%define pypi_name py2pack
 %define python_name python3-%{pypi_name}
 Name:           python-%{pypi_name}
 Version:        0.8.5

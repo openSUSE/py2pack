@@ -1,4 +1,4 @@
-__USER__#
+#
 # spec file for package python-poetry
 #
 # Copyright (c) __YEAR__ SUSE LINUX GmbH, Nuernberg, Germany.

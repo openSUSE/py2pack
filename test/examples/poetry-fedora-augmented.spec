@@ -1,4 +1,4 @@
-__USER__%define pypi_name poetry
+%define pypi_name poetry
 %define python_name python3-%{pypi_name}
 Name:           python-%{pypi_name}
 Version:        1.5.1

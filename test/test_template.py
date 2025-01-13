@@ -19,7 +19,6 @@
 import datetime
 import os
 import os.path
-import pwd
 import sys
 
 import pytest
@@ -41,7 +40,18 @@ class Args(object):
 
 compare_dir = os.path.join(os.path.dirname(__file__), 'examples')
 maxDiff = None
-username = pwd.getpwuid(os.getuid())[4]
+
+import random
+import string
+
+
+def generate_random_string(length):
+    letters = string.ascii_letters + string.digits + string.punctuation
+    random_string = ''.join(random.choice(letters) for i in range(length))
+    return random_string
+
+
+username = generate_random_string(22)
 
 
 @pytest.mark.parametrize('template, fetch_tarball',
@@ -60,6 +70,9 @@ def test_template(tmpdir, template, fetch_tarball, project, version):
 
     args = Args()
     args.template = template
+    args.maintainer = username
+    assert py2pack.get_user_name()
+    assert py2pack.get_user_name(args) == username
     base, ext = template.split(".")
     suffix = '-augmented' if fetch_tarball else ''
     filename = f"{base}{suffix}.{ext}"

@@ -1,4 +1,4 @@
-__USER__%define mod_name py2pack
+%define mod_name py2pack
 
 Name:           python-%{mod_name}
 Version:        0.8.5
