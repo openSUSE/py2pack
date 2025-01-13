@@ -1,7 +1,7 @@
 __USER__#
 # spec file for package python-poetry
 #
-# Copyright (c) __YEAR__ SUSE LLC
+# Copyright (c) __YEAR__ SUSE LINUX GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -13,7 +13,6 @@ __USER__#
 # published by the Open Source Initiative.
 
 # Please submit bugfixes or comments via https://bugs.opensuse.org/
-#
 
 
 Name:           python-poetry
@@ -23,11 +22,9 @@ Summary:        Python dependency management and packaging made easy
 License:        MIT
 URL:            https://python-poetry.org/
 Source:         https://files.pythonhosted.org/packages/source/p/poetry/poetry-%{version}.tar.gz
-BuildRequires:  python-rpm-macros
-BuildRequires:  %{python_module pip}
-BuildRequires:  fdupes
+BuildRequires:  python-setuptools
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
-%python_subpackages
 
 %description
 # Poetry: Python packaging and dependency management made easy
@@ -150,14 +147,13 @@ installation script
 %autosetup -p1 -n poetry-%{version}
 
 %build
-%pyproject_wheel
+python setup.py build
 
 %install
-%pyproject_install
-%python_expand %fdupes %{buildroot}%{$python_sitelib}
+python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
-%files %{python_files}
-%{python_sitelib}/poetry
-%{python_sitelib}/poetry-%{version}.dist-info
+%files
+%defattr(-,root,root,-)
+%{python_sitelib}/*
 
 %changelog

@@ -1,4 +1,4 @@
-#
+__USER__#
 # spec file for package python-sampleproject
 #
 # Copyright (c) __YEAR__ SUSE LLC

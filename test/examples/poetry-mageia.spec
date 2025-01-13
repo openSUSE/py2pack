@@ -1,18 +1,18 @@
-__USER__%define mod_name py2pack
+__USER__%define mod_name poetry
 
 Name:           python-%{mod_name}
-Version:        0.8.5
+Version:        1.5.1
 Release:        %mkrel 1
-Url:            http://github.com/openSUSE/py2pack
-Summary:        Generate distribution packages from PyPI
-License:        Apache-2.0
+Url:            https://python-poetry.org/
+Summary:        Python dependency management and packaging made easy.
+License:        MIT
 Group:          Development/Python
-Source:         https://files.pythonhosted.org/packages/source/p/py2pack/py2pack-%{version}.tar.gz
+Source:         https://files.pythonhosted.org/packages/source/p/poetry/poetry-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-buildroot
 BuildRequires:  python-devel
 
 %description
-Generate distribution packages from PyPI
+Python dependency management and packaging made easy.
 
 
 %prep

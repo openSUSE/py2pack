@@ -1,35 +1,24 @@
-__USER__#
-# spec file for package python-poetry
-#
-# Copyright (c) __YEAR__ SUSE LLC
-#
-# All modifications and additions to the file contributed by third parties
-# remain the property of their copyright owners, unless otherwise agreed
-# upon. The license for this file, and modifications and additions to the
-# file, is the same license as for the pristine package itself (unless the
-# license for the pristine package is not an Open Source License, in which
-# case the license is the MIT License). An "Open Source License" is a
-# license that conforms to the Open Source Definition (Version 1.9)
-# published by the Open Source Initiative.
-
-# Please submit bugfixes or comments via https://bugs.opensuse.org/
-#
-
-
-Name:           python-poetry
+__USER__%define pypi_name poetry
+%define python_name python3-%{pypi_name}
+Name:           python-%{pypi_name}
 Version:        1.5.1
-Release:        0
-Summary:        Python dependency management and packaging made easy
+Release:        %autorelease
+# Fill in the actual package summary to submit package to Fedora
+Summary:        Python dependency management and packaging made easy.
+
+# Check if the automatically generated License and its spelling is correct for Fedora
+# https://docs.fedoraproject.org/en-US/packaging-guidelines/LicensingGuidelines/
 License:        MIT
 URL:            https://python-poetry.org/
 Source:         https://files.pythonhosted.org/packages/source/p/poetry/poetry-%{version}.tar.gz
-BuildRequires:  python-rpm-macros
-BuildRequires:  %{python_module pip}
+
+BuildRequires:  pyproject-rpm-macros
+BuildRequires:  python3-devel
 BuildRequires:  fdupes
 BuildArch:      noarch
-%python_subpackages
 
-%description
+# Fill in the actual package description to submit package to Fedora
+%global _description %{expand:
 # Poetry: Python packaging and dependency management made easy
 
 [![Stable Version](https://img.shields.io/pypi/v/poetry?label=stable)][PyPI Releases]
@@ -144,20 +133,36 @@ external formats like virtual environments
 * [install.python-poetry.org](https://github.com/python-poetry/install.python-poetry.org): The official Poetry
 installation script
 * [website](https://github.com/python-poetry/website): The official Poetry website and blog
+}
 
+%description %_description
+
+%package -n %{python_name}
+Summary:        %{summary}
+
+%description -n %{python_name} %_description
 
 %prep
-%autosetup -p1 -n poetry-%{version}
+%autosetup -p1 -n %{pypi_name}-%{version}
+
+
+%generate_buildrequires
+# Keep only those extras which you actually want to package or use during tests
+%pyproject_buildrequires 
+
 
 %build
 %pyproject_wheel
 
+
 %install
 %pyproject_install
-%python_expand %fdupes %{buildroot}%{$python_sitelib}
+# For official Fedora packages, including files with '*' +auto is not allowed
+# Replace it with a list of relevant Python modules/globs and list extra files in %%files
+%pyproject_save_files '*' +auto
 
-%files %{python_files}
-%{python_sitelib}/poetry
-%{python_sitelib}/poetry-%{version}.dist-info
+%files -n %{python_name} -f %{pyproject_files}
 
 %changelog
+%autochangelog
+

@@ -1,4 +1,4 @@
-#
+__USER__#
 # spec file for package python-py2pack
 #
 # Copyright (c) __YEAR__ SUSE LLC
