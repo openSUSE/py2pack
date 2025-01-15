@@ -206,7 +206,7 @@ def fetch(args):
     print('downloading package {0}-{1}...'.format(args.name, args.version))
     print('from {0}'.format(url['url']))
 
-    with requests.get(url['url']) as r:
+    with requests.get(url['download_url']) as r:
         with open(url['filename'], 'wb') as f:
             f.write(r.content)
 
@@ -437,7 +437,7 @@ def generate(args):
         warnings.warn("the '--run' switch is deprecated and a noop",
                       DeprecationWarning)
 
-    fetch_local_data(args)
+    fetch_data(args)
     if not args.template:
         args.template = file_template_list()[0]
     if not args.filename:
@@ -445,7 +445,7 @@ def generate(args):
     print('generating spec file for {0}...'.format(args.name))
     data = args.fetched_data['info']
     durl = newest_download_url(args)
-    source_url = data['source_url'] = (args.source_url or (durl and durl['url']))
+    source_url = data['source_url'] = (args.source_url or (durl and durl['download_url']))
     data['year'] = datetime.datetime.now().year                             # set current year
     data['user_name'] = get_user_name(args)                   # set system user (packager)
     data['summary_no_ending_dot'] = re.sub(r'(.*)\.', r'\g<1>', data.get('summary')) if data.get('summary') else ""
@@ -497,8 +497,8 @@ def generate(args):
         outfile.close()
 
 
-def fetch_local_data(args):
-    localfile = args.localfile
+def fetch_data(args):
+    localfile = args.localfile or ''
     local = args.local
 
     if not localfile and local:
@@ -512,21 +512,19 @@ def fetch_local_data(args):
             except json.decoder.JSONDecodeError:
                 data = pypi_text_file(localfile)
         args.fetched_data = data
-        args.version = args.fetched_data['info']['version']
+        data_info = data['info']
+        args.version = data_info['version']
+        args.name = data_info['name']
         fix_data(data)
     else:
-        fetch_data(args)
-
-
-def fetch_data(args):
-    data = args.fetched_data = pypi_json(args.name, args.version)
-    urls = data.get('urls', [])
-    if len(urls) == 0:
-        print(f"unable to find a suitable release for {args.name}!")
-        sys.exit(1)
-    else:
-        args.version = args.fetched_data['info']['version']                 # return current release number
-    fix_data(data)
+        data = args.fetched_data = pypi_json(args.name, args.version)
+        urls = data.get('urls', [])
+        if len(urls) == 0:
+            print(f"unable to find a suitable release for {args.name}!")
+            sys.exit(1)
+        else:
+            args.version = data['info']['version']                 # return current release number
+        fix_data(data)
 
 
 def newest_download_url(args):
@@ -537,14 +535,14 @@ def newest_download_url(args):
     if not hasattr(args, "fetched_data"):
         return {}
     for release in args.fetched_data['urls']:     # Check download URLs in releases
-        if release['packagetype'] == 'sdist':                      # Found the source URL we care for
-            release['url'] = _get_source_url(args.name, release['filename'])
+        if release.get('packagetype') == 'sdist' and not release.get('download_url'):                      # Found the source URL we care for
+            release['download_url'] = _get_source_url(args.name, release['filename'])
             return release
     # No PyPI tarball release, let's see if an upstream download URL is provided:
     data = args.fetched_data['info']
-    if 'download_url' in data and data['download_url']:
-        url = data['download_url']
-        return {'url': url,
+    url = data.get('download_url')
+    if url:
+        return {'download_url': url,
                 'filename': os.path.basename(url)}
     return {}                                                               # We're all out of bubblegum
 
@@ -554,6 +552,17 @@ def file_template_list():
     for d in _get_template_dirs():
         template_files += [f for f in os.listdir(d) if not f.startswith('.')]
     return template_files
+
+
+def Munch(args):
+    import collections
+    d = collections.defaultdict(lambda: None, args.__dict__)
+    return type('Munch', tuple(), {
+        "__getattr__": d.__getitem__,
+        "__setattr__": d.__setitem__,
+        "__getitem__": d.__getitem__,
+        "__setitem__": d.__setitem__,
+        "__contains__": d.__contains__})()
 
 
 def main():
@@ -570,8 +579,10 @@ def main():
     parser_search.set_defaults(func=search)
 
     parser_show = subparsers.add_parser('show', help='show metadata for package')
-    parser_show.add_argument('name', help='package name')
+    parser_show.add_argument('name', nargs='?', help='package name')
     parser_show.add_argument('version', nargs='?', help='package version (optional)')
+    parser_show.add_argument('--local', action='store_true', help='get metadata from local package')
+    parser_show.add_argument('--localfile', default='', help='path to the local PKG-INFO or json metadata')
     parser_show.set_defaults(func=show)
 
     parser_fetch = subparsers.add_parser('fetch', help='download package source tarball from PyPI')
@@ -581,12 +592,12 @@ def main():
     parser_fetch.set_defaults(func=fetch)
 
     parser_generate = subparsers.add_parser('generate', help='generate RPM spec or DEB dsc file for a package')
-    parser_generate.add_argument('name', help='package name')
+    parser_generate.add_argument('name', nargs='?', help='package name')
     parser_generate.add_argument('version', nargs='?', help='package version (optional)')
     parser_generate.add_argument('--source-url', default=None, help='source url')
     parser_generate.add_argument('--maintainer', default=None, help='maintainer name')
     parser_generate.add_argument('--source-glob', help='source glob template')
-    parser_generate.add_argument('--local', action='store_true', help='build from local package')
+    parser_generate.add_argument('--local', action='store_true', help='get metadata from local package')
     parser_generate.add_argument('--localfile', default='', help='path to the local PKG-INFO or json metadata')
     parser_generate.add_argument('-t', '--template', choices=file_template_list(), default=DEFAULT_TEMPLATE, help='file template')
     parser_generate.add_argument('-f', '--filename', help='spec filename (optional)')
@@ -599,7 +610,7 @@ def main():
     parser_help = subparsers.add_parser('help', help='show this help')
     parser_help.set_defaults(func=lambda args: parser.print_help())
 
-    args = parser.parse_args()
+    args = Munch(parser.parse_args())
 
     # set HTTP proxy if one is provided
     if args.proxy:
@@ -612,6 +623,13 @@ def main():
 
     if 'func' not in args:
         sys.exit(parser.print_help())
+
+    namestr = args.func.__name__
+    # Custom validation logic
+    if namestr in {'generate', 'show'}:
+        if args.localfile == '' and not args.local and not args.name:
+            subparsers.choices[namestr].error("The name argument is required if not --local or --localfile is provided.")
+
     args.func(args)
 
 
