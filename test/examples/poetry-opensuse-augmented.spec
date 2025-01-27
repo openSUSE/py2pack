@@ -1,7 +1,7 @@
 #
 # spec file for package python-poetry
 #
-# Copyright (c) 2024 SUSE LLC
+# Copyright (c) __YEAR__ SUSE LLC
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -21,7 +21,7 @@ Version:        1.5.1
 Release:        0
 Summary:        Python dependency management and packaging made easy
 License:        MIT
-URL:            https://python-poetry.org/
+URL:            None
 Source:         https://files.pythonhosted.org/packages/source/p/poetry/poetry-%{version}.tar.gz
 BuildRequires:  python-rpm-macros
 BuildRequires:  %{python_module pip}
