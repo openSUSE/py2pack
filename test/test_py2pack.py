@@ -28,6 +28,7 @@ from py2pack import replace_string
 class Py2packTestCase(unittest.TestCase):
     def setUp(self):
         class Args:
+            setopt = ['py2pack_test_option=test', 'py2pack_test_flag']
             name = "py2pack"
             version = "0.4.4"
             source_url = None

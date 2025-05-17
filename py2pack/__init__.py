@@ -37,9 +37,70 @@ import py2pack.requires
 from py2pack import version as py2pack_version
 from py2pack.utils import (_get_archive_filelist, get_pyproject_table,
                            parse_pyproject, get_setuptools_scripts,
-                           get_metadata)
+                           get_metadata, CaselessDict, pypi_text_file,
+                           pypi_json_file, pypi_archive_file,
+                           parse_vars)
 
-from email import parser
+from packaging.requirements import Requirement
+
+
+def get_user_name():
+    return pwd.getpwuid(os.getuid()).pw_name
+
+
+def _get_homepage(urls):
+    try:
+        urls = CaselessDict(urls)
+        for page in ('Homepage', 'Source', 'GitHub', 'Repository', 'GitLab'):
+            if page in urls:
+                return urls[page]
+    except Exception:
+        pass
+    return None
+
+
+def fix_data(args):
+    # fix data fetched from pypi.org
+    data = args.fetched_data
+    # get info
+    data_info = data["info"]
+    # set version if absent
+    args.version = data_info['version']
+    # set name if absent
+    if not args.name:
+        args.name = data_info['name']
+    # fix requires_dist
+    requires_dist = data_info.get("requires_dist", None) or []
+    # fix provides_extra
+    provides_extra = data_info.get("provides_extra", None) or []
+    extra_from_req = re.compile(r'''\bextra\s+==\s+["']([^"']+)["']''')
+    # add additional provides_extra from requires_dist
+    for required_dist in requires_dist:
+        req = Requirement(required_dist)
+        if found := extra_from_req.search(str(req.marker)):
+            provides_extra.append(found.group(1))
+    # provides_extra must be unique list
+    provides_extra = list(sorted(set(provides_extra)))
+    # fix classifiers
+    classifiers = data_info.get("classifiers", None) or []
+    # get project_urls dictionary
+    try:
+        urls = dict(data_info.get('project_urls', None))
+    except TypeError:
+        urls = {}
+    # fix homepage
+    if 'home_page' not in data_info:
+        home_page = _get_homepage(urls) or data_info.get('project_url', None)
+        if home_page:
+            data_info['home_page'] = home_page
+    # set fixed requires_dist
+    data_info["requires_dist"] = requires_dist
+    # set fixed provides_extra
+    data_info["provides_extra"] = provides_extra
+    # set fixed classifiers
+    data_info["classifiers"] = classifiers
+    # set fixed project_urls
+    data_info['project_urls'] = urls
 
 
 def replace_string(output_string, replaces):
@@ -65,33 +126,6 @@ def pypi_json(project, release=None):
     with requests.get('https://pypi.org/pypi/{}{}/json'.format(project, version)) as r:
         pypimeta = r.json()
     return pypimeta
-
-
-def pypi_text_file(pkg_info_path):
-    with open(pkg_info_path, 'r') as pkg_info_file:
-        pkg_info_lines = parser.Parser().parse(pkg_info_file)
-    pkg_info_dict = {}
-    for key, value in pkg_info_lines.items():
-        key = key.lower().replace('-', '_')
-        if key in {'classifiers', 'requires_dist', 'provides_extra'}:
-            val = pkg_info_dict.get(key)
-            if val is None:
-                val = []
-                pkg_info_dict[key] = val
-            val.append(value)
-        else:
-            pkg_info_dict[key] = value
-    return {'info': pkg_info_dict, 'urls': []}
-
-
-def pypi_json_file(file_path):
-    with open(file_path, 'r') as json_file:
-        js = json.load(json_file)
-    if 'info' not in js:
-        js = {'info': js}
-    if 'urls' not in js:
-        js['urls'] = []
-    return js
 
 
 def _get_template_dirs():
@@ -128,7 +162,7 @@ def search(args):
 
 
 def show(args):
-    fetch_data(args)
+    fetch_data(args, trylocal=True)
     print('showing package {0}...'.format(args.fetched_data['info']['name']))
     pprint.pprint(args.fetched_data)
 
@@ -140,9 +174,10 @@ def fetch(args):
         print("unable to find a source release for {0}!".format(args.name))
         sys.exit(1)
     print('downloading package {0}-{1}...'.format(args.name, args.version))
-    print('from {0}'.format(url['url']))
+    download_url = url['download_url']
+    print('from {0}'.format(download_url))
 
-    with requests.get(url['url']) as r:
+    with requests.get(download_url) as r:
         with open(url['filename'], 'wb') as f:
             f.write(r.content)
 
@@ -239,11 +274,7 @@ def _canonicalize_setup_data(data):
         data["console_scripts"] = list(dict.fromkeys(console_scripts))
 
     # Standards says, that keys must be lowercase but not even PyPA adheres to it
-    homepage = (get_pyproject_table(data, 'project.urls.homepage') or
-                get_pyproject_table(data, 'project.urls.Homepage') or
-                get_pyproject_table(data, 'project.urls.Source') or
-                get_pyproject_table(data, 'project.urls.GitHub') or
-                get_pyproject_table(data, 'project.urls.Repository') or
+    homepage = (_get_homepage(get_pyproject_table(data, 'project.urls')) or
                 data.get('home_page', None))
     if homepage:
         data['home_page'] = homepage
@@ -363,7 +394,7 @@ def generate(args):
         warnings.warn("the '--run' switch is deprecated and a noop",
                       DeprecationWarning)
 
-    fetch_local_data(args)
+    fetch_data(args, trylocal=True)
     if not args.template:
         args.template = file_template_list()[0]
     if not args.filename:
@@ -371,9 +402,9 @@ def generate(args):
     print('generating spec file for {0}...'.format(args.name))
     data = args.fetched_data['info']
     durl = newest_download_url(args)
-    source_url = data['source_url'] = (args.source_url or (durl and durl['url']))
+    source_url = data['source_url'] = (args.source_url or (durl and durl['download_url']))
     data['year'] = datetime.datetime.now().year                             # set current year
-    data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
+    data['user_name'] = get_user_name()                                     # set system user (packager)
     data['summary_no_ending_dot'] = re.sub(r'(.*)\.', r'\g<1>', data.get('summary')) if data.get('summary') else ""
 
     # If package name supplied on command line differs in case from PyPI's one
@@ -392,8 +423,18 @@ def generate(args):
         if tarball_file:
             break
 
-    if tarball_file:                                                        # get some more info from that
+    # localarchive argument was set by fetch_local_data method, and, if not empty, then exists in filesystem
+    localarchive = args.localarchive
+
+    if tarball_file and not localarchive:  # get some more info from that
         tarball_file = tarball_file[0]
+    else:
+        tarball_file = localarchive
+
+    if not tarball_file:
+        tarball_file = args.name + '-' + args.version + '.tar.gz'
+
+    if os.path.exists(tarball_file):
         _augment_data_from_tarball(args, tarball_file, data)
 
     else:
@@ -409,6 +450,7 @@ def generate(args):
 
     env = _prepare_template_env(_get_template_dirs())
     template = env.get_template(args.template)
+    data.update(parse_vars(args.setopt))
     result = template.render(data).encode('utf-8')                          # render template and encode properly
     outfile = open(args.filename, 'wb')                                     # write result to spec file
     try:
@@ -420,28 +462,35 @@ def generate(args):
 def fetch_local_data(args):
     localfile = args.localfile
     local = args.local
-
+    # set localarchive argument
+    args.localarchive = None
     if not localfile and local:
         localfile = os.path.join(f'{args.name}.egg-info', 'PKG-INFO')
     if os.path.isfile(localfile):
         try:
-            data = pypi_json_file(localfile)
-        except json.decoder.JSONDecodeError:
-            data = pypi_text_file(localfile)
+            data = pypi_archive_file(localfile)
+            args.localarchive = localfile
+        except TypeError:
+            try:
+                data = pypi_json_file(localfile)
+            except json.decoder.JSONDecodeError:
+                data = pypi_text_file(localfile)
         args.fetched_data = data
-        args.version = args.fetched_data['info']['version']
-        return
-    fetch_data(args)
+        return True
+    return False
 
 
-def fetch_data(args):
-    args.fetched_data = pypi_json(args.name, args.version)
-    urls = args.fetched_data.get('urls', [])
-    if len(urls) == 0:
-        print(f"unable to find a suitable release for {args.name}!")
-        sys.exit(1)
-    else:
-        args.version = args.fetched_data['info']['version']                 # return current release number
+def fetch_data(args, trylocal=False):
+    if trylocal:
+        trylocal = fetch_local_data(args)
+
+    if not trylocal:
+        args.fetched_data = pypi_json(args.name, args.version)
+        urls = args.fetched_data.get('urls', [])
+        if len(urls) == 0:
+            print(f"unable to find a suitable release for {args.name}!")
+            sys.exit(1)
+    fix_data(args)
 
 
 def newest_download_url(args):
@@ -452,14 +501,14 @@ def newest_download_url(args):
     if not hasattr(args, "fetched_data"):
         return {}
     for release in args.fetched_data['urls']:     # Check download URLs in releases
-        if release['packagetype'] == 'sdist':                      # Found the source URL we care for
-            release['url'] = _get_source_url(args.name, release['filename'])
+        if release['packagetype'] == 'sdist' and not release.get('download_url'):  # Found the source URL we care for
+            release['download_url'] = _get_source_url(args.name, release['filename'])
             return release
     # No PyPI tarball release, let's see if an upstream download URL is provided:
     data = args.fetched_data['info']
-    if 'download_url' in data and data['download_url']:
-        url = data['download_url']
-        return {'url': url,
+    url = data.get('download_url')
+    if url:
+        return {'download_url': url,
                 'filename': os.path.basename(url)}
     return {}                                                               # We're all out of bubblegum
 
@@ -487,6 +536,8 @@ def main():
     parser_show = subparsers.add_parser('show', help='show metadata for package')
     parser_show.add_argument('name', help='package name')
     parser_show.add_argument('version', nargs='?', help='package version (optional)')
+    parser_show.add_argument('--local', action='store_true', help='show metadata from local package')
+    parser_show.add_argument('--localfile', default='', help='path to the local PKG-INFO or json metadata')
     parser_show.set_defaults(func=show)
 
     parser_fetch = subparsers.add_parser('fetch', help='download package source tarball from PyPI')
@@ -500,6 +551,7 @@ def main():
     parser_generate.add_argument('version', nargs='?', help='package version (optional)')
     parser_generate.add_argument('--source-url', default=None, help='source url')
     parser_generate.add_argument('--source-glob', help='source glob template')
+    parser_generate.add_argument('--setopt', action="append", help='An KEY=VALUE option (optional)')
     parser_generate.add_argument('--local', action='store_true', help='build from local package')
     parser_generate.add_argument('--localfile', default='', help='path to the local PKG-INFO or json metadata')
     parser_generate.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec', help='file template')
