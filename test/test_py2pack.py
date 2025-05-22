@@ -34,6 +34,7 @@ class Py2packTestCase(unittest.TestCase):
             source_glob = None
             local = False
             localfile = ""
+            options = {}
 
         self.args = Args()
 
