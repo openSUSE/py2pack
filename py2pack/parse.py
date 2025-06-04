@@ -1,7 +1,7 @@
 from email import parser
 from importlib import metadata
 import json
-from io import StringIO
+from io import TextIOWrapper
 import tarfile
 import os
 import pwd
@@ -96,13 +96,13 @@ def pypi_archive_file(file_path):
         with tarfile.open(file_path, 'r') as archive:
             for member in archive.getmembers():
                 if _check_if_pypi_archive_file(member.name):
-                    return pypi_text_stream(StringIO(archive.extractfile(member).read().decode()))
+                    return pypi_text_stream(TextIOWrapper(archive.extractfile(member), encoding='utf-8'))
     # try to extract metadata from zip archive
     elif zipfile.is_zipfile(file_path):
         with zipfile.ZipFile(file_path, 'r') as archive:
             for member in archive.namelist():
                 if _check_if_pypi_archive_file(member):
-                    return pypi_text_stream(StringIO(archive.open(member).read().decode()))
+                    return pypi_text_stream(TextIOWrapper(archive.open(member), encoding='utf-8'))
     else:
         raise TypeError("Can not extract '%s'. Not a tar or zip file" % file_path)
     raise KeyError('PKG-INFO not found on archive ' + file_path)
@@ -134,16 +134,7 @@ def fetch_local_data(args):
     return False
 
 
-def fix_data(args):
-    # fix data fetched from pypi.org
-    data = args.fetched_data
-    # get info
-    data_info = data["info"]
-    # set version if absent
-    args.version = data_info['version']
-    # set name if absent
-    if not args.name:
-        args.name = data_info['name']
+def fix_info(data_info):
     # fix requires_dist
     requires_dist = data_info.get("requires_dist", None) or []
     # fix provides_extra
@@ -176,27 +167,6 @@ def fix_data(args):
     data_info["classifiers"] = classifiers
     # set fixed project_urls
     data_info['project_urls'] = urls
-
-
-# parse options
-def parseopts(opts):
-    try:
-        opt_iter = iter(opts)
-    except TypeError:
-        return {}
-    ret = {}
-    while True:
-        try:
-            opt = str(next(opt_iter))
-        except StopIteration:
-            return ret
-
-        index = opt.find('=')
-        if index < 0:
-            ret[opt] = True
-        else:
-            index1 = index + 1
-            ret[opt[:index]] = opt[index1:]
 
 
 # get username

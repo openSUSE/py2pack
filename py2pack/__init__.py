@@ -38,8 +38,8 @@ from py2pack.utils import (_get_archive_filelist, get_pyproject_table,
                            parse_pyproject, get_setuptools_scripts,
                            get_metadata)
 
-from py2pack.parse import (fetch_local_data, fix_data, get_homepage,
-                           get_user_name, parseopts)
+from py2pack.parse import (fetch_local_data, fix_info, get_homepage,
+                           get_user_name)
 
 
 def replace_string(output_string, replaces):
@@ -379,7 +379,6 @@ def generate(args):
         warnings.warn("No tarball for {} in version {} found. Valuable "
                       "information for the generation might be missing."
                       "".format(args.name, args.version))
-        tarball_file = args.name + '-' + args.version + '.zip'
 
     if not source_url:
         data['source_url'] = os.path.basename(tarball_file)
@@ -406,7 +405,13 @@ def fetch_data(args, trylocal=False):
         if len(urls) == 0:
             print(f"unable to find a suitable release for {args.name}!")
             sys.exit(1)
-    fix_data(args)
+    data_info = args.fetched_data["info"]
+    fix_info(data_info)
+    # set version if absent
+    args.version = data_info['version']
+    # set name if absent
+    if not args.name:
+        args.name = data_info['name']
 
 
 def newest_download_url(args):
@@ -467,7 +472,7 @@ def main():
     parser_generate.add_argument('version', nargs='?', help='package version (optional)')
     parser_generate.add_argument('--source-url', default=None, help='source url')
     parser_generate.add_argument('--source-glob', help='source glob template')
-    parser_generate.add_argument('--setopt', action="append", help='An KEY=VALUE option (optional)')
+    parser_generate.add_argument('--setopt', action="append", help='An KEY=VALUE option (optional)', default=[])
     parser_generate.add_argument('--local', action='store_true', help='build from local package')
     parser_generate.add_argument('--localfile', default='', help='path to the local PKG-INFO or json metadata')
     parser_generate.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec', help='file template')
@@ -495,7 +500,13 @@ def main():
     if 'func' not in args:
         sys.exit(parser.print_help())
     if args.func == generate:
-        args.options = parseopts(args.setopt)
+        options = args.options = {}
+        for opt in args.setopt:
+            if '=' in opt:
+                key, value = opt.split('=', 1)
+                options[key] = value
+            else:
+                options[opt] = True
     args.func(args)
 
 
