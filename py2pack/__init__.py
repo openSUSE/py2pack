@@ -23,7 +23,6 @@ import glob
 import json
 import os
 import pprint
-import pwd
 import re
 import sys
 import warnings
@@ -39,7 +38,8 @@ from py2pack.utils import (_get_archive_filelist, get_pyproject_table,
                            parse_pyproject, get_setuptools_scripts,
                            get_metadata)
 
-from email import parser
+from py2pack.parse import (fetch_local_data, fix_info, get_homepage,
+                           get_user_name)
 
 
 def replace_string(output_string, replaces):
@@ -65,33 +65,6 @@ def pypi_json(project, release=None):
     with requests.get('https://pypi.org/pypi/{}{}/json'.format(project, version)) as r:
         pypimeta = r.json()
     return pypimeta
-
-
-def pypi_text_file(pkg_info_path):
-    with open(pkg_info_path, 'r') as pkg_info_file:
-        pkg_info_lines = parser.Parser().parse(pkg_info_file)
-    pkg_info_dict = {}
-    for key, value in pkg_info_lines.items():
-        key = key.lower().replace('-', '_')
-        if key in {'classifiers', 'requires_dist', 'provides_extra'}:
-            val = pkg_info_dict.get(key)
-            if val is None:
-                val = []
-                pkg_info_dict[key] = val
-            val.append(value)
-        else:
-            pkg_info_dict[key] = value
-    return {'info': pkg_info_dict, 'urls': []}
-
-
-def pypi_json_file(file_path):
-    with open(file_path, 'r') as json_file:
-        js = json.load(json_file)
-    if 'info' not in js:
-        js = {'info': js}
-    if 'urls' not in js:
-        js['urls'] = []
-    return js
 
 
 def _get_template_dirs():
@@ -128,7 +101,7 @@ def search(args):
 
 
 def show(args):
-    fetch_data(args)
+    fetch_data(args, trylocal=True)
     print('showing package {0}...'.format(args.fetched_data['info']['name']))
     pprint.pprint(args.fetched_data)
 
@@ -239,11 +212,7 @@ def _canonicalize_setup_data(data):
         data["console_scripts"] = list(dict.fromkeys(console_scripts))
 
     # Standards says, that keys must be lowercase but not even PyPA adheres to it
-    homepage = (get_pyproject_table(data, 'project.urls.homepage') or
-                get_pyproject_table(data, 'project.urls.Homepage') or
-                get_pyproject_table(data, 'project.urls.Source') or
-                get_pyproject_table(data, 'project.urls.GitHub') or
-                get_pyproject_table(data, 'project.urls.Repository') or
+    homepage = (get_homepage(get_pyproject_table(data, 'project.urls')) or
                 data.get('home_page', None))
     if homepage:
         data['home_page'] = homepage
@@ -363,7 +332,7 @@ def generate(args):
         warnings.warn("the '--run' switch is deprecated and a noop",
                       DeprecationWarning)
 
-    fetch_local_data(args)
+    fetch_data(args, trylocal=True)
     if not args.template:
         args.template = file_template_list()[0]
     if not args.filename:
@@ -373,7 +342,7 @@ def generate(args):
     durl = newest_download_url(args)
     source_url = data['source_url'] = (args.source_url or (durl and durl['url']))
     data['year'] = datetime.datetime.now().year                             # set current year
-    data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
+    data['user_name'] = get_user_name()                                     # set system user (packager)
     data['summary_no_ending_dot'] = re.sub(r'(.*)\.', r'\g<1>', data.get('summary')) if data.get('summary') else ""
 
     # If package name supplied on command line differs in case from PyPI's one
@@ -392,15 +361,24 @@ def generate(args):
         if tarball_file:
             break
 
-    if tarball_file:                                                        # get some more info from that
+    # localarchive argument was set by fetch_local_data method, and, if not empty, then exists in filesystem
+    localarchive = args.localarchive
+
+    if tarball_file and not localarchive:  # get some more info from that
         tarball_file = tarball_file[0]
+    else:
+        tarball_file = localarchive
+
+    if not tarball_file:
+        tarball_file = args.name + '-' + args.version + '.tar.gz'
+
+    if os.path.exists(tarball_file):
         _augment_data_from_tarball(args, tarball_file, data)
 
     else:
         warnings.warn("No tarball for {} in version {} found. Valuable "
                       "information for the generation might be missing."
                       "".format(args.name, args.version))
-        tarball_file = args.name + '-' + args.version + '.zip'
 
     if not source_url:
         data['source_url'] = os.path.basename(tarball_file)
@@ -409,6 +387,7 @@ def generate(args):
 
     env = _prepare_template_env(_get_template_dirs())
     template = env.get_template(args.template)
+    data.update(args.options)                                               # update data with custom options
     result = template.render(data).encode('utf-8')                          # render template and encode properly
     outfile = open(args.filename, 'wb')                                     # write result to spec file
     try:
@@ -417,31 +396,22 @@ def generate(args):
         outfile.close()
 
 
-def fetch_local_data(args):
-    localfile = args.localfile
-    local = args.local
-
-    if not localfile and local:
-        localfile = os.path.join(f'{args.name}.egg-info', 'PKG-INFO')
-    if os.path.isfile(localfile):
-        try:
-            data = pypi_json_file(localfile)
-        except json.decoder.JSONDecodeError:
-            data = pypi_text_file(localfile)
-        args.fetched_data = data
-        args.version = args.fetched_data['info']['version']
-        return
-    fetch_data(args)
-
-
-def fetch_data(args):
-    args.fetched_data = pypi_json(args.name, args.version)
-    urls = args.fetched_data.get('urls', [])
-    if len(urls) == 0:
-        print(f"unable to find a suitable release for {args.name}!")
-        sys.exit(1)
-    else:
-        args.version = args.fetched_data['info']['version']                 # return current release number
+def fetch_data(args, trylocal=False):
+    if trylocal:
+        trylocal = fetch_local_data(args)
+    if not trylocal:
+        args.fetched_data = pypi_json(args.name, args.version)
+        urls = args.fetched_data.get('urls', [])
+        if len(urls) == 0:
+            print(f"unable to find a suitable release for {args.name}!")
+            sys.exit(1)
+    data_info = args.fetched_data["info"]
+    fix_info(data_info)
+    # set version if absent
+    args.version = data_info['version']
+    # set name if absent
+    if not args.name:
+        args.name = data_info['name']
 
 
 def newest_download_url(args):
@@ -487,6 +457,8 @@ def main():
     parser_show = subparsers.add_parser('show', help='show metadata for package')
     parser_show.add_argument('name', help='package name')
     parser_show.add_argument('version', nargs='?', help='package version (optional)')
+    parser_show.add_argument('--local', action='store_true', help='show metadata from local package')
+    parser_show.add_argument('--localfile', default='', help='path to the local PKG-INFO or json metadata')
     parser_show.set_defaults(func=show)
 
     parser_fetch = subparsers.add_parser('fetch', help='download package source tarball from PyPI')
@@ -500,6 +472,7 @@ def main():
     parser_generate.add_argument('version', nargs='?', help='package version (optional)')
     parser_generate.add_argument('--source-url', default=None, help='source url')
     parser_generate.add_argument('--source-glob', help='source glob template')
+    parser_generate.add_argument('--setopt', action="append", help='An KEY=VALUE option (optional)', default=[])
     parser_generate.add_argument('--local', action='store_true', help='build from local package')
     parser_generate.add_argument('--localfile', default='', help='path to the local PKG-INFO or json metadata')
     parser_generate.add_argument('-t', '--template', choices=file_template_list(), default='opensuse.spec', help='file template')
@@ -526,6 +499,14 @@ def main():
 
     if 'func' not in args:
         sys.exit(parser.print_help())
+    if args.func == generate:
+        options = args.options = {}
+        for opt in args.setopt:
+            if '=' in opt:
+                key, value = opt.split('=', 1)
+                options[key] = value
+            else:
+                options[opt] = True
     args.func(args)
 
 

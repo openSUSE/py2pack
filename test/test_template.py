@@ -19,7 +19,6 @@
 import datetime
 import os
 import os.path
-import pwd
 import sys
 
 import pytest
@@ -37,11 +36,12 @@ class Args(object):
     source_glob = None
     local = False
     localfile = ''
+    options = {}
 
 
 compare_dir = os.path.join(os.path.dirname(__file__), 'examples')
 maxDiff = None
-username = pwd.getpwuid(os.getuid())[4]
+username = py2pack.get_user_name()
 
 
 @pytest.mark.parametrize('template, fetch_tarball',
