@@ -85,4 +85,4 @@ def test_template(tmpdir, template, fetch_tarball, project, version):
         required = filehandle.read()
     required = required.replace('__USER__', username, 1)
     required = required.replace('__YEAR__', str(datetime.date.today().year), 1)
-    assert written_spec == required
+    assert written_spec == required, filehandle

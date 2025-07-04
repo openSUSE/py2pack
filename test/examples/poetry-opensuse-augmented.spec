@@ -14,6 +14,8 @@
 
 # Please submit bugfixes or comments via https://bugs.opensuse.org/
 #
+# Enable libalternatives by default
+%bcond_without libalternatives
 
 
 Name:           python-poetry
@@ -63,6 +65,8 @@ BuildRequires:  %{python_module pytest-xdist}
 BuildRequires:  %{python_module zipp}
 # /SECTION
 BuildRequires:  fdupes
+BuildRequires:  alts
+Requires:       alts
 Requires:       python-build >= 0.10.0
 Requires:       python-cachecontrol >= 0.12.9
 Requires:       python-cleo >= 2.0.0
@@ -222,12 +226,6 @@ installation script
 
 %check
 CHOOSE: %pytest OR %pyunittest -v OR CUSTOM
-
-%post
-%python_install_alternative poetry
-
-%postun
-%python_uninstall_alternative poetry
 
 %files %{python_files}
 %doc README.md

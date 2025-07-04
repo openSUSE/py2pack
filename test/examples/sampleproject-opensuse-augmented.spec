@@ -14,6 +14,8 @@
 
 # Please submit bugfixes or comments via https://bugs.opensuse.org/
 #
+# Enable libalternatives by default
+%bcond_without libalternatives
 
 
 Name:           python-sampleproject
@@ -51,6 +53,8 @@ BuildRequires:  %{python_module peppercorn}
 BuildRequires:  %{python_module coverage}
 # /SECTION
 BuildRequires:  fdupes
+BuildRequires:  alts
+Requires:       alts
 Requires:       python-peppercorn
 Suggests:       python-check-manifest
 BuildArch:      noarch
@@ -69,12 +73,6 @@ A sample Python project
 %pyproject_install
 %python_clone -a %{buildroot}%{_bindir}/sample
 %python_expand %fdupes %{buildroot}%{$python_sitelib}
-
-%post
-%python_install_alternative sample
-
-%postun
-%python_uninstall_alternative sample
 
 %files %{python_files}
 %doc README.md
