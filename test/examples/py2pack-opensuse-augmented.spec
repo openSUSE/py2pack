@@ -14,6 +14,8 @@
 
 # Please submit bugfixes or comments via https://bugs.opensuse.org/
 #
+# Enable libalternatives by default
+%bcond_without libalternatives
 
 
 Name:           python-py2pack
@@ -34,6 +36,8 @@ BuildRequires:  %{python_module metaextract}
 BuildRequires:  %{python_module six}
 # /SECTION
 BuildRequires:  fdupes
+BuildRequires:  alts
+Requires:       alts
 Requires:       python-Jinja2
 Requires:       python-metaextract
 Requires:       python-setuptools
@@ -58,12 +62,6 @@ Generate distribution packages from PyPI
 
 %check
 CHOOSE: %pytest OR %pyunittest -v OR CUSTOM
-
-%post
-%python_install_alternative py2pack
-
-%postun
-%python_uninstall_alternative py2pack
 
 %files %{python_files}
 %doc AUTHORS ChangeLog README.rst
