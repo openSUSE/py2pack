@@ -29,7 +29,6 @@ import sys
 import warnings
 
 import jinja2
-import pypi_search.search
 import requests
 from metaextract import utils as meta_utils
 
@@ -119,12 +118,6 @@ def list_packages(args=None):
     simplere = re.compile(r'<a href="/simple/.+">(.*)</a>')
     for package in simplere.findall(html):
         print(package)
-
-
-def search(args):
-    print('searching for package {0}...'.format(args.name))
-    for hit in pypi_search.search.find_packages(args.name):
-        print('found {0}-{1}'.format(hit['name'], hit['version']))
 
 
 def show(args):
@@ -479,10 +472,6 @@ def main():
 
     parser_list = subparsers.add_parser('list', help='list all packages on PyPI')
     parser_list.set_defaults(func=list_packages)
-
-    parser_search = subparsers.add_parser('search', help='search for packages on PyPI')
-    parser_search.add_argument('name', help='package name (with optional version)')
-    parser_search.set_defaults(func=search)
 
     parser_show = subparsers.add_parser('show', help='show metadata for package')
     parser_show.add_argument('name', help='package name')
