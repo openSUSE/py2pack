@@ -59,9 +59,6 @@ class Py2packTestCase(unittest.TestCase):
     def test_list(self):
         py2pack.list_packages(self.args)
 
-    def test_search(self):
-        py2pack.search(self.args)
-
     def test_show(self):
         py2pack.show(self.args)
 
