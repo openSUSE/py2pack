@@ -19,8 +19,11 @@
             (scripts|map('basename')|list if scripts and scripts is not none else []) +
             (console_scripts if console_scripts and console_scripts is not none else [])) %}
 {%- if scripts_or_console_scripts %}
-# Enable libalternatives by default
+%if 0%{?suse_version} > 1500
 %bcond_without libalternatives
+%else
+%bcond_with libalternatives
+%endif
 {%- endif %}
 
 
@@ -56,8 +59,13 @@ BuildRequires:  unzip
 {%- endif %}
 BuildRequires:  fdupes
 {%- if scripts_or_console_scripts %}
-BuildRequires:  alts
+%if %{with libalternatives}
 Requires:       alts
+BuildRequires:  alts
+%else
+Requires(post): update-alternatives
+Requires(postun):update-alternatives
+%endif
 {%- endif %}
 {%- if install_requires and install_requires is not none %}
 {%- for req in install_requires|sort %}
@@ -107,6 +115,15 @@ CHOOSE: %pytest_arch OR %pyunittest_arch -v OR CUSTOM
 {%- else %}
 CHOOSE: %pytest OR %pyunittest -v OR CUSTOM
 {%- endif %}
+{%- endif %}
+
+{%- if scripts_or_console_scripts %}
+
+%post
+%python_install_alternative {{ scripts_or_console_scripts|join(" ") }}
+
+%postun
+%python_uninstall_alternative {{ scripts_or_console_scripts|first }}
 {%- endif %}
 
 %files %{python_files}
