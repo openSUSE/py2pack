@@ -149,6 +149,12 @@ def fetch(args):
 
 def _canonicalize_setup_data(data):
 
+    def _search_requires(req, pat):
+        for arr in req:
+            if arr[0] == pat:
+                return 1
+        return 0
+
     if data.get('build-system', None):
         # PEP 518: 'requires' field is mandatory
         data['build_requires'] = py2pack.requires._requirements_sanitize(
@@ -160,14 +166,13 @@ def _canonicalize_setup_data(data):
         if isinstance(setup_requires, str):
             setup_requires = setup_requires.splitlines()
         # canonicalize to build_requires
-        data["build_requires"] = ['setuptools', 'wheel'] + \
+        data["build_requires"] = [['setuptools'], ['wheel']] + \
             py2pack.requires._requirements_sanitize(setup_requires)
     else:
         # no build_requires means most probably legacy setuptools
-        data["build_requires"] = ['setuptools']
-    if 'setuptools' in data['build_requires'] and 'wheel' not in data['build_requires']:
-        data['build_requires'] += ['wheel']
-
+        data["build_requires"] = [['setuptools']]
+    if _search_requires(data['build_requires'], 'setuptools') and not _search_requires(data['build_requires'], 'wheel'):
+        data['build_requires'] += [['wheel']]
     install_requires = (
         get_pyproject_table(data, "project.dependencies") or
         get_pyproject_table(data, "tool.flit.metadata.requires") or
@@ -343,10 +348,56 @@ def _normalize_license(data):
 def _prepare_template_env(template_dir):
     # setup jinja2 environment with custom filters
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
+
+    def _rpm_format_requires(req, pfx):
+        req[0] = pfx + req[0]
+        part1 = " ".join(req[0:3])
+        part2 = ""
+        if len(req) > 3:
+            req[3] = pfx + req[3]
+            part2 = ", " + " ".join(req[3:])
+        return part1 + part2
+
+    def _parenthesize_version(req):
+        ret = req[0].lower()
+        ver = []
+        if len(req) > 1:
+            if req[1] == '<':
+                req[1] = '<<'
+            if req[1] == '>':
+                req[1] = '>>'
+            ver.append(" (" + " ".join(req[1:3]) + ")")
+        if len(req) > 3:
+            if req[4] == '<':
+                req[4] = '<<'
+            if req[4] == '>':
+                req[4] = '>>'
+            ver.append(req[3].lower() + " (" + " ".join(req[4:6]) + ")")
+
+        if ver:
+            ret += ", ".join(ver)
+        return ret
+
+    def reject_pkg(s, req):
+        nms = list(map(lambda n: n[0], req))
+        ret = []
+        for n in s:
+            if n[0] not in nms:
+                ret.append(n)
+        return ret
+
     env.filters['parenthesize_version'] = \
-        lambda s: re.sub('([=<>]+)(.+)', r' (\1 \2)', s)
+        lambda s: _parenthesize_version(s)
     env.filters['basename'] = \
         lambda s: s[s.rfind('/') + 1:]
+    env.filters['rpm_format_buildrequires'] = \
+        lambda s: " ".join(s[0:3])
+    env.filters['rpm_format_requires'] = \
+        lambda s, p: _rpm_format_requires(s, p)
+    env.filters['sort_requires'] = \
+        lambda s: sorted(s, key=lambda k: k[0].lower())
+    env.filters['reject_pkg'] = reject_pkg
+
     return env
 
 
@@ -368,7 +419,7 @@ def generate(args):
         args.template = file_template_list()[0]
     if not args.filename:
         args.filename = "python-" + args.name + '.' + args.template.rsplit('.', 1)[1]   # take template file ending
-    print('generating spec file for {0}...'.format(args.name))
+    print('generating spec file for {0} using {1}...'.format(args.name, args.template))
     data = args.fetched_data['info']
     durl = newest_download_url(args)
     source_url = data['source_url'] = (args.source_url or (durl and durl['url']))

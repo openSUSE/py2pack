@@ -114,39 +114,39 @@ class Py2packTestCase(unittest.TestCase):
     @data(
         (
             {'install_requires': ["pywin32>=1.0;sys_platform=='win32'", 'monotonic>=0.1 #comment']},
-            {'build_requires': ['setuptools', 'wheel'],
-             'install_requires': ['monotonic >= 0.1']},
+            {'build_requires': [['setuptools'], ['wheel']],
+             'install_requires': [['monotonic', '>=', '0.1']]},
         ),
         (
             {'install_requires': 'six  >=1.9,!=1.0  # comment\nfoobar>=0.1,>=0.5'},
-            {'build_requires': ['setuptools', 'wheel'],
-             'install_requires': ['six >= 1.9', 'foobar >= 0.1']}
+            {'build_requires': [['setuptools'], ['wheel']],
+             'install_requires': [['six', '>=', '1.9'], ['foobar', '>=', '0.1']]}
         ),
         (
             {'setup_requires': 'six  >=1.9,!=1.0  # comment\nfoobar>=0.1,>=0.5'},
-            {'build_requires': ['setuptools', 'wheel', 'six >= 1.9', 'foobar >= 0.1']}
+            {'build_requires': [['setuptools'], ['wheel'], ['six', '>=', '1.9'], ['foobar', '>=', '0.1']]}
         ),
         (
             {'tests_require': ['six  >=1.9', 'foobar>=0.1,>=0.5']},
-            {'build_requires': ['setuptools', 'wheel'],
-             'tests_require': ['six >= 1.9', 'foobar >= 0.1']}
+            {'build_requires': [['setuptools'], ['wheel']],
+             'tests_require': [['six', '>=', '1.9'], ['foobar', '>=', '0.1']]}
         ),
         (
             {'tests_require': 'six  >=1.9\nfoobar>=0.1,>=0.5'},
-            {'build_requires': ['setuptools', 'wheel'],
-             'tests_require': ['six >= 1.9', 'foobar >= 0.1']}
+            {'build_requires': [['setuptools'], ['wheel']],
+             'tests_require': [['six', '>=', '1.9'], ['foobar', '>=', '0.1']]}
         ),
         (
             {'extras_require': {'extra1': ['foobar<=3.0, >= 2.1']}},
-            {'build_requires': ['setuptools', 'wheel'],
-             'extras_require': {'extra1': ['foobar >= 2.1']}}
+            {'build_requires': [['setuptools'], ['wheel']],
+             'extras_require': {'extra1': [['foobar', '>=', '2.1']]}}
         ),
         (
             {'extras_require': {'extra1': 'foobar<=3.0, >= 2.1\ntest1  # comment',
                                 'extra2': ['test2']}},
-            {'build_requires': ['setuptools', 'wheel'],
-             'extras_require': {'extra1': ['foobar >= 2.1', 'test1'],
-                                'extra2': ['test2']}}
+            {'build_requires': [['setuptools'], ['wheel']],
+             'extras_require': {'extra1': [['foobar', '>=', '2.1'], ['test1']],
+                                'extra2': [['test2']]}}
         ),
         (
             {'build-system': {'requires': ['setuptools']},
@@ -155,10 +155,10 @@ class Py2packTestCase(unittest.TestCase):
                                                    'test': ['pytest']},
                          'scripts': {'cmd1': 'foo:main', 'cmd2': 'bar:cmd2'},
                          'gui-scripts': {'gui': 'foo:mainview'}}},
-            {'build_requires': ['setuptools', 'wheel'],
-             'install_requires': ['foo', 'bar >= 1', 'foobar > 2'],
-             'extras_require': {'extra': ['extra1', 'extra2 > 2']},
-             'tests_require': ['pytest'],
+            {'build_requires': [['setuptools'], ['wheel']],
+             'install_requires': [['foo'], ['bar', '>=', '1'], ['foobar', '>', '2']],
+             'extras_require': {'extra': [['extra1'], ['extra2', '>', '2']]},
+             'tests_require': [['pytest']],
              'console_scripts': ['cmd1', 'cmd2', 'gui']}
         ),
         (
@@ -169,17 +169,17 @@ class Py2packTestCase(unittest.TestCase):
                      'requires-extra': {'extra': ['extra1', 'extra2>2'],
                                         'test': ['pytest']}},
                  'scripts': {'cmd': 'foo:main'}}}},
-            {'build_requires': ['flit_core'],
-             'install_requires': ['foo', 'bar >= 1', 'foobar > 2'],
-             'extras_require': {'extra': ['extra1', 'extra2 > 2']},
-             'tests_require': ['pytest'],
+            {'build_requires': [['flit_core']],
+             'install_requires': [['foo'], ['bar', '>=', '1'], ['foobar', '>', '2']],
+             'extras_require': {'extra': [['extra1'], ['extra2', '>', '2']]},
+             'tests_require': [['pytest']],
              'console_scripts': ['cmd']}
         ),
         (
             {'build-system': {'requires': ['hatchling']},
              'project': {'dependencies': ['foo', 'bar>=1', 'foobar>2,<3']}},
-            {'build_requires': ['hatchling'],
-             'install_requires': ['foo', 'bar >= 1', 'foobar > 2']}
+            {'build_requires': [['hatchling']],
+             'install_requires': [['foo'], ['bar', '>=', '1'], ['foobar', '>', '2']]}
         ),
     )
     @unpack
