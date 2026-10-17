@@ -14,8 +14,11 @@
 
 # Please submit bugfixes or comments via https://bugs.opensuse.org/
 #
-# Enable libalternatives by default
+%if 0%{?suse_version} > 1500
 %bcond_without libalternatives
+%else
+%bcond_with libalternatives
+%endif
 
 
 Name:           python-py2pack
@@ -36,8 +39,13 @@ BuildRequires:  %{python_module metaextract}
 BuildRequires:  %{python_module six}
 # /SECTION
 BuildRequires:  fdupes
-BuildRequires:  alts
+%if %{with libalternatives}
 Requires:       alts
+BuildRequires:  alts
+%else
+Requires(post): update-alternatives
+Requires(postun):update-alternatives
+%endif
 Requires:       python-Jinja2
 Requires:       python-metaextract
 Requires:       python-setuptools
@@ -62,6 +70,12 @@ Generate distribution packages from PyPI
 
 %check
 CHOOSE: %pytest OR %pyunittest -v OR CUSTOM
+
+%post
+%python_install_alternative py2pack
+
+%postun
+%python_uninstall_alternative py2pack
 
 %files %{python_files}
 %doc AUTHORS ChangeLog README.rst
