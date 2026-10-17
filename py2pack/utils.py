@@ -18,6 +18,7 @@
 """Module containing utility functions that fit nowhere else."""
 
 import os
+import pwd
 import tempfile
 import shutil
 from contextlib import contextmanager
