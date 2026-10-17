@@ -16,7 +16,7 @@ A sample Python project
 
 
 %prep
-%setup -q -n %{mod_name}-%{version}
+%setup -q -n sampleproject-%{version}
 
 %build
 %{__python} setup.py build
