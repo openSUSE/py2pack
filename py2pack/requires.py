@@ -102,4 +102,20 @@ def _requirements_sanitize(req_list):
         (Requirement(s.split("#", maxsplit=1)[0]) for s in req_list)
         if _requirement_filter_by_marker(req)
     )
-    return [" ".join(req) for req in filtered_req_list]
+    out_list = []
+    for req in filtered_req_list:
+        # Convert '~=' operator to something rpm and deb can understand
+        # abc ~= 1.1.1
+        # should be converted into something like (for rpm)
+        #
+        # Requires: python-abc >= 1.1.1, python-abc < 1.2
+        # BuildRequires: %{python_module  abc >= 1.1.1}
+        if len(req) > 1 and req[1] == '~=':
+            req[1] = '>='
+            v = req[2].split('.')
+            v.pop()
+            v[-1] = str(int(v[-1]) + 1)
+            req += [req[0], '<', ".".join(v)]
+        out_list.append(req)
+
+    return out_list
