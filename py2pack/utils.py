@@ -195,3 +195,11 @@ def get_metadata(filename):
         data['install_requires'] = mdata.get_all('Requires-Dist')
 
     return data
+
+
+def get_user_name():
+    """get username"""
+    pwuid = pwd.getpwuid(os.getuid())
+    gecos = pwuid.pw_gecos  # or pwd.getpwuid(os.getuid())[4]
+    name = pwuid.pw_name  # or pwd.getpwuid(os.getuid())[0]
+    return gecos or name
