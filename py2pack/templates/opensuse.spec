@@ -35,6 +35,18 @@ License:        {{ license }}
 URL:            {{ home_page }}
 Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRequires:  python-rpm-macros
+{%- if preamble and preamble is not none %}
+{{ preamble }}
+{%- endif %}
+{%- if not archive_prefix or archive_prefix is none %}
+{%- set archive_prefix = name|replace('-', '_')|replace('.', '_') ~ '-%{version}' %}
+{%- endif %}
+{%- if not module_prefix or module_prefix is none %}
+{%- set module_prefix = name|replace('-', '_')|replace('.', '/') %}
+{%- endif %}
+{%- if not metadata_prefix or metadata_prefix is none %}
+{%- set metadata_prefix = name|replace('-', '_')|replace('.', '_') ~ '-%{version}.dist-info' %}
+{%- endif %}
 {%- set build_requires_plus_pip = ((build_requires if build_requires and build_requires is not none else []) +
                                    ['pip']) %}
 {%- for req in build_requires_plus_pip |sort %}
@@ -88,7 +100,7 @@ BuildArch:      noarch
 {{ description }}
 
 %prep
-%autosetup -p1 -n {{ name }}-%{version}
+%autosetup -p1 -n {{ archive_prefix }}
 
 %build
 {%- if has_ext_modules %}
@@ -137,11 +149,11 @@ CHOOSE: %pytest OR %pyunittest -v OR CUSTOM
 %python_alternative %{_bindir}/{{ script }}
 {%- endfor %}
 {%- if has_ext_modules %}
-%{python_sitearch}/{{name}}
-%{python_sitearch}/{{name}}-%{version}.dist-info
+%{python_sitearch}/{{ module_prefix }}
+%{python_sitearch}/{{ metadata_prefix }}
 {%- else %}
-%{python_sitelib}/{{name}}
-%{python_sitelib}/{{name}}-%{version}.dist-info
+%{python_sitelib}/{{ module_prefix }}
+%{python_sitelib}/{{ metadata_prefix }}
 {%- endif %}
 {%- if data_files and data_files is not none %}
 {%- for dir, files in data_files %}

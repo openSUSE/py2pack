@@ -65,6 +65,41 @@ def _get_archive_filelist(filename):
     return names
 
 
+def _get_archive_prefix(filename):
+    files = _get_archive_filelist(filename)
+
+    if not files:
+        return ""
+
+    roots = set()
+    normalized_files = []
+
+    for path in files:
+        while path.startswith("./"):
+            path = path[2:]
+
+        path = path.rstrip("/")
+
+        if not path:
+            continue
+
+        normalized_files.append(path)
+        roots.add(path.split("/", 1)[0])
+
+    if len(roots) != 1:
+        return ""
+
+    root = roots.pop()
+
+    # The root must have at least one descendant.
+    has_descendants = any(
+        path.startswith(root + "/")
+        for path in normalized_files
+    )
+
+    return root if has_descendants else ""
+
+
 def parse_pyproject(archive):
     """Parse the pyproject.toml in the archive and return the metadata as dict.
 
