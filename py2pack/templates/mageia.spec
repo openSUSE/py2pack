@@ -10,6 +10,15 @@ Group:          Development/Python
 Source:         {{ source_url|replace(version, '%{version}') }}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-buildroot
 BuildRequires:  python-devel
+{%- if preamble and preamble is not none %}
+{{ preamble }}
+{%- endif %}
+{%- if not archive_prefix or archive_prefix is none %}
+{%- set archive_prefix = name|replace('-', '_')|replace('.', '_') %}
+{%- endif %}
+{%- if not module_prefix or module_prefix is none %}
+{%- set module_prefix = name|replace('-', '_')|replace('.', '/') %}
+{%- endif %}
 {%- for req in requires %}
 BuildRequires:  python-{{ req|lower }}
 Requires:       pyhton-{{ req|lower }}
@@ -31,11 +40,7 @@ Suggests:       python-{{ req|lower }}
 
 
 %prep
-{%- if name != name|lower %}
-%setup -q -n {{ name }}-%{version}
-{%- else %}
-%setup -q -n %{mod_name}-%{version}
-{%- endif %}
+%setup -q -n {{ archive_prefix }}-%{version}
 
 %build
 %{__python} setup.py build

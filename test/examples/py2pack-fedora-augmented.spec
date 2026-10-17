@@ -48,7 +48,7 @@ Summary:        %{summary}
 
 
 %prep
-%autosetup -p1 -n %{pypi_name}-%{version}
+%autosetup -p1 -n py2pack-%{version}
 
 %build
 %pyproject_wheel
