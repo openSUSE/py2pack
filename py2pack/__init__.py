@@ -36,10 +36,9 @@ import py2pack.requires
 from py2pack import version as py2pack_version
 from py2pack.utils import (_get_archive_filelist, get_pyproject_table,
                            parse_pyproject, get_setuptools_scripts,
-                           get_metadata, _get_archive_prefix)
+                           get_metadata, _get_archive_prefix, get_user_name)
 
-from py2pack.parse import (fetch_local_data, fix_info, get_homepage,
-                           get_user_name)
+from py2pack.parse import (fetch_local_data, fix_info, get_homepage)
 
 
 def replace_string(output_string, replaces):
