@@ -16,7 +16,16 @@ BuildRequires:  python-devel
 %if %{undefined python_module}
 %define python_module() python3dist(%1)
 %endif
+{%- if preamble and preamble is not none %}
+{{ preamble }}
+{%- endif %}
 
+{%- if not archive_prefix or archive_prefix is none %}
+{%- set archive_prefix = name|replace('-', '_')|replace('.', '_') ~ '-%{version}' %}
+{%- endif %}
+{%- if not module_prefix or module_prefix is none %}
+{%- set module_prefix = name|replace('-', '_')|replace('.', '/') %}
+{%- endif %}
 {%- set build_requires_plus_pip = ((build_requires if build_requires and build_requires is not none else []) +
                                    ['pip']) %}
 {%- for req in build_requires_plus_pip |sort %}
@@ -71,7 +80,7 @@ Summary:        %{summary}
 
 
 %prep
-%autosetup -p1 -n %{pypi_name}-%{version}
+%autosetup -p1 -n {{ archive_prefix }}
 
 %build
 %pyproject_wheel

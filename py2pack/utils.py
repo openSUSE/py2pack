@@ -20,6 +20,7 @@
 import os
 import tempfile
 import shutil
+import pwd
 from contextlib import contextmanager
 from build.util import project_wheel_metadata
 
@@ -63,6 +64,41 @@ def _get_archive_filelist(filename):
     if "./" in names:
         names.remove("./")
     return names
+
+
+def _get_archive_prefix(filename):
+    files = _get_archive_filelist(filename)
+
+    if not files:
+        return ""
+
+    roots = set()
+    normalized_files = []
+
+    for path in files:
+        while path.startswith("./"):
+            path = path[2:]
+
+        path = path.rstrip("/")
+
+        if not path:
+            continue
+
+        normalized_files.append(path)
+        roots.add(path.split("/", 1)[0])
+
+    if len(roots) != 1:
+        return ""
+
+    root = roots.pop()
+
+    # The root must have at least one descendant.
+    has_descendants = any(
+        path.startswith(root + "/")
+        for path in normalized_files
+    )
+
+    return root if has_descendants else ""
 
 
 def parse_pyproject(archive):
@@ -195,3 +231,13 @@ def get_metadata(filename):
         data['install_requires'] = mdata.get_all('Requires-Dist')
 
     return data
+
+
+def get_user_name():
+    """
+    Get username
+    """
+    pwuid = pwd.getpwuid(os.getuid())
+    gecos = pwuid.pw_gecos  # or pwd.getpwuid(os.getuid())[4]
+    name = pwuid.pw_name  # or pwd.getpwuid(os.getuid())[0]
+    return gecos or name

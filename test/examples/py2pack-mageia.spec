@@ -16,7 +16,7 @@ Generate distribution packages from PyPI
 
 
 %prep
-%setup -q -n %{mod_name}-%{version}
+%setup -q -n py2pack-%{version}
 
 %build
 %{__python} setup.py build
