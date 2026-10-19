@@ -23,7 +23,6 @@ import glob
 import json
 import os
 import pprint
-import pwd
 import re
 import sys
 import warnings
@@ -36,7 +35,7 @@ import py2pack.requires
 from py2pack import version as py2pack_version
 from py2pack.utils import (_get_archive_filelist, get_pyproject_table,
                            parse_pyproject, get_setuptools_scripts,
-                           get_metadata)
+                           get_metadata, get_user_name)
 
 from email import parser
 
@@ -366,7 +365,7 @@ def generate(args):
     durl = newest_download_url(args)
     source_url = data['source_url'] = (args.source_url or (durl and durl['url']))
     data['year'] = datetime.datetime.now().year                             # set current year
-    data['user_name'] = pwd.getpwuid(os.getuid())[4]                        # set system user (packager)
+    data['user_name'] = get_user_name()                                     # set system user (packager)
     data['summary_no_ending_dot'] = re.sub(r'(.*)\.', r'\g<1>', data.get('summary')) if data.get('summary') else ""
 
     # If package name supplied on command line differs in case from PyPI's one
