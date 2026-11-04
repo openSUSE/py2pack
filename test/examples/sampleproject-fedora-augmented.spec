@@ -1,12 +1,14 @@
-%define pypi_name sampleproject
-%define python_name python3-%{pypi_name}
+%global pypi_name sampleproject
+%global python_name python3-%{pypi_name}
+
+%bcond_without test
+
 Name:           python-%{pypi_name}
 Version:        3.0.0
 Release:        %autorelease
 Summary:        A sample Python project
 
-# Check if the automatically generated License and its spelling is correct for Fedora
-# https://docs.fedoraproject.org/en-US/packaging-guidelines/LicensingGuidelines/
+# Check the generated license identifier against Fedora's licensing guidelines.
 License:        Copyright (c) 2016 The Python Packaging Authority (PyPA)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -29,27 +31,19 @@ SOFTWARE.
  (FIXME:No SPDX)
 URL:            https://github.com/pypa/sampleproject
 Source:         https://files.pythonhosted.org/packages/source/s/sampleproject/sampleproject-%{version}.tar.gz
-
-BuildRequires:  pyproject-rpm-macros
-BuildRequires:  python-devel
-%if %{undefined python_module}
-%define python_module() python3dist(%1)
-%endif
-BuildRequires:  %{python_module pip}
-BuildRequires:  %{python_module setuptools >= 43.0.0}
-BuildRequires:  %{python_module wheel}
-# SECTION test requirements
-%if %{with test}
-BuildRequires:  %{python_module peppercorn}
-BuildRequires:  %{python_module coverage}
-%endif
-# /SECTION
-BuildRequires:  fdupes
-Requires:       %{python_module peppercorn}
-Suggests:       %{python_module check-manifest}
 BuildArch:      noarch
 
-# Fill in the actual package description to submit package to Fedora
+BuildRequires:  python3-devel
+BuildRequires:  pyproject-rpm-macros
+BuildRequires:  python3dist(setuptools) >= 43.0.0
+BuildRequires:  python3dist(wheel)
+
+%if %{with test}
+BuildRequires:  python3dist(coverage)
+BuildRequires:  python3dist(peppercorn)
+BuildRequires:  python3dist(pytest)
+%endif
+
 %global _description %{expand:
 A sample Python project}
 
@@ -57,28 +51,34 @@ A sample Python project}
 
 %package -n %{python_name}
 Summary:        %{summary}
+Requires:       python3dist(peppercorn)
+Suggests:       python3dist(check-manifest)
 
 %description -n %{python_name} %_description
-
 
 %prep
 %autosetup -p1 -n %{pypi_name}-%{version}
 
+%generate_buildrequires
+%pyproject_buildrequires
+
 %build
 %pyproject_wheel
 
-
 %install
 %pyproject_install
-#
-#%python_clone -a %{buildroot}%{_bindir}/sample
-#
-# For official Fedora packages, including files with '*' +auto is not allowed
-# Replace it with a list of relevant Python modules/globs and list extra files in %%files
-%pyproject_save_files '*' +auto
+%pyproject_save_files -L sample
+
+%check
+%if %{with test}
+# Adjust the test runner and arguments to match the upstream test suite.
+%pytest
+%endif
 
 %files -n %{python_name} -f %{pyproject_files}
+%doc README.md
+%license LICENSE.txt
+%{_bindir}/sample
 
 %changelog
 %autochangelog
-

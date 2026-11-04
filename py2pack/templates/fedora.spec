@@ -75,8 +75,12 @@ Suggests:       {{ req|fedora_requirement }}
 
 %install
 %pyproject_install
-# Replace '*' with the actual importable module names before submission.
-%pyproject_save_files '*'
+{%- if python_modules %}
+%pyproject_save_files {% if license_files %}-L{% else %}-l{% endif %} {{ python_modules|sort|join(' ') }}
+{%- else %}
+# Verify this import name, guessed from the distribution name.
+%pyproject_save_files {% if license_files %}-L{% else %}-l{% endif %} {{ name|lower|replace('-', '_')|replace('.', '_') }}
+{%- endif %}
 {%- if has_tests %}
 
 %check
@@ -87,9 +91,29 @@ Suggests:       {{ req|fedora_requirement }}
 {%- endif %}
 
 %files -n %{python_name} -f %{pyproject_files}
+{%- if doc_files %}
+%doc {{ doc_files|join(' ') }}
+{%- endif %}
+{%- if license_files %}
+%license {{ license_files|join(' ') }}
+{%- endif %}
 {%- for script in scripts_or_console_scripts|sort %}
 %{_bindir}/{{ script }}
 {%- endfor %}
+{%- if data_files %}
+# Review ownership of any package-specific data directories.
+{%- for directory, files in data_files %}
+{%- set rpm_dir = (directory.rstrip('/') ~ '/')|
+    replace('/usr/share/', '%{_datadir}/', 1)|
+    replace('/usr/bin/', '%{_bindir}/', 1)|
+    replace('/usr/sbin/', '%{_sbindir}/', 1)|
+    replace('/etc/', '%{_sysconfdir}/', 1)|
+    replace('/usr/', '%{_prefix}/', 1) %}
+{%- for file in files %}
+{{ rpm_dir }}{{ file|basename }}
+{%- endfor %}
+{%- endfor %}
+{%- endif %}
 
 %changelog
 %autochangelog

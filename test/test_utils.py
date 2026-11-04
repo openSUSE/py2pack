@@ -15,11 +15,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import io
 import os
 import shutil
 import tarfile
 import tempfile
+from types import SimpleNamespace
 import unittest
+import zipfile
+
+import pytest
 
 import py2pack.utils
 
@@ -93,3 +98,38 @@ class Py2packUtilsTestCase(unittest.TestCase):
 
         self.assertNotIn(
             "Not a tar or zip file", str(f_not_found_err.exception))
+
+
+@pytest.fixture(params=['tar', 'zip'])
+def module_archive(tmp_path, request):
+    path = tmp_path / ('source.' + request.param)
+    files = {
+        'Foo-Bar-1.0/src/Foo_Bar.egg-info/top_level.txt': b'first\nsecond\nfirst\n\n../bad\nnot-a-module\n',
+        'Foo-Bar-1.0/vendor/unrelated.egg-info/top_level.txt': b'unrelated\n',
+        'Foo-Bar-1.0/Foo_Bar.egg-info/other.txt': b'ignored\n',
+    }
+    if request.param == 'tar':
+        with tarfile.open(path, 'w') as archive:
+            for name, content in files.items():
+                member = tarfile.TarInfo(name)
+                member.size = len(content)
+                archive.addfile(member, io.BytesIO(content))
+    else:
+        with zipfile.ZipFile(path, 'w') as archive:
+            for name, content in files.items():
+                archive.writestr(name, content)
+    return path
+
+
+def test_archive_module_names(module_archive):
+    assert py2pack.utils._get_archive_module_names(module_archive, 'foo-bar') == ['first', 'second']
+    assert py2pack.utils._get_archive_module_names(module_archive, 'missing') == []
+
+
+def test_archive_modules_are_available_to_templates(module_archive, monkeypatch):
+    monkeypatch.setattr(py2pack.meta_utils, 'from_archive',
+                        lambda filename: {'data': {'name': 'Foo-Bar'}})
+    data = {'name': 'Foo-Bar'}
+    args = SimpleNamespace(name='Foo-Bar', version='1.0')
+    py2pack._augment_data_from_tarball(args, str(module_archive), data)
+    assert data['python_modules'] == ['first', 'second']

@@ -34,9 +34,9 @@ from metaextract import utils as meta_utils
 
 import py2pack.requires
 from py2pack import version as py2pack_version
-from py2pack.utils import (_get_archive_filelist, get_pyproject_table,
-                           parse_pyproject, get_setuptools_scripts,
-                           get_metadata)
+from py2pack.utils import (_get_archive_filelist, _get_archive_module_names,
+                           get_pyproject_table, parse_pyproject,
+                           get_setuptools_scripts, get_metadata)
 
 from email import parser
 
@@ -291,6 +291,9 @@ def _augment_data_from_tarball(args, filename, data):
                           .format(filename, exc))
 
     names = _get_archive_filelist(filename)
+    modules = _get_archive_module_names(filename, data.get('name') or args.name)
+    if modules:
+        data['python_modules'] = modules
     _canonicalize_setup_data(data)
 
     for name in names:
