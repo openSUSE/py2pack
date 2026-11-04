@@ -24,6 +24,31 @@ jobs:
             - name: Run the test suite
               run: python -mtox --parallel auto --parallel-live -- -vvvvv
 
+    fedora:
+        runs-on: ubuntu-latest
+        container: registry.fedoraproject.org/fedora:latest
+        steps:
+            - name: Install RPM build tools
+              run: >-
+                  dnf -y install git gcc rpm-build pyproject-rpm-macros
+                  python3-devel python3-pip python3-setuptools python3-wheel
+                  python3-pytest
+            - uses: actions/checkout@v4
+            - name: Install py2pack and test dependencies
+              run: python3 -m pip install . -r test-requirements.txt
+            - name: Build generated Fedora RPMs
+              env:
+                  PY2PACK_TEST_FEDORA_BUILDS: "1"
+              run: >-
+                  python3 -m pytest -v test/test_fedora_build.py
+                  --basetemp=/tmp/fedora-build-tests
+            - name: Upload RPM build logs
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: fedora-rpm-build-logs
+                  path: /tmp/fedora-build-tests/**/build.log
+
     lint:
         runs-on: ubuntu-latest
 

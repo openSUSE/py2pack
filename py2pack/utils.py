@@ -22,6 +22,7 @@ import tempfile
 import shutil
 from contextlib import contextmanager
 from build.util import project_wheel_metadata
+from packaging.utils import canonicalize_name
 
 from typing import List  # noqa: F401, pylint: disable=unused-import
 try:
@@ -63,6 +64,34 @@ def _get_archive_filelist(filename):
     if "./" in names:
         names.remove("./")
     return names
+
+
+def _get_archive_module_names(filename, project_name):
+    """Read import names from this distribution's egg-info, without extraction."""
+    def is_top_level(name):
+        parent, _, basename = name.rpartition('/')
+        egg_info = parent.rsplit('/', 1)[-1]
+        return (basename == 'top_level.txt' and egg_info.endswith('.egg-info') and
+                canonicalize_name(egg_info[:-9]) == canonicalize_name(project_name))
+
+    modules = set()
+
+    def add_modules(content):
+        modules.update(name for name in content.decode('utf-8', errors='replace').splitlines()
+                       if name.isidentifier())
+
+    if tarfile.is_tarfile(filename):
+        with tarfile.open(filename) as archive:
+            for member in archive:
+                if member.isfile() and is_top_level(member.name):
+                    with archive.extractfile(member) as stream:
+                        add_modules(stream.read())
+    elif zipfile.is_zipfile(filename):
+        with zipfile.ZipFile(filename) as archive:
+            for name in archive.namelist():
+                if is_top_level(name):
+                    add_modules(archive.read(name))
+    return sorted(modules)
 
 
 def parse_pyproject(archive):
