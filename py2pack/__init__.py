@@ -340,6 +340,16 @@ def _prepare_template_env(template_dir):
         lambda s: re.sub('([=<>]+)(.+)', r' (\1 \2)', s)
     env.filters['basename'] = \
         lambda s: s[s.rfind('/') + 1:]
+
+    def _fedora_requirement(requirement):
+        # Requirements have already been sanitised into "name [operator version]".
+        name, _, constraint = requirement.partition(' ')
+        name = re.sub(r'[-_.]+', '-', name).lower()
+        if constraint.startswith('=='):
+            constraint = constraint[1:]
+        return 'python3dist({}){}'.format(name, ' ' + constraint if constraint else '')
+
+    env.filters['fedora_requirement'] = _fedora_requirement
     return env
 
 

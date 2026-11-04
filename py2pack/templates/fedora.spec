@@ -1,208 +1,95 @@
-#
-# spec file for package python-{{ name }}
-#
-# Copyright (c) {{ year }} {{ user_name }}.
-#
-
-# python3_pkgversion macro for EPEL in older RHEL
-%{!?python3_pkgversion:%global python3_pkgversion 3}
-
-# Fedora and RHEL split python2 and python3
-# Older RHEL requires EPEL and python34 or python36
-%global with_python3 1
-
-# Fedora >= 38 no longer publishes python2 by default
-%if 0%{?fedora} >= 30
-%global with_python2 0
-%else
-%global with_python2 1
-%endif
-
-# Older RHEL does not use dnf, does not support "Suggests"
-%if 0%{?fedora} || 0%{?rhel} > 7
-%global with_dnf 1
-%else
-%global with_dnf 0
-%endif
-
 %global pypi_name {{ name }}
+%global python_name python3-%{pypi_name}
+{%- set build_reqs = build_requires or [] %}
+{%- set runtime_reqs = (requires or []) + (install_requires or []) %}
+{%- set has_tests = testsuite or test_suite or tests_require %}
+{%- set scripts_or_console_scripts = (
+            (scripts|map('basename')|list if scripts else []) +
+            (console_scripts if console_scripts else []))|unique|list %}
+{%- if has_tests %}
 
-# Descriptions can get long and clutter .spec file
-%global common_description %{expand:
-{{ description }}
-}
+%bcond_without test
+{%- endif %}
 
-# Common SRPM package
 Name:           python-%{pypi_name}
 Version:        {{ version }}
-Release:        0%{?dist}
-Url:            {{ home_page }}
+Release:        %autorelease
 Summary:        {{ summary }}
+
+# Check the generated license identifier against Fedora's licensing guidelines.
 License:        {{ license }}
-Group:          Development/Languages/Python
-# Stop using py2pack macros, use local macros published by Fedora
-Source0:        https://files.pythonhosted.org/packages/source/%(n=%{pypi_name}; echo ${n:0:1})/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+URL:            {{ home_page }}
+Source:         {{ source_url|replace(version, '%{version}') }}
 {%- if not has_ext_modules %}
 BuildArch:      noarch
 {%- endif %}
 
-%description
-{{ description }}
-
-%if %{with_python2}
-%package -n python2-%{pypi_name}
-Version:        {{ version }}
-Release:        0%{?dist}
-Url:            {{ home_page }}
-Summary:        {{ summary }}
-License:        {{ license }}
-
-BuildRequires:  python2-devel
-BuildRequires:  python2-setuptools
-# requires stanza of py2pack
-{%- for req in requires %}
-BuildRequires:  python2-{{ req|replace('(','')|replace(')','') }}
-Requires:       python2-{{ req|replace('(','')|replace(')','') }}
+BuildRequires:  python3-devel
+BuildRequires:  pyproject-rpm-macros
+{%- if has_ext_modules %}
+BuildRequires:  gcc
+{%- endif %}
+{%- for req in build_reqs|unique|sort %}
+BuildRequires:  {{ req|fedora_requirement }}
 {%- endfor %}
-# install_requires stanza of py2pack
-{%- for req in install_requires %}
-BuildRequires:  python2-{{ req|replace('(','')|replace(')','') }}
-Requires:       python2-{{ req|replace('(','')|replace(')','') }}
+{%- if source_url.endswith('.zip') %}
+BuildRequires:  unzip
+{%- endif %}
+{%- if has_tests %}
+
+%if %{with test}
+{%- for req in (runtime_reqs + (tests_require or []) + ['pytest'])|unique|sort %}
+{%- if req not in build_reqs %}
+BuildRequires:  {{ req|fedora_requirement }}
+{%- endif %}
 {%- endfor %}
-%if %{with_dnf}
+%endif
+{%- endif %}
+
+%global _description %{expand:
+{{ description }}}
+
+%description %_description
+
+%package -n %{python_name}
+Summary:        %{summary}
+{%- for req in runtime_reqs|unique|sort %}
+Requires:       {{ req|fedora_requirement }}
+{%- endfor %}
 {%- if extras_require %}
-{%- for reqlist in extras_require.values() %}
-{%- for req in reqlist %}
-Suggests:       python2-{{ req|replace('(','')|replace(')','') }}
-{%- endfor %}
+{%- for req in extras_require.values()|sum(start=[])|unique|sort %}
+Suggests:       {{ req|fedora_requirement }}
 {%- endfor %}
 {%- endif %}
-%endif # with_dnf
-%{?python_provide:%python_provide python2-%{pypi_name}}
 
-%description -n python2-%{pypi_name}
-{{ description }}
-
-%endif # with_python2
-
-%if %{with_python3}
-%package -n python%{python3_pkgversion}-%{pypi_name}
-Version:        {{ version }}
-Release:        0%{?dist}
-Url:            {{ home_page }}
-Summary:        {{ summary }}
-License:        {{ license }}
-
-# requires stanza of py2pack
-{%- for req in requires %}
-BuildRequires:  python%{python3_pkgversion}-{{ req|replace('(','')|replace(')','') }}
-Requires:       python%{python3_pkgversion}-{{ req|replace('(','')|replace(')','') }}
-{%- endfor %}
-# install_requires stanza of py2pack
-{%- for req in install_requires %}
-BuildRequires:  python%{python3_pkgversion}-{{ req|replace('(','')|replace(')','') }}
-Requires:       python%{python3_pkgversion}-{{ req|replace('(','')|replace(')','') }}
-{%- endfor %}
-%if %{with_dnf}
-{%- if extras_require %}
-{%- for reqlist in extras_require.values() %}
-{%- for req in reqlist %}
-Suggests:       python%{python3_pkgversion}-{{ req|replace('(','')|replace(')','') }}
-{%- endfor %}
-{%- endfor %}
-{%- endif %}
-%endif # with_dnf
-%{?python_provide:%python_provide python%{python3_pkgversion}-%{pypi_name}}
-
-%description -n python%{python3_pkgversion}-%{pypi_name}
-{{ description }}
-
-%endif # with_python3
+%description -n %{python_name} %_description
 
 %prep
-%setup -q -n %{pypi_name}-%{version}
+%autosetup -p1 -n %{pypi_name}-%{version}
+
+%generate_buildrequires
+%pyproject_buildrequires
 
 %build
-{%- if is_extension %}
-export CFLAGS="%{optflags}"
-{%- endif %}
-%if %{with_python2}
-%py2_build
-%endif # with_python2
-
-%if %{with_python3}
-%py3_build
-%endif # with_python3
+%pyproject_wheel
 
 %install
-%if %{with_python2}
-%py2_install
-{%- if scripts %}
-{%- for script in scripts %}
-%{__mv} $RPM_BUILD_ROOT%{_bindir}/{{ script }} $RPM_BUILD_ROOT%{_bindir}/{{ script }}-%{python2_version}
-{%- endfor %}
+%pyproject_install
+# Replace '*' with the actual importable module names before submission.
+%pyproject_save_files '*'
+{%- if has_tests %}
 
-%if ! %{with_python3}
-{%- for script in scripts %}
-%{__ln_s} {{ script }}-%{python2_version} $RPM_BUILD_ROOT%{_bindir}/{{ script }}
-{%- endfor %}
-%endif # ! with_python3
+%check
+%if %{with test}
+# Adjust the test runner and arguments to match the upstream test suite.
+%pytest
+%endif
 {%- endif %}
-%endif # with_python2
 
-%if %{with_python3}
-%py3_install
-{%- for script in scripts %}
-%{__mv} $RPM_BUILD_ROOT%{_bindir}/{{ script }} $RPM_BUILD_ROOT%{_bindir}/{{ script }}-%{python3_version}
-%{__ln_s} {{ script }}-%{python3_version} $RPM_BUILD_ROOT%{_bindir}/{{ script }}
-{%- endfor %}
-%endif # with_python3
-
-%clean
-rm -rf %{buildroot}
-
-%if %{with_python2}
-%files -n python2-%{pypi_name}
-%defattr(-,root,root,-)
-{%- if doc_files %}
-%doc {{ doc_files|join(" ") }}
-{%- endif %}
-{%- for script in scripts %}
-%{_bindir}/{{ script }}-%{python2_version}
-{%- endfor %}
-{%- if is_extension %}
-
-%if ! %{with_python3}
-# Symlinks for binaries to script-2, only if with_python3 is not enabled
-{%- for script in scripts %}
+%files -n %{python_name} -f %{pyproject_files}
+{%- for script in scripts_or_console_scripts|sort %}
 %{_bindir}/{{ script }}
 {%- endfor %}
-%endif # with_python3
-%{python2_archlib}/*
-{%- endif %}
-{%- if not is_extension %}
-%{python2_sitelib}/*
-{%- endif %}
-%endif # with_python2
-
-%if %{with_python3}
-%files -n python%{python3_pkgversion}-%{pypi_name}
-%defattr(-,root,root,-)
-{%- if doc_files %}
-%doc {{ doc_files|join(" ") }}
-{%- endif %}
-{%- for script in scripts %}
-%{_bindir}/{{ script }}-%{python3_version}
-{%- endfor %}
-{%- for script in scripts %}
-%{_bindir}/{{ script }}
-{%- endfor %}
-{%- if is_extension %}
-%{python3_archlib}/*
-{%- endif %}
-{%- if not is_extension %}
-%{python3_sitelib}/*
-{%- endif %}
-%endif # with_python3
 
 %changelog
+%autochangelog
