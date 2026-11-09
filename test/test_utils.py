@@ -20,6 +20,7 @@ import shutil
 import tarfile
 import tempfile
 import unittest
+from unittest import mock
 
 import py2pack.utils
 
@@ -76,6 +77,18 @@ class Py2packUtilsTestCase(unittest.TestCase):
 
         self.assertIn(file_name, str(val_err.exception))
         self.assertIn("Not a tar or zip file", str(val_err.exception))
+
+    @mock.patch('py2pack.utils.pwd.getpwuid')
+    def test_get_user_name_with_gecos(self, getpwuid):
+        getpwuid.return_value = mock.Mock(pw_gecos='Jane Doe', pw_name='jdoe')
+
+        self.assertEqual('Jane Doe', py2pack.utils.get_user_name())
+
+    @mock.patch('py2pack.utils.pwd.getpwuid')
+    def test_get_user_name_without_gecos(self, getpwuid):
+        getpwuid.return_value = mock.Mock(pw_gecos='', pw_name='jdoe')
+
+        self.assertEqual('jdoe', py2pack.utils.get_user_name())
 
     def test__get_archive_filelist_nonexistent_file(self):
         file_name = os.path.join(
